@@ -18,7 +18,7 @@ const _collection = Symbol('collection');
  * handler during the handler's execution ({@link Handler.execute}).
  *
  * You can define options by either using the full option location or using a
- * `metadata variable`:
+ * `option var`:
  *
  * **Full option location:**
  * Uses a convention interpreted by the {@link Handler.metadata} to describe
@@ -33,7 +33,7 @@ const _collection = Symbol('collection');
  *    _perform(data){
  *
  *      // defining a custom header using full option
- *      // location (not recommended, see metadata variable)
+ *      // location (not recommended, see option var)
  *      this.setMetadata('handler.web.writeOptions.headers', {
  *        someOption: 'foo',
  *      });
@@ -43,7 +43,7 @@ const _collection = Symbol('collection');
  * }
  * ```
  *
- * **Metadata variable (recommended):**
+ * **Option var (recommended):**
  * Eliminates the need of using convoluted long names to define the options by
  * simply using a variable that represents a full option location:
  *
@@ -62,9 +62,9 @@ const _collection = Symbol('collection');
  * }
  * ```
  *
- * The complete list of the available variables can be found bellow, it's
+ * The complete list of the available option variables can be found bellow, it's
  * separated by handler type. Also, new variables can be assigned through
- * {@link Metadata.registerPathVar}.
+ * {@link Metadata.registerOptionVar}.
  *
  * <h2>Web Variables</h2>
  *
@@ -142,37 +142,37 @@ class Metadata{
   }
 
   /**
-   * register a path variable to under metadata
+   * register an option variable under metadata
    *
-   * The value of the variable can contain other pre-defined path variables,
+   * The value of the variable can contain other pre-defined option variables,
    * for instance:
    * ```
-   * Mebo.Metadata.registerPathVar('$myVar', '$otherVar.data')
+   * Mebo.Metadata.registerOptionVar('$myVar', '$otherVar.data')
    * ```
    *
    * @param {string} name - name of the variable
    * @param {string} value - value for the variable
    */
-  static registerPathVar(name, value){
+  static registerOptionVar(name, value){
     assert(TypeCheck.isString(name), 'name needs to be defined as string');
     assert(TypeCheck.isString(value), 'value needs to be defined as string');
     assert((/^([\w_\$\.\-])+$/gi).test(value), `Illegal characters found variable (${name}) value: ${value}`); // eslint-disable-line no-useless-escape
 
-    this._validatePathVarName(name);
+    this._validateOptionVarName(name);
 
     // flushing cache
-    this._cachedPathVariables = {};
+    this._cachedOptionVariables = {};
 
     // assigning variable
-    this._pathVariables[name] = value;
+    this._optionVariables[name] = value;
   }
 
   /**
-   * Returns the value for a path variable
+   * Returns the value for an option variable
    *
    * for instance:
    * ```
-   * const myVariableValue = Mebo.Metadata.pathVar('$myVariable');
+   * const myVariableValue = Mebo.Metadata.optionVar('$myVariable');
    * console.log(myVariableValue)
    * ```
    *
@@ -184,18 +184,18 @@ class Metadata{
    * @throws {Error} throws an error if the var name is undefined
    * under the metadata.
    */
-  static pathVar(name, processValue=true){
+  static optionVar(name, processValue=true){
 
-    this._validatePathVarName(name);
-    if (!(name in this._pathVariables)){
+    this._validateOptionVarName(name);
+    if (!(name in this._optionVariables)){
       throw new Error(`Path variable ${name} is undefined`);
     }
 
     if (processValue){
-      return this._resolvePathVar(name);
+      return this._resolveOptionVar(name);
     }
 
-    return this._pathVariables[name];
+    return this._optionVariables[name];
   }
 
   /**
@@ -204,10 +204,10 @@ class Metadata{
    * @param {string} name - variable name
    * @return {boolean}
    */
-  static hasPathVar(name){
-    this._validatePathVarName(name);
+  static hasOptionVar(name){
+    this._validateOptionVarName(name);
 
-    return (name in this._pathVariables);
+    return (name in this._optionVariables);
   }
 
   /**
@@ -215,8 +215,8 @@ class Metadata{
    *
    * @return {Array<string>}
    */
-  static registeredPathVars(){
-    return Object.keys(this._pathVariables);
+  static registeredOptionVars(){
+    return Object.keys(this._optionVariables);
   }
 
   /**
@@ -233,7 +233,7 @@ class Metadata{
       const processedPath = [];
       for (const part of path.split('.')){
         if (part.startsWith('$')){
-          processedPath.push(Metadata.pathVar(part));
+          processedPath.push(Metadata.optionVar(part));
         }
         else{
           processedPath.push(part);
@@ -259,7 +259,7 @@ class Metadata{
    * @return {string}
    * @private
    */
-  static _resolvePathVar(name, rootName, depth=0){
+  static _resolveOptionVar(name, rootName, depth=0){
 
     // detecting circular references
     if (depth >= this._maxDepth){
@@ -274,10 +274,10 @@ class Metadata{
     }
 
     // processing value
-    const rawValue = this._pathVariables[name];
+    const rawValue = this._optionVariables[name];
 
     // in case the value is not under the cache, lets process it
-    if (!(name in this._cachedPathVariables)){
+    if (!(name in this._cachedOptionVariables)){
 
       // checking if the value contains any variable
       let processedValue = rawValue;
@@ -291,9 +291,9 @@ class Metadata{
           // in case of a variable
           if (part.startsWith('$')){
 
-            this._validatePathVarName(part);
+            this._validateOptionVarName(part);
             // processing variable value
-            processedPartValue = this._resolvePathVar(part, rootName || name, depth + 1);
+            processedPartValue = this._resolveOptionVar(part, rootName || name, depth + 1);
           }
           // otherwise just use the part without any processing
           else{
@@ -307,11 +307,11 @@ class Metadata{
       }
 
       // adding processed value to the cache
-      this._cachedPathVariables[name] = processedValue;
+      this._cachedOptionVariables[name] = processedValue;
     }
 
     // returning value from cache
-    return this._cachedPathVariables[name];
+    return this._cachedOptionVariables[name];
   }
 
   /**
@@ -321,7 +321,7 @@ class Metadata{
    * @param {string} name - variable name
    * @private
    */
-  static _validatePathVarName(name){
+  static _validateOptionVarName(name){
     assert(TypeCheck.isString(name), 'name needs to be a string');
 
     // check if variable name starts with $
@@ -341,8 +341,8 @@ class Metadata{
     }
   }
 
-  static _pathVariables = {};
-  static _cachedPathVariables = {};
+  static _optionVariables = {};
+  static _cachedOptionVariables = {};
   static _maxDepth = 1000;
 }
 

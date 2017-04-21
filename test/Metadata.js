@@ -22,21 +22,21 @@ describe('Metadata:', () => {
     assert.equal(metadata.value('a.b.c'), 1);
   });
 
-  it('Should assign a path variable under metadata', () => {
+  it('Should assign an option variable under metadata', () => {
     const value = 'someValue';
 
-    Metadata.registerPathVar('$myVarA', value);
-    assert.equal(Metadata.pathVar('$myVarA'), value);
+    Metadata.registerOptionVar('$myVarA', value);
+    assert.equal(Metadata.optionVar('$myVarA'), value);
   });
 
-  it('Should test for a circular reference error when assigning a path variable', () => {
+  it('Should test for a circular reference error when assigning an option variable', () => {
 
-    Metadata.registerPathVar('$myVarA', '$myVarB');
-    Metadata.registerPathVar('$myVarB', '$myVarC');
-    Metadata.registerPathVar('$myVarC', '$myVarA');
+    Metadata.registerOptionVar('$myVarA', '$myVarB');
+    Metadata.registerOptionVar('$myVarB', '$myVarC');
+    Metadata.registerOptionVar('$myVarC', '$myVarA');
 
     try{
-      Metadata.pathVar('$myVarA');
+      Metadata.optionVar('$myVarA');
       throw new Error('Should have failed!');
     }
     catch(err){
@@ -46,11 +46,11 @@ describe('Metadata:', () => {
     }
   });
 
-  it('Should assign a value using a path variable', () => {
+  it('Should assign a value using an option variable', () => {
 
     // setting variable
-    Metadata.registerPathVar('$myVarA', 'd');
-    Metadata.registerPathVar('$myVarB', 'a.b.c.$myVarA');
+    Metadata.registerOptionVar('$myVarA', 'd');
+    Metadata.registerOptionVar('$myVarB', 'a.b.c.$myVarA');
 
     // creating a metadata Object
     const metadata = new Metadata();
@@ -63,44 +63,44 @@ describe('Metadata:', () => {
     assert.equal(metadata.value('$myVarB.value'), 10);
   });
 
-  it('Should return the raw value (processValue=false) of the path variable', () => {
+  it('Should return the raw value (processValue=false) of the option variable', () => {
 
     // setting variable
-    Metadata.registerPathVar('$myVarA', 'd');
-    Metadata.registerPathVar('$myVarB', 'a.b.c.$myVarA');
+    Metadata.registerOptionVar('$myVarA', 'd');
+    Metadata.registerOptionVar('$myVarB', 'a.b.c.$myVarA');
 
-    assert.equal(Metadata.pathVar('$myVarB', false), 'a.b.c.$myVarA');
+    assert.equal(Metadata.optionVar('$myVarB', false), 'a.b.c.$myVarA');
   });
 
-  it('Should tell if the path variable exists', () => {
+  it('Should tell if the option variable exists', () => {
 
     // setting variable
-    Metadata.registerPathVar('$newVariable10', 'hi');
+    Metadata.registerOptionVar('$newVariable10', 'hi');
 
-    assert(Metadata.hasPathVar('$newVariable10'));
-    assert(!Metadata.hasPathVar('$nonExistingVariable'));
+    assert(Metadata.hasOptionVar('$newVariable10'));
+    assert(!Metadata.hasOptionVar('$nonExistingVariable'));
   });
 
-  it('Should return the list of the available path variables', () => {
+  it('Should return the list of the available option variables', () => {
 
-    const currentVarsLength = Metadata.registeredPathVars().length;
+    const currentVarsLength = Metadata.registeredOptionVars().length;
 
     // setting variable
-    Metadata.registerPathVar('$newAvailableVariable', 'value');
-    assert.equal(currentVarsLength + 1, Metadata.registeredPathVars().length);
+    Metadata.registerOptionVar('$newAvailableVariable', 'value');
+    assert.equal(currentVarsLength + 1, Metadata.registeredOptionVars().length);
 
     // assign variable again, it should not create a new entry
-    Metadata.registerPathVar('$newAvailableVariable', 'value');
-    assert.equal(currentVarsLength + 1, Metadata.registeredPathVars().length);
+    Metadata.registerOptionVar('$newAvailableVariable', 'value');
+    assert.equal(currentVarsLength + 1, Metadata.registeredOptionVars().length);
 
     // checking if variable name is part of the result
-    assert(Metadata.registeredPathVars().includes('$newAvailableVariable'));
+    assert(Metadata.registeredOptionVars().includes('$newAvailableVariable'));
   });
 
-  it('Should fail to get the value from a undefined path variable', () => {
+  it('Should fail to get the value from a undefined option variable', () => {
 
     try{
-      Metadata.pathVar('$nonExistingVariable');
+      Metadata.optionVar('$nonExistingVariable');
       throw new Error('Should have failed!');
     }
     catch(err){
@@ -110,7 +110,7 @@ describe('Metadata:', () => {
     }
   });
 
-  it('Should fail to set a value under the metadata when path contains an undefined path variable', () => {
+  it('Should fail to set a value under the metadata when path contains an undefined option variable', () => {
 
     try{
       const metadata = new Metadata();
@@ -124,10 +124,10 @@ describe('Metadata:', () => {
     }
   });
 
-  it('Should fail when path variable name does not start with $', () => {
+  it('Should fail when option variable name does not start with $', () => {
 
     try{
-      Metadata.registerPathVar('customVariable', 'testing');
+      Metadata.registerOptionVar('customVariable', 'testing');
       throw new Error('Should have failed!');
     }
     catch(err){
@@ -137,10 +137,10 @@ describe('Metadata:', () => {
     }
   });
 
-  it('Should fail when path variable name is empty', () => {
+  it('Should fail when option variable name is empty', () => {
 
     try{
-      Metadata.registerPathVar('$', 'testing');
+      Metadata.registerOptionVar('$', 'testing');
       throw new Error('Should have failed!');
     }
     catch(err){
@@ -150,10 +150,10 @@ describe('Metadata:', () => {
     }
   });
 
-  it('Should fail when path variable name contains invalid characters', () => {
+  it('Should fail when option variable name contains invalid characters', () => {
 
     try{
-      Metadata.registerPathVar('$invalidName -$', 'testing');
+      Metadata.registerOptionVar('$invalidName -$', 'testing');
       throw new Error('Should have failed!');
     }
     catch(err){

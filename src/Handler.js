@@ -121,7 +121,7 @@ class Handler{
    * @param {string} path - path about where the value is localized (the levels
    * must be separated by '.'). In case of an empty string it returns the
    * entire metadata. The path can be defined using `path vars`
-   * ({@link Metadata.pathVar}).
+   * ({@link Metadata.optionVar}).
    * @param {*} [defaultValue] - default value returned in case a value was
    * not found for the path
    * @return {*}
@@ -140,7 +140,7 @@ class Handler{
    *
    * @param {string} path - path about where the value should be stored under the metadata
    * (the levels must be separated by '.'). The path can be defined using `path vars`
-   * ({@link Metadata.pathVar}).
+   * ({@link Metadata.optionVar}).
    * @param {*} value - value that is going to be stored under the collection
    * @param {boolean} [merge=true] - this option is used to decide in case of the
    * last level is already existing under the collection, if the value should be

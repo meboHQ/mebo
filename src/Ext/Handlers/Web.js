@@ -572,18 +572,18 @@ Settings.set('handler/web/requireAuthByDefault', false); // ⚠ BE CAREFUL
 Input.registerProperty('filePath', 'restrictWebAccess', true);
 
 // registering path vars
-Metadata.registerPathVar('$web', 'handler.web');
-Metadata.registerPathVar('$webUploadDirectory', '$web.readOptions.uploadDirectory');
-Metadata.registerPathVar('$webUploadPreserveName', '$web.readOptions.uploadPreserveName');
-Metadata.registerPathVar('$webUploadMaxFileSize', '$web.readOptions.uploadMaxFileSize');
-Metadata.registerPathVar('$webMaxFields', '$web.readOptions.maxFields');
-Metadata.registerPathVar('$webMaxFieldsSize', '$web.readOptions.maxFieldsSize');
-Metadata.registerPathVar('$webHeaders', '$web.writeOptions.headers');
-Metadata.registerPathVar('$webHeadersOnly', '$web.writeOptions.headersOnly');
-Metadata.registerPathVar('$webResult', '$web.writeOptions.result');
-Metadata.registerPathVar('$webRoot', '$web.writeOptions.root');
-Metadata.registerPathVar('$webSuccessStatus', '$web.writeOptions.successStatus');
-Metadata.registerPathVar('$webResultLabel', '$web.writeOptions.resultLabel');
+Metadata.registerOptionVar('$web', 'handler.web');
+Metadata.registerOptionVar('$webUploadDirectory', '$web.readOptions.uploadDirectory');
+Metadata.registerOptionVar('$webUploadPreserveName', '$web.readOptions.uploadPreserveName');
+Metadata.registerOptionVar('$webUploadMaxFileSize', '$web.readOptions.uploadMaxFileSize');
+Metadata.registerOptionVar('$webMaxFields', '$web.readOptions.maxFields');
+Metadata.registerOptionVar('$webMaxFieldsSize', '$web.readOptions.maxFieldsSize');
+Metadata.registerOptionVar('$webHeaders', '$web.writeOptions.headers');
+Metadata.registerOptionVar('$webHeadersOnly', '$web.writeOptions.headersOnly');
+Metadata.registerOptionVar('$webResult', '$web.writeOptions.result');
+Metadata.registerOptionVar('$webRoot', '$web.writeOptions.root');
+Metadata.registerOptionVar('$webSuccessStatus', '$web.writeOptions.successStatus');
+Metadata.registerOptionVar('$webResultLabel', '$web.writeOptions.resultLabel');
 
 // registering handler
 Handler.registerHandler(Web);
