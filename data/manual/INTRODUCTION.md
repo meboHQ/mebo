@@ -20,7 +20,7 @@ class MyAction extends Mebo.Action{
 }
 ```
 
-[Action Documentation](https://mebo.github.io/docs/class/src/Action.js~Action.html)
+[Action Documentation](https://mebohq.github.io/docs/class/src/Action.js~Action.html)
 
 ## What is an Input ?
 
@@ -33,21 +33,21 @@ Mebo comes bundled with the inputs types:
 
 | Type        | Data Example |
 | ------------- |-------------|
-| [Bool](https://mebo.github.io/docs/class/src/Ext/Inputs/Bool.js~Bool.html) | ```true``` |
-| [Numeric](https://mebo.github.io/docs/class/src/Ext/Inputs/Numeric.js~Numeric.html) | ```10``` |
-| [Text](https://mebo.github.io/docs/class/src/Ext/Inputs/Text.js~Text.html) | ```'Test'``` |
-| [FilePath](https://mebo.github.io/docs/class/src/Ext/Inputs/FilePath.js~FilePath.html) | ```/tmp/someFile.txt``` |
-| [Url](https://mebo.github.io/docs/class/src/Ext/Inputs/Url.js~Url.html) | ```http://www.google.com``` |
-| [Email](https://mebo.github.io/docs/class/src/Ext/Inputs/Email.js~Email.html) | ```user@domain.com``` |
-| [Ip](https://mebo.github.io/docs/class/src/Ext/Inputs/Ip.js~Ip.html) | ```192.168.0.1``` |
-| [Timestamp](https://mebo.github.io/docs/class/src/Ext/Inputs/Timestamp.js~Timestamp.html) | ```new Date()``` |
-| [Hex](https://mebo.github.io/docs/class/src/Ext/Inputs/Hex.js~Hex.html) | ```ffff00```|
-| [Hash](https://mebo.github.io/docs/class/src/Ext/Inputs/Hash.js~Hash.html) | ```d41d8cd98f00b204e9800998ecf8427e```|
-| [UUID](https://mebo.github.io/docs/class/src/Ext/Inputs/UUID.js~UUID.html) | ```10ec58a-a0f2-4ac4-8393-c866d813b8d1```|
-| [Version](https://mebo.github.io/docs/class/src/Ext/Inputs/Version.js~Version.html) | ```0.1.12```|
-| [Stream](https://mebo.github.io/docs/class/src/Ext/Inputs/Stream.js~Stream.html) | ```new stream.Writable()```|
-| [Buffer](https://mebo.github.io/docs/class/src/Ext/Inputs/Buf.js~Buf.html) | ```new Buffer([2, 3, 4])```|
-| [Any](https://mebo.github.io/docs/class/src/Ext/Inputs/Any.js~Any.html) | ```{a: 1, b: 2}```|
+| [Bool](https://mebohq.github.io/docs/class/src/Ext/Inputs/Bool.js~Bool.html) | ```true``` |
+| [Numeric](https://mebohq.github.io/docs/class/src/Ext/Inputs/Numeric.js~Numeric.html) | ```10``` |
+| [Text](https://mebohq.github.io/docs/class/src/Ext/Inputs/Text.js~Text.html) | ```'Test'``` |
+| [FilePath](https://mebohq.github.io/docs/class/src/Ext/Inputs/FilePath.js~FilePath.html) | ```/tmp/someFile.txt``` |
+| [Url](https://mebohq.github.io/docs/class/src/Ext/Inputs/Url.js~Url.html) | ```http://www.google.com``` |
+| [Email](https://mebohq.github.io/docs/class/src/Ext/Inputs/Email.js~Email.html) | ```user@domain.com``` |
+| [Ip](https://mebohq.github.io/docs/class/src/Ext/Inputs/Ip.js~Ip.html) | ```192.168.0.1``` |
+| [Timestamp](https://mebohq.github.io/docs/class/src/Ext/Inputs/Timestamp.js~Timestamp.html) | ```new Date()``` |
+| [Hex](https://mebohq.github.io/docs/class/src/Ext/Inputs/Hex.js~Hex.html) | ```ffff00```|
+| [Hash](https://mebohq.github.io/docs/class/src/Ext/Inputs/Hash.js~Hash.html) | ```d41d8cd98f00b204e9800998ecf8427e```|
+| [UUID](https://mebohq.github.io/docs/class/src/Ext/Inputs/UUID.js~UUID.html) | ```10ec58a-a0f2-4ac4-8393-c866d813b8d1```|
+| [Version](https://mebohq.github.io/docs/class/src/Ext/Inputs/Version.js~Version.html) | ```0.1.12```|
+| [Stream](https://mebohq.github.io/docs/class/src/Ext/Inputs/Stream.js~Stream.html) | ```new stream.Writable()```|
+| [Buffer](https://mebohq.github.io/docs/class/src/Ext/Inputs/Buf.js~Buf.html) | ```new Buffer([2, 3, 4])```|
+| [Any](https://mebohq.github.io/docs/class/src/Ext/Inputs/Any.js~Any.html) | ```{a: 1, b: 2}```|
 
 > You can easily implement your own type, if you are interested take a look at
 the input inplementations bundled with Mebo
@@ -135,7 +135,7 @@ class CustomAction extends Mebo.Action{
 }
 ```
 
-[Input Documentation](https://mebo.github.io/docs/class/src/Input.js~Input.html)
+[Input Documentation](https://mebohq.github.io/docs/class/src/Input.js~Input.html)
 
 ## How to execute actions ?
 
@@ -191,7 +191,7 @@ Mebo.addBeforeAuthAction(passport.authenticate('...'));
 ```
 
 Alternatively a custom authentication method can be defined per handler basis, if
-you are interested checkout about the [Web Handler](https://mebo.github.io/docs/class/src/Ext/Handlers/Web.js~Web.html)
+you are interested checkout about the [Web Handler](https://mebohq.github.io/docs/class/src/Ext/Handlers/Web.js~Web.html)
 
 
 **Calling the action through middleware**
@@ -270,14 +270,14 @@ actionA.bakeToJSON().then((json) => {
 });
 ```
 
-[JSON Action Documentation](https://mebo.github.io/docs/class/src/Action.js~Action.html#instance-method-bakeToJSON)
+[JSON Action Documentation](https://mebohq.github.io/docs/class/src/Action.js~Action.html#instance-method-bakeToJSON)
 
 ## How to share data between actions ?
 
 Mebo shares data between actions using a Session, for futher
-details please checkout the [Session Documentation](https://mebo.github.io/docs/class/src/Session.js~Session.html)
+details please checkout the [Session Documentation](https://mebohq.github.io/docs/class/src/Session.js~Session.html)
 
 ## How to configure Mebo ?
 
 The basic configuration can be found under Settings, for futher
-details please checkout the [Settings Documentation](https://mebo.github.io/docs/class/src/Settings.js~Settings.html)
+details please checkout the [Settings Documentation](https://mebohq.github.io/docs/class/src/Settings.js~Settings.html)
