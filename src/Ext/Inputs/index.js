@@ -1,0 +1,16 @@
+module.exports.Bool = require('./Bool');
+module.exports.BaseText = require('./BaseText');
+module.exports.Text = require('./Text');
+module.exports.Numeric = require('./Numeric');
+module.exports.Any = require('./Any');
+module.exports.Version = require('./Version');
+module.exports.FilePath = require('./FilePath');
+module.exports.Url = require('./Url');
+module.exports.Email = require('./Email');
+module.exports.Ip = require('./Ip');
+module.exports.UUID = require('./UUID');
+module.exports.Timestamp = require('./Timestamp');
+module.exports.Stream = require('./Stream');
+module.exports.Buf = require('./Buf');
+module.exports.Hex = require('./Hex');
+module.exports.Hash = require('./Hash');
