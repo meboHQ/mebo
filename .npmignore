@@ -1,0 +1,15 @@
+test
+node_modules
+coverage
+.nyc_output
+src
+esdoc
+testutils
+data/manual
+data/docs
+data/*.svg
+
+# OS
+Desktop.ini
+*.DS_Store
+Thumbs.db

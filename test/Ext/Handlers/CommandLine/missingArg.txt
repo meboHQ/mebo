@@ -1,0 +1,6 @@
+file: missing <argument-a>
+Usage: file --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
+       file <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
+       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
+       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
+See file -h/--help for more information

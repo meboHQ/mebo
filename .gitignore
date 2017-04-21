@@ -1,0 +1,12 @@
+# global git ignore
+coverage
+esdoc
+node_modules
+dist
+.nyc_output
+npm-debug.log
+
+# OS
+Desktop.ini
+*.DS_Store
+Thumbs.db

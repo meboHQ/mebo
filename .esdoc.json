@@ -1,0 +1,28 @@
+{
+  "source": "./src",
+  "title": "Mebo",
+  "undocumentIdentifier": false,
+  "manual": {
+    "overview": ["./data/manual/INTRODUCTION.md"],
+    "badge": false
+  },
+  "plugins": [
+    {
+      "name": "./data/docs/tweaks.js"
+    }
+  ],
+  "styles": ["./data/docs/style.css"],
+  "destination": "./esdoc",
+  "package": "./package.json",
+  "lint": true,
+  "experimentalProposal": {
+    "classProperties": true,
+    "objectRestSpread": true,
+    "decorators": true,
+    "doExpressions": true,
+    "functionBind": true,
+    "asyncGenerators": true,
+    "exportExtensions": true,
+    "dynamicImport": true
+  }
+}
