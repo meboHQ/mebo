@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://mebohq.github.io/docs/data/logo.png"/>
+  <img src="https://mebohq.github.io/docs/data/logo.png?v=1"/>
 </p>
 
 ![status](https://mebohq.github.io/docs/data/status.svg)
@@ -7,7 +7,7 @@
 [![Build Status](https://travis-ci.org/meboHQ/mebo.svg?branch=master)](https://travis-ci.org/meboHQ/mebo)
 [![Known Vulnerabilities](https://snyk.io/test/github/meboHQ/mebo/badge.svg)](https://snyk.io/test/github/meboHQ/mebo)
 [![codecov.io](https://codecov.io/github/meboHQ/mebo/coverage.svg?branch=master)](https://codecov.io/github/meboHQ/mebo?branch=master)
-[![Esdocs](https://mebohq.github.io/badge.svg)](https://mebohq.github.io/)
+[![Esdocs](https://mebohq.github.io/badge.svg?v=1)](https://mebohq.github.io/)
 </p>
 
 ### What is it ?
@@ -22,7 +22,7 @@ It works by providing an interface focused to describe evaluations in a way that
 These evaluations can be triggered across multiple domains, you write once and Mebo takes care about the specifics necessary to run the evaluation across the domains.
 
 <p align="center">
-  <img src="https://mebohq.github.io/docs/data/hi.png"/>
+  <img src="https://mebohq.github.io/docs/data/hi.png?v=1"/>
 </p>
 
 ## Key features
@@ -40,7 +40,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 
 - **Console support**. By using Mebo your evaluations can be executed through command-line interfaces following docopt specifications.
 
-[<img src="https://mebohq.github.io/docs/data/intro.png"/>](data/manual/INTRODUCTION.md)
+[<img src="https://mebohq.github.io/docs/data/intro.png?v=1"/>](data/manual/INTRODUCTION.md)
 
 ## Documentation
 - [API Documentation](https://mebohq.github.io)
@@ -54,7 +54,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 - Tutorials (coming soon)
 
 ## Requirement
-[<img src="https://mebohq.github.io/docs/data/nodejs.png"/>](https://www.nodejs.org)
+[<img src="https://mebohq.github.io/docs/data/nodejs.png?v=1"/>](https://www.nodejs.org)
 
 Mebo is built using modern specs ES6/ES7, it requires [Node.js](https://www.nodejs.org) version **6** or **greater**
 
