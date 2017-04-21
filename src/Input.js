@@ -578,14 +578,14 @@ class Input{
    * This method is called by the {@link Handler} or when an action is loaded/created using
    * {@link Action.fromJSON}/{@link Action.createFromJSON}. In case the input
    * is defined as vector then the value can be defined using an array encoded in JSON.
-   * The parsed value gets returned and assigned to the input (you can control it by
-   * the `assignValue` argument).
+   * The parsed value gets returned and assigned to the input as well (you can control this
+   * by the `assignValue` argument).
    *
    * The implementation of the decoding is done by the method {@link Input._decode}.
    * To know if an input supports decoding checkout the {@link Input.isSerializable}.
    *
-   * Also, in case you want to know the serialization form for the inputs bundled with
-   * Mebo checkout {@link Reader}.
+   * To know how the serialization is done for the inputs bundled with
+   * Mebo take a look at {@link Reader} documentation.
    *
    * @param {string} value - string containing the serialized data
    * @param {boolean} [assignValue=true] - tells if the parsed value should be assigned
