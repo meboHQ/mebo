@@ -2,7 +2,7 @@
   <img src="https://mebohq.github.io/docs/data/logo.png"/>
 </p>
 
-![status](https://mebo.github.io/docs/data/status.svg)
+![status](https://mebohq.github.io/docs/data/status.svg)
 [![Gitter chat](https://badges.gitter.im/meboHQ/gitter.png)](https://gitter.im/meboHQ)
 [![Build Status](https://travis-ci.org/meboHQ/mebo.svg?branch=master)](https://travis-ci.org/meboHQ/mebo)
 [![Known Vulnerabilities](https://snyk.io/test/github/meboHQ/mebo/badge.svg)](https://snyk.io/test/github/meboHQ/mebo)
