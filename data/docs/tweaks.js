@@ -14,7 +14,7 @@ exports.onHandleHTML = (ev) => {
   .replace('<header>', '<header><a href="./index.html"><img src="data/thumbnail.png" id="meboSmallLogo" width="40" height="40" align="top"/></a>')
   .replace('>Repository</a>', '>Mebo&nbsp;GitHub</a>')
   .replace(/#http#:\//g, `http:/`)
-  .replace(new RegExp('https://mebo.github.io/docs/data/', 'g'), 'data/')
+  .replace(new RegExp('https://mebohq.github.io/docs/data/', 'g'), 'data/')
   .replace('Mebo API Document', 'Mebo')
   .replace('<img src="data/logo.png">', '<p align="center"><img src="data/logo.png"></p>')
   .replace('<img src="data/meboHi.png">', '<p align="center"><img src="data/meboHi.png"></p>')
@@ -42,7 +42,7 @@ exports.onHandleHTML = (ev) => {
   // replacing the domain that is hard coded in the INTRODUCTION to the relative doc location
   if (ev.data.html.indexOf('<div data-ice="manual" data-toc-name="overview">') !== -1){
     ev.data.html = ev.data.html
-    .replace(new RegExp('https://mebo.github.io/docs/', 'g'), '');
+    .replace(new RegExp('https://mebohq.github.io/docs/', 'g'), '');
     ev.data.html = ev.data.html.replace('indent-h1 manual-color manual-color-reference', 'indent-h1');
   }
 
