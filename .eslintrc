@@ -1,0 +1,292 @@
+{
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "plugins": [
+    "spellcheck"
+  ],
+  "globals" : {
+    // MOCHA
+    "describe" : false,
+    "it" : false,
+    "before" : false,
+    "beforeEach" : false,
+    "after" : false,
+    "afterEach" : false
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 8
+  },
+  "rules": {
+    "spellcheck/spell-checker": [
+      1,
+      {
+        "comments": true,
+        "strings": true,
+        "identifiers": false,
+        "lang": "en_US",
+        "skipWords": [
+          "param",
+          "pre",
+          "mebo",
+          "func",
+          "arg",
+          "autofill",
+          "auth",
+          "webfy",
+          "webfying",
+          "webfication",
+          "webfied",
+          "util",
+          "struct",
+          "ascii",
+          "lru",
+          "ip",
+          "testutils",
+          "basename",
+          "filename",
+          "src",
+          "buf",
+          "http",
+          "https",
+          "api",
+          "desc",
+          "tmp",
+          "parsers",
+          "enum",
+          "checksum",
+          "bool",
+          "stdout",
+          "stderr",
+          "middleware",
+          "middlewares",
+          "dir",
+          "unlink",
+          "js",
+          "javascript",
+          "localhost",
+          "timestamp",
+          "ffff",
+          "ipv4",
+          "ipv6",
+          "argv",
+          "req",
+          "res",
+          "jpg",
+          "png",
+          "txt",
+          "xml",
+          "async",
+          "dirname",
+          "wikipedia",
+          "todo",
+          "github",
+          "mb",
+          "istanbul",
+          "nbsp",
+          "algo",
+          "sha256",
+          "const",
+          "esdocs",
+          "traceback",
+          "wrapup",
+          "cacheable",
+          "jshint",
+          "eslint",
+          "subclasses",
+          "args",
+          "proto",
+          "somedomain",
+          "loopfunc",
+          "intermediated",
+          "utf",
+          "cli",
+          "mkdirs",
+          "br",
+          "dev",
+          "neodoc",
+          "docgen",
+          "parallelization",
+          "integrations",
+          "promisifying",
+          "serializable",
+          "docopt",
+          "handlers",
+          "passportjs",
+          "expressjs",
+          "revalidate",
+          "metadata",
+          "cryptographic",
+
+          // modules
+          "promisify",
+          "minimatch",
+          "typecheck",
+          "os",
+          "fs",
+          "uuid",
+          "sizeof",
+          "xxhash"
+        ],
+        "skipIfMatch": [
+          "http?.://[^s]*",
+
+          // checksums
+          "^[0-9a-f]{64}$",
+          "^[0-9a-f]{40}$",
+
+          // uuid v4
+          "^\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$"
+        ]
+      }
+    ],
+    "valid-jsdoc": [
+      2,
+      {
+        "prefer": {
+          "return": "return"
+        },
+        "preferType": {
+          "Boolean": "boolean",
+          "Number": "number",
+          "String": "string",
+          "Null": "null",
+          "Array": "Array",
+          "Object": "Object"
+        },
+        "requireParamDescription": true,
+        "requireReturnDescription": false,
+        "requireReturnType": true,
+        "requireReturn": false
+      }
+    ],
+    "no-warning-comments": [
+      1,
+      {
+        "terms": ["todo", "fixme", "xxx"],
+        "location": "start"
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "max-len": [
+      0
+    ],
+    "no-console": [
+      2
+    ],
+    "consistent-return": [
+      0
+    ],
+    "no-lonely-if": [
+      0
+    ],
+    "space-infix-ops": [
+      0
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+      "props":
+        false
+      }
+    ],
+    "space-before-blocks": [
+      "error",
+      "never"
+    ],
+    "arrow-body-style": [
+      0,
+      "as-needed"
+    ],
+    "no-restricted-syntax": [
+      "error",
+      "WithStatement"
+    ],
+    "guard-for-in": [
+      0
+    ],
+    "no-continue": [
+      0
+    ],
+    "padded-blocks": [
+      0
+    ],
+    "no-bitwise": [
+      0
+    ],
+    "object-curly-spacing": [
+      0
+    ],
+    "no-plusplus": [
+      0
+    ],
+    "brace-style": [
+      2,
+      "stroustrup"
+    ],
+    "class-methods-use-this": [
+      0
+    ],
+    "keyword-spacing": [
+      "error",
+      {
+        "overrides": {
+          "if": { "after": true },
+          "else": { "after": false },
+          "try": { "after": false },
+          "catch": { "after": false },
+          "finally": { "after": false }
+        }
+      }
+    ],
+    "indent": [
+      2,
+      2
+    ],
+    "quotes": [
+      2,
+      "single",
+      {
+        "allowTemplateLiterals": true,
+        "avoidEscape": true
+      }
+    ],
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
+    "no-underscore-dangle": [
+      0
+    ],
+    "semi": [
+      2,
+      "always"
+    ],
+    "eqeqeq": [
+      2,
+      "always"
+    ],
+    "no-eval": [
+      2
+    ],
+    "no-multi-spaces": [
+      2
+    ],
+    "camelcase":[
+      2,
+      {
+        "properties": "always"
+      }
+    ]
+  },
+  "extends": "airbnb-base"
+}
