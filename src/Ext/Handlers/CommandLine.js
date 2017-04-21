@@ -206,9 +206,9 @@ Input.registerProperty(Input, 'cliElementType', 'option');
 Input.registerProperty(Input, 'cliShortOption');
 
 // registering path vars
-Metadata.registerPathVar('$commandLine', 'handler.commandLine');
-Metadata.registerPathVar('$commandLineDescription', '$commandLine.readOptions.description');
-Metadata.registerPathVar('$commandLineResult', '$commandLine.writeOptions.result');
+Metadata.registerOptionVar('$commandLine', 'handler.commandLine');
+Metadata.registerOptionVar('$commandLineDescription', '$commandLine.readOptions.description');
+Metadata.registerOptionVar('$commandLineResult', '$commandLine.writeOptions.result');
 
 // registering handler
 Handler.registerHandler(CommandLine);
