@@ -1,0 +1,21 @@
+A command.
+
+Usage: file --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
+       file <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
+       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
+       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
+
+Arguments:
+  argument-a           argumentA help (text type).
+  argument-b           argumentB help (text type).
+  argument-optional-a  argumentOptionalA help [default: "a" "b"] (text[] type).
+
+Options:
+  --api=<value>                         version used to make sure that the api is still compatible (version type).
+  --option-a=<value>...                 (filepath[] type).
+  -b=<value>, --option-b=<value>        [default: 90] (numeric type).
+  -c=<value>, --option-c=<value>        (numeric type).
+  -d, --no-option-d                     (bool type).
+  -e=<value>..., --option-e=<value>...  [default: 0 1] (bool[] type).
+  --option-f                            (bool type).
+  --option-g=<value>...                 [default: "text1" "text2" "text3"] (text[] type).
