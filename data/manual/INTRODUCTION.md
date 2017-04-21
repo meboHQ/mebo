@@ -68,10 +68,6 @@ class MyAction extends Mebo.Action {
   }
 
   _perform(data){
-
-    // using it inside of the evalutation
-    const value = data.myInput;
-
     return Promise.resolve(`hello ${data.myInput}`);
   }
 }
