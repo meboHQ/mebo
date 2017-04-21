@@ -8,63 +8,63 @@ describe('Web metadata path vars:', () => {
 
   it('Should test $web var', () => {
     assert.equal(
-      Metadata.pathVar('$web'),
+      Metadata.optionVar('$web'),
       'handler.web',
     );
   });
 
   it('Should test $webUploadDirectory var', () => {
     assert.equal(
-      Metadata.pathVar('$webUploadDirectory'),
+      Metadata.optionVar('$webUploadDirectory'),
       'handler.web.readOptions.uploadDirectory',
     );
   });
 
   it('Should test $webUploadPreserveName var', () => {
     assert.equal(
-      Metadata.pathVar('$webUploadPreserveName'),
+      Metadata.optionVar('$webUploadPreserveName'),
       'handler.web.readOptions.uploadPreserveName',
     );
   });
 
   it('Should test $webUploadMaxFileSize var', () => {
     assert.equal(
-      Metadata.pathVar('$webUploadMaxFileSize'),
+      Metadata.optionVar('$webUploadMaxFileSize'),
       'handler.web.readOptions.uploadMaxFileSize',
     );
   });
 
   it('Should test $webMaxFields var', () => {
     assert.equal(
-      Metadata.pathVar('$webMaxFields'),
+      Metadata.optionVar('$webMaxFields'),
       'handler.web.readOptions.maxFields',
     );
   });
 
   it('Should test $webMaxFieldsSize var', () => {
     assert.equal(
-      Metadata.pathVar('$webMaxFieldsSize'),
+      Metadata.optionVar('$webMaxFieldsSize'),
       'handler.web.readOptions.maxFieldsSize',
     );
   });
 
   it('Should test $webHeaders var', () => {
     assert.equal(
-      Metadata.pathVar('$webHeaders'),
+      Metadata.optionVar('$webHeaders'),
       'handler.web.writeOptions.headers',
     );
   });
 
   it('Should test $webHeadersOnly var', () => {
     assert.equal(
-      Metadata.pathVar('$webHeadersOnly'),
+      Metadata.optionVar('$webHeadersOnly'),
       'handler.web.writeOptions.headersOnly',
     );
   });
 
   it('Should test $webResult var', () => {
     assert.equal(
-      Metadata.pathVar('$webResult'),
+      Metadata.optionVar('$webResult'),
       'handler.web.writeOptions.result',
     );
   });
@@ -72,21 +72,21 @@ describe('Web metadata path vars:', () => {
 
   it('Should test $webRoot var', () => {
     assert.equal(
-      Metadata.pathVar('$webRoot'),
+      Metadata.optionVar('$webRoot'),
       'handler.web.writeOptions.root',
     );
   });
 
   it('Should test $webSuccessStatus var', () => {
     assert.equal(
-      Metadata.pathVar('$webSuccessStatus'),
+      Metadata.optionVar('$webSuccessStatus'),
       'handler.web.writeOptions.successStatus',
     );
   });
 
   it('Should test $webResultLabel var', () => {
     assert.equal(
-      Metadata.pathVar('$webResultLabel'),
+      Metadata.optionVar('$webResultLabel'),
       'handler.web.writeOptions.resultLabel',
     );
   });
