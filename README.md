@@ -12,8 +12,8 @@
 
 ### What is it ?
 
-Mebo is a framework designed to help building apps across multiple domains. It can be integrated in the process 
-of developing any kind of application whether web based or desktop ones.
+Mebo is a framework designed to help building apps across multiple domains. It can be employed in the
+development of the most common applications.
 
 ### How does it work ?
 
@@ -26,7 +26,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 </p>
 
 ## Key features
-- **Flexible architeture**. Mebo can be integrated to any existing application. Also, it's designed from ground up to be customizable and extendable
+- **Flexible architeture**. Mebo can be integrated to existing applications. Also, it's designed from ground up to be customizable and extendable
 
 - **Reliable executions**. Mebo enforces quality control over the data used in the evaluations by performing a wide range of verifications
 
