@@ -19,7 +19,7 @@ of developing any kind of application whether web based or desktop ones.
 
 It works by providing an interface focused to describe evaluations in a way that is fairly extendable and comprehensible through a process that minimize repetitive thedeus routines  ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)) and produces a more versatile code base.
 
-These evaluations can be triggered across multiple domains, you write once and Mebo takes care about the specifics necessary to run the evaluation across the domains.
+These evaluations can be triggered across multiple domains, you write once and Mebo takes care of getting the evaluations up running across the domains.
 
 <p align="center">
   <img src="https://mebohq.github.io/docs/data/hi.png?v=1"/>
