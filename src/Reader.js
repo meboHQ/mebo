@@ -15,10 +15,9 @@ const _result = Symbol('result');
  * to query {@link Input} and {@link Session} information that is going be used
  * during the execution of the action.
  *
- * In case of new implements the only method expected to be implemented is
- * {@link Reader._perform}. Readers can have custom options
- * ({@link Reader.setOption}). These options are passed from the handler to the reader
- * during the execution ({@link Handler.execute}).
+ * In case of new implements it's expected to implement the {@link Reader._perform}.
+ * Readers can have custom options ({@link Reader.setOption}). These options are
+ * passed from the handler to the reader during the execution ({@link Handler.execute}).
  *
  * When a value is found for an input it's decoded using {@link Input.parseValue}
  * where each input implementation has its own way of parsing the serialized data,
