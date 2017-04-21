@@ -1,0 +1,88 @@
+{
+  "name": "mebo",
+  "version": "0.1.0",
+  "description": "A framework designed to build apps across multiple domains",
+  "scripts": {
+    "build": "babel src --out-dir=dist --source-maps both",
+    "build-dev": "babel src --watch --out-dir=dist --source-maps both",
+    "prepublish": "npm run build",
+    "start": "node dist",
+    "docs": "esdoc -c .esdoc.json && npm run docs-assets",
+    "docs-assets": "cp -R data/ esdoc/data/",
+    "lint": "eslint src/** test/**",
+    "test": "nyc mocha --check-leaks --full-trace --recursive",
+    "test-debug": "mocha --inspect --trace-deprecation --debug-brk --watch --full-trace --recursive --compilers babel-register",
+    "test-cr": "madge ./src/ --circular",
+    "test-ci": "npm run lint && npm run test-cr && npm test && codecov"
+  },
+  "author": "Paulo Nogueira",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meboHQ/mebo/issues"
+  },
+  "homepage": "https://github.com/meboHQ/mebo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meboHQ/mebo.git"
+  },
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">= 6.0.0"
+  },
+  "keywords": [
+    "cli",
+    "console",
+    "web",
+    "rest",
+    "framework",
+    "node",
+    "es6",
+    "es7"
+  ],
+  "dependencies": {
+    "compare-versions": "^3.0.1",
+    "debug": "^2.6.3",
+    "es6-promisify": "^5.0.0",
+    "formidable": "^1.1.1",
+    "ip": "^1.1.5",
+    "js-typecheck": "^0.6.0",
+    "lru-cache": "^4.0.2",
+    "minimatch": "^3.0.3",
+    "neodoc": "^1.4.0",
+    "object-sizeof": "^1.2.0",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.2",
+    "babel-preset-es2015-node6": "^0.4.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "codecov": "^2.1.0",
+    "esdoc": "^0.5.2",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-spellcheck": "0.0.8",
+    "express": "^4.15.2",
+    "madge": "^1.6.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.2.0",
+    "passport": "^0.3.2",
+    "passport-http": "^0.3.0",
+    "request": "^2.81.0"
+  },
+  "optionalDependencies": {
+    "xxhash": "^0.2.4"
+  },
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  }
+}
