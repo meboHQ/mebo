@@ -12,6 +12,8 @@
 
 ### What is it ?
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/meboHQ/mebo.svg)](https://greenkeeper.io/)
+
 Mebo is a framework designed to build apps across multiple domains. You can
 use it to build any kind of application whether web based or desktop ones.
 
