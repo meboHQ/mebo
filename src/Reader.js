@@ -57,6 +57,7 @@ const _result = Symbol('result');
  *     this.createInput('readerCantSeeMe: numeric', {hidden: true});
  *     this.createInput('readerSeeMe: numeric');
  *   }
+ * }
  * ```
  */
 class Reader{
