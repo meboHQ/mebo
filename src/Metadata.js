@@ -18,7 +18,7 @@ const _collection = Symbol('collection');
  * handler during the handler's execution ({@link Handler.execute}).
  *
  * You can define options by either using the full option location or using a
- * `metadata variable`:
+ * metadata variable:
  *
  * **Full option location:**
  * Uses a convention interpreted by the {@link Handler.metadata} to describe
