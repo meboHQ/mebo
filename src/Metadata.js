@@ -17,8 +17,8 @@ const _collection = Symbol('collection');
  * the metadata. By doing that the options are passed from the action to the
  * handler during the handler's execution ({@link Handler.execute}).
  *
- * You can define options by either using the full option location or using a
- * metadata variable:
+ * You can define options by either using the full option location or using
+ * option variables:
  *
  * **Full option location:**
  * Uses a convention interpreted by the {@link Handler.metadata} to describe
@@ -33,7 +33,7 @@ const _collection = Symbol('collection');
  *    _perform(data){
  *
  *      // defining a custom header using full option
- *      // location (not recommended, see metadata variable)
+ *      // location (not recommended, see option variable)
  *      this.setMetadata('handler.web.writeOptions.headers', {
  *        someOption: 'foo',
  *      });
@@ -43,7 +43,7 @@ const _collection = Symbol('collection');
  * }
  * ```
  *
- * **Metadata variable (recommended):**
+ * **Option variable (recommended):**
  * Eliminates the need of using convoluted long names to define the options by
  * simply using a variable that represents a full option location:
  *
