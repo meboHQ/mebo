@@ -9,7 +9,7 @@ const BaseText = require('./BaseText');
  * Hexadecimal input.
  *
  * ```javascript
- * const input = Input.create('myInput: hex', {size: 24});
+ * const input = Input.create('myInput: hex');
  * input.setValue('ffff00');
  * ```
  *
