@@ -44,9 +44,9 @@ const _response = Symbol('response');
  * result.data | ::none::
  *
  * <br>When defining options through the metadata support, it can done using
- * `option variables`. Mebo comes bundled with pre-defined option variables
+ * `option vars`. Mebo comes bundled with pre-defined option vars
  * for most of the options available for the readers & writers. The complete list
- * of option variables can be found at {@link Metadata} documentation.
+ * of the option vars can be found at {@link Metadata} documentation.
  *
  * Example of defining the `headers` option from inside of an action through
  * the metadata support:
