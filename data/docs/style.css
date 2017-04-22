@@ -41,7 +41,7 @@ h4 {
 }
 
 .layout-container > header {
-  background-color: #40aa8a;
+  background-color: #4077aa;
   border: none;
   box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.3);
   margin-bottom: 10px;
@@ -171,6 +171,7 @@ table.summary thead, .description thead, table.files-summary thead, table.test-s
 #meboSmallLogo {
   width: 40px;
   height: 40px;
+  border: none;
 }
 
 p > code, li > code {
