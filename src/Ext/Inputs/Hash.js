@@ -65,7 +65,7 @@ class Hash extends Hex{
 
       // size checking
       if (this.property('size') !== (value.length / 2) * 8){
-        throw new ValidationFail('Invalid hash value size', Hash.errorCodes[0]);
+        throw new ValidationFail('Invalid hash size', Hash.errorCodes[0]);
       }
 
       return value;
