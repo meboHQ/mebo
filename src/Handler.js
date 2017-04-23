@@ -419,7 +419,7 @@ class Handler{
 
   /**
    * Adds a listener to an exception raised during the {@link Handler.output} process.
-   * It can happen by either during the serialization process ({@link Writer.serialize})
+   * It can happen either during the serialization process ({@link Writer.serialize})
    * or during the finalization of the session ({@link Session.finalize}).
    * This event passes as argument: error, handlerName and handlerMask.
    *
