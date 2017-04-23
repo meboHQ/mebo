@@ -16,8 +16,6 @@ const _result = Symbol('result');
  * during the execution of the action.
  *
  * In case of new implements it's expected to implement the {@link Reader._perform}.
- * Readers can have custom options ({@link Reader.setOption}). These options are
- * passed from the handler to the reader during the execution ({@link Handler.execute}).
  *
  * When a value is found for an input it's decoded using {@link Input.parseValue}
  * where each input implementation has its own way of parsing the serialized data,
@@ -45,7 +43,40 @@ const _result = Symbol('result');
  * {@link UUID} | `'075054e0-810a-11e6-8c1d-e5fb28c699ca'` | \
  * `'["075054e0-810a-11e6-8c1d-e5fb28c699ca","98e631d3-6255-402a-88bd-66056e1ca9df"]'`
  *
- * <br/>**Hidding inputs from readers:**
+ * <br/>**Options:**
+ * Custom options can be assigned to readers ({@link Reader.setOption}). They are
+ * passed from the handler to the reader during the handler's execution
+ * ({@link Handler.execute}).
+ *
+ * ```
+ * const myHandler = Mebo.createHandler('someHandler');
+ *
+ * // setting reading options
+ * myHandler.execute('myAction', {
+ *  someOption: 10,
+ * });
+ * ```
+ *
+ * When an action is executed through a handler it can define options via
+ * the {@link Metadata} support. Detailed information about that can be found
+ * at {@link Metadata}:
+ *
+ * ```
+ * class MyAction extends Mebo.Action{
+ *    constructor(){
+ *
+ *      // defining a custom reading option
+ *      this.setMetadata('$myOption', {
+ *        someOption: 10,
+ *      });
+ *
+ *      // ...
+ *    }
+ * }
+ * Mebo.registerAction(MyAction);
+ * ```
+ *
+ * **Hidding inputs from readers:**
  * A reader only sees inputs that are capable of serialization
  * ({@link Input.isSerializable}) or visible inputs. Therefore, any input assigned
  * with the property `hidden` is not visible by readers, for instance:
