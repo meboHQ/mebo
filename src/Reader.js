@@ -77,7 +77,7 @@ const _result = Symbol('result');
  * Mebo.registerAction(MyAction);
  * ```
  *
- * **Hidding inputs from readers:**
+ * **Hiding inputs from readers:**
  * A reader only sees inputs that are capable of serialization
  * ({@link Input.isSerializable}) or visible inputs. Therefore, any input assigned
  * with the property `hidden` is not visible by readers, for instance:
