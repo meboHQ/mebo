@@ -64,6 +64,7 @@ const _result = Symbol('result');
  * ```
  * class MyAction extends Mebo.Action{
  *    constructor(){
+ *      super();
  *
  *      // defining a custom reading option
  *      this.setMetadata('$myOption', {
