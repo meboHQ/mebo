@@ -18,8 +18,8 @@ const _value = Symbol('value');
  * as success value. Therefore, new implements are expected to implement both a success
  * ({@link Writer._successOutput}) and error ({@link Writer._errorOutput}) outputs.
  *
- * Custom options can be assigned to writers ({@link Writer.setOption}). They are
- * passed from the handler to the writer during the output process
+ * **Options:** Custom options can be assigned to writers ({@link Writer.setOption}).
+ * They are passed from the handler to the writer during the output process
  * ({@link Handler.output}).
  *
  * ```
@@ -31,9 +31,9 @@ const _value = Symbol('value');
  * });
  * ```
  *
- * When executing the handler output you can use the action's result
- * {@link Metadata} to drive the writer options. Detailed information about the
- * metadata support can be found at {@link Metadata}:
+ * When an action is executed through a handler it can define options via
+ * the {@link Metadata} support. Detailed information about that can be found
+ * at {@link Metadata}:
  *
  * ```
  * class MyAction extends Mebo.Action{

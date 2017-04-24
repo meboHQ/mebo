@@ -16,14 +16,15 @@ const _response = Symbol('response');
 /**
  * Handles the web integration through expressjs and passportjs.
  *
- * It enables the execution of actions that are triggered by web requests by reading
- * ({@link WebRequest}) the information that is passed to the action
+ * It enables the execution of actions triggered by web requests.
+ * The request information is read by {@link WebRequest}, this information
+ * is passed to the action during the execution of the web handler
  * ({@link Web.execute}). The output of this handler ({@link Web.output}) is done
  * through the {@link WebResponse} writer.
  *
  * In order to tell which actions are visible by this handler, they are required to
- * be registered via a webfication process that describes their request method,
- * route and if it requires authentication.
+ * be registered beforehand via a webfication process that describes their
+ * request method, rest route and if it requires authentication.
  *
  * ```
  * Mebo.webfyAction('myRegisteredAction', 'get', {restRoute: '/myApi/action', auth: true});
@@ -47,26 +48,28 @@ const _response = Symbol('response');
  * After the webfication process, actions can be triggered in two ways:
  *
  * - *Rest support* ({@link Web.restful}):
- * Executing through a rest route, it happens when an action is webfied with `restRoute`
- * where it becomes automatically visible as part of the restful support. In order to
- * activated the restful support you need to tell Mebo what is the expressjs app
- * you want to use for the rest routes:
+ * Executes an action through a rest route, it happens when an action is webfied
+ * with `restRoute` where it becomes automatically visible as part of the
+ * restful support. In order to activated the restful support you need to tel
+ * Mebo what is the expressjs app you want to register the rest routes:
  * ```javascript
  * const app = express();
  * // this process registers the rest route for the webfied actions
  * Mebo.restful(app);
  * ```
- * The result of webfied actions through the restful support is automatically
- * serialized using google's json style guide. The only exceptions are readable stream
+ * The result of webfied actions is done through the restful support is automatically
+ * by using google's json style guide. The only exceptions are readable stream
  * and buffer that are piped to the response
  * ({@link Web._successOutput}, {@link Web._errorOutput}).
  *
  * - *Middleware support* ({@link Web.middleware}):
- * Executing through an arbitrary route. Actions can be executed as expressjs middlewares.
- * It's done by using `Mebo.middleware` where you tell what is action's registration name that
- * should be executed for the express route (make sure the action has
- * been webfied before hand). By using this feature you control the response
- * of the request, since the result of the action flows to the middleware:
+ * Executes an action through an arbitrary route. Actions can be executed as
+ * expressjs middlewares.
+ * It's done by using `Mebo.middleware` where you tell what is the action's
+ * registration name that should be executed for the express route
+ * (make sure the action has been webfied before hand). By using this feature
+ * you control the response of the request, since the result of the action
+ * is passed to the middleware:
  * ```javascript
  * const app = express();
  * app.get(

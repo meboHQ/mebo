@@ -41,7 +41,7 @@ h4 {
 }
 
 .layout-container > header {
-  background-color: #40aa8a;
+  background-color: #4077aa;
   border: none;
   box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.3);
   margin-bottom: 10px;
@@ -102,6 +102,7 @@ h4 {
   color: #888;
   font-weight: normal;
   margin-left: 0;
+  font-style: oblique;
   font-size: 0.8em;
   margin-top: 1em;
 }
@@ -113,7 +114,7 @@ h4 {
 
 .navigation li a {
   font-weight:200;
-  color: #2e6c5a;
+  color: #555;
 }
 
 .content{
@@ -171,6 +172,27 @@ table.summary thead, .description thead, table.files-summary thead, table.test-s
 #meboSmallLogo {
   width: 40px;
   height: 40px;
+  border: none;
+}
+
+.summary > tbody > tr > td {
+  padding: 2px 4px;
+}
+
+.summary > tbody > tr > td:first-child{
+  display: none;
+}
+
+.summary > tbody > tr > td > div > div {
+  display: none;
+}
+
+.summary > tbody > tr > td > div > p > span[data-ice="signature"] {
+  font-size: 90%;
+  color: #888;
+}
+.summary > tbody > tr > td > div > p > span[data-ice="signature"] > span > a{
+  color: #888;
 }
 
 p > code, li > code {

@@ -17,7 +17,7 @@ const Hex = require('./Hex');
  *
  * Property Name | Description | Defined&nbsp;by Default | Default Value
  * --- | --- | :---: | :---:
- * size | size of the hash in bits. This property needs to be defined at constructor \
+ * size | bit size of the hash. This property needs to be defined at constructor \
  *  time | ::true:: | ::none::
  *
  * All properties including the inherited ones can be listed via
@@ -65,7 +65,7 @@ class Hash extends Hex{
 
       // size checking
       if (this.property('size') !== (value.length / 2) * 8){
-        throw new ValidationFail('Invalid hash value size', Hash.errorCodes[0]);
+        throw new ValidationFail('Invalid hash size', Hash.errorCodes[0]);
       }
 
       return value;

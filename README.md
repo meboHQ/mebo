@@ -12,8 +12,8 @@
 
 ### What is it ?
 
-Mebo is a framework designed to help building apps across multiple domains. It can be integrated in the process 
-of developing any kind of application whether web based or desktop ones.
+Mebo is a framework designed to help building apps across multiple domains. It can be employed in the
+development of the most common applications.
 
 ### How does it work ?
 
@@ -26,7 +26,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 </p>
 
 ## Key features
-- **Flexible architeture**. Mebo can be integrated to any existing application. Also, it's designed from ground up to be customizable and extendable
+- **Flexible architeture**. Mebo can be integrated to existing applications. Also, it's designed from ground up to be customizable and extendable
 
 - **Reliable executions**. Mebo enforces quality control over the data used in the evaluations by performing a wide range of verifications
 
@@ -46,7 +46,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 - [API Documentation](https://mebohq.github.io)
 - Full Examples
  - [Hello World](https://github.com/meboHQ/example-hello-world)
- - [REST](https://github.com/meboHQ/example-rest)
+ - [RESTful using Express and Mongodb](https://github.com/meboHQ/example-restful-using-express-mongodb)
  - [Middleware integration](https://github.com/meboHQ/example-middleware)
  - [Authentication](https://github.com/meboHQ/example-auth)
  - [Uploads](https://github.com/meboHQ/example-uploads)

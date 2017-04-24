@@ -11,7 +11,7 @@ exports.onHandleCode = (ev) => {
 // Customize HTML texting/formating
 exports.onHandleHTML = (ev) => {
   ev.data.html = ev.data.html
-  .replace('<header>', '<header><a href="./index.html"><img src="data/thumbnail.png" id="meboSmallLogo" width="40" height="40" align="top"/></a>')
+  .replace('<header>', '<header><a href="./index.html"><img src="data/icon.png" id="meboSmallLogo" width="40" height="40" align="top"/></a>')
   .replace('>Repository</a>', '>Mebo&nbsp;GitHub</a>')
   .replace(/#http#:\//g, `http:/`)
   .replace(new RegExp('https://mebohq.github.io/docs/data/', 'g'), 'data/')
@@ -35,7 +35,7 @@ exports.onHandleHTML = (ev) => {
   // adding the star button to the README displayed in the index page
   if (ev.data.html.indexOf(' alt="Esdocs"></a>' !== -1)){
     ev.data.html = ev.data.html
-    .replace('</head>', '<link rel="icon" type="image/png" sizes="256x256" href="data/thumbnail.png"><script async defer src="https://buttons.github.io/buttons.js"></script></head>')
+    .replace('</head>', '<link rel="icon" type="image/png" sizes="64x64" href="data/icon.png"><script async defer src="https://buttons.github.io/buttons.js"></script></head>')
     .replace(' alt="Esdocs"></a>', ' alt=Esdocs"></a> <a class="github-button" href="https://github.com/meboHQ/mebo" data-icon="octicon-star" data-style="mega" data-count-href="/meboHQ/mebo/stargazers" data-count-api="/repos/meboHQ/mebo#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Mebo on GitHub">Star</a>');
   }
 

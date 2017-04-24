@@ -17,8 +17,8 @@ const _collection = Symbol('collection');
  * the metadata. By doing that the options are passed from the action to the
  * handler during the handler's execution ({@link Handler.execute}).
  *
- * You can define options by either using the full option location or using a
- * `option var`:
+ * You can define options by either using the full option location or using
+ * option variables:
  *
  * **Full option location:**
  * Uses a convention interpreted by the {@link Handler.metadata} to describe
@@ -32,7 +32,6 @@ const _collection = Symbol('collection');
  * class MyAction extends Mebo.Action{
  *    _perform(data){
  *
- *      // defining a custom header using full option
  *      // location (not recommended, see option var)
  *      this.setMetadata('handler.web.writeOptions.headers', {
  *        someOption: 'foo',
