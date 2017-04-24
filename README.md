@@ -46,7 +46,7 @@ These evaluations can be triggered across multiple domains, you write once and M
 - [API Documentation](https://mebohq.github.io)
 - Full Examples
  - [Hello World](https://github.com/meboHQ/example-hello-world)
- - [REST](https://github.com/meboHQ/example-rest)
+ - [RESTful using Express and Mongodb](https://github.com/meboHQ/example-restful-using-express-mongodb)
  - [Middleware integration](https://github.com/meboHQ/example-middleware)
  - [Authentication](https://github.com/meboHQ/example-auth)
  - [Uploads](https://github.com/meboHQ/example-uploads)
