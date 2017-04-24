@@ -17,7 +17,7 @@ const BaseText = require('./BaseText');
  *
  * Property Name | Description | Defined&nbsp;by Default | Default Value
  * --- | --- | :---: | :---:
- * size | optional maximum size of the value in bits | ::none:: | ::none::
+ * size | optional maximum bit size of the value | ::none:: | ::none::
  *
  * All properties including the inherited ones can be listed via
  * {@link registeredPropertyNames}
@@ -66,7 +66,7 @@ class Hex extends BaseText{
       }
       // value size checking
       else if (this.property('size') && (value.length / 2) * 8 > this.property('size')){
-        throw new ValidationFail('Value exceeds the maximum size allowed', Hex.errorCodes[1]);
+        throw new ValidationFail('Value exceeds the maximum bit size', Hex.errorCodes[1]);
       }
 
       return value;

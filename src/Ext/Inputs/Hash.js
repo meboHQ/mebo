@@ -17,7 +17,7 @@ const Hex = require('./Hex');
  *
  * Property Name | Description | Defined&nbsp;by Default | Default Value
  * --- | --- | :---: | :---:
- * size | size of the hash in bits. This property needs to be defined at constructor \
+ * size | bit size of the hash. This property needs to be defined at constructor \
  *  time | ::true:: | ::none::
  *
  * All properties including the inherited ones can be listed via
