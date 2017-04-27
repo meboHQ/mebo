@@ -252,7 +252,10 @@ class Handler{
     // the session finalization runs in parallel, since it does secondary tasks
     // (such as clean-up, logging, etc...) there is no need to await for that
     if (finalizeSession){
-      this.session().finalize().then().catch((err) => {
+      this.session().finalize().then(() => {
+        // runaway promise
+        return null;
+      }).catch((err) => {
         this._emitOutputError(err);
       });
     }

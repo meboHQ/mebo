@@ -539,6 +539,8 @@ class Web extends Handler{
         else{
           responseCallback(null, result, req, res, next);
         }
+        // runaway promise
+        return null;
       }).catch((err) => {
         if (render){
           web.output(err);
