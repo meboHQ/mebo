@@ -140,28 +140,19 @@ describe('Url Input:', () => {
     })();
   });
 
-  it('Should test the cache for the headers (fail)', (done) => {
+  it('Should test a request error', (done) => {
 
     (async () => {
 
       const input = Input.create('input: url', {exists: true});
-      input.setValue(`http://localhost:${port}/${smallFile}`);
-      server.close();
-      try{
-        await input.headers();
-      }
-      catch(err){
-        // ...
-      }
-
-      server.listen(port);
+      input.setValue(`http://localhost:${port}/_invalidURL_`);
       await input.headers();
 
     })().then((result) => {
       done(new Error('Unexpected result'));
 
     }).catch((err) => {
-      done(err.message === 'Web error' ? null : err);
+      done(err.message === 'Could not connect to the url' ? null : err);
     });
   });
 

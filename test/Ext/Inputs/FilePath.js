@@ -125,19 +125,19 @@ describe('FilePath Input:', () => {
     })();
   });
 
-  it('Should fail in setupFrom to set a vector input based on in a scalar input', (done) => {
+  it('Should let to use setupFrom to set a vector input based on in a scalar input', () => {
 
     const inputA = Input.create('input: filePath[]');
-    const inputB = Input.create('input: filePath');
+    const inputB = Input.create('input: filePath', {defaultValue: 'value'});
+    inputB._setToCache('x', 10);
+    inputB._setToCache('y', 20);
 
-    try{
-      inputA.setupFrom(inputB);
-      done(new Error('Unexpected result'));
-    }
-    catch(err){
-      done(minimatch(err.message, "Source input is not a vector, can't setup to a vector target input") ? null : err);
-    }
+    inputA.setupFrom(inputB);
 
+    assert.equal(inputA.value().length, 1);
+    assert.equal(inputA.value()[0], 'value');
+    assert.equal(inputA._getFromCache('x', 0), 10);
+    assert.equal(inputA._getFromCache('y', 0), 20);
   });
 
   it("Should fail in setupFrom to set a scalar input based on in a vector input without supplying 'at'", (done) => {
@@ -230,41 +230,22 @@ describe('FilePath Input:', () => {
     })();
   });
 
-  it('Should return the stat error from the cache', (done) => {
+  it('Should test an error during stat', (done) => {
     (async () => {
 
-      const temporaryFile = path.join(temporaryFolder, 'cacheTestFile2');
+      const doesNotExistFile = path.join(temporaryFolder, 'doesNotExistFile');
       const input = Input.create('input: filePath', {exists: false});
-      input.setValue(temporaryFile);
+      input.setValue(doesNotExistFile);
 
+      let error = null;
       try{
         await input.stat();
       }
       catch(err){
-        // ...
+        error = err;
       }
 
-      // now writing the file
-      fs.writeFileSync(temporaryFile, Array(1).join('0'));
-
-      // it should get the value from the cache
-      let success = false;
-      try{
-        await input.stat();
-      }
-      catch(err){
-        success = true;
-      }
-
-      // no more need for the file
-      fs.unlinkSync(temporaryFile);
-
-      if (success){
-        done();
-      }
-      else{
-        done(new Error('Unexpected error'));
-      }
+      done((error.code === 'ENOENT') ? null : error);
     })();
   });
 
