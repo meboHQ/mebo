@@ -428,9 +428,11 @@ class Action{
   createAction(actionName){
     const action = Action.create(actionName, this.session());
 
-    // overriding the metadata information about the origin of the action, by telling
-    // it has been created from inside of another action
-    action.setMetadata('action.origin', 'nested');
+    if (action){
+      // overriding the metadata information about the origin of the action, by telling
+      // it has been created from inside of another action
+      action.setMetadata('action.origin', 'nested');
+    }
 
     return action;
   }
