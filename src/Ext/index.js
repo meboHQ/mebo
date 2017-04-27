@@ -1,5 +1,5 @@
 /**
- * Resources bundled with mebo
+ * Resources bundled with Mebo
  */
 module.exports.Inputs = require('./Inputs');
 module.exports.Handlers = require('./Handlers');
