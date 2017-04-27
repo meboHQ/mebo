@@ -1,5 +1,4 @@
 const assert = require('assert');
-const path = require('path');
 const TypeCheck = require('js-typecheck');
 const Settings = require('../../Settings');
 const Metadata = require('../../Metadata');
@@ -415,8 +414,17 @@ class Web extends Handler{
     // registering the routes
     for (const webfiedAction of this._webfyActions){
       if (webfiedAction.restRoute !== null){
+
+        // building the final route path
+        let finalRoute = prefix;
+        if (prefix.length && !webfiedAction.restRoute.startsWith('/')){
+          finalRoute += '/';
+        }
+        finalRoute += webfiedAction.restRoute;
+
+        // registering route
         expressApp[webfiedAction.method](
-          path.join(prefix, webfiedAction.restRoute),
+          finalRoute,
           this._createMiddleware(webfiedAction.actionName),
         );
       }
