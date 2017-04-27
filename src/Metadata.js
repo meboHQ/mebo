@@ -79,7 +79,7 @@ const _collection = Symbol('collection');
  * $webHeadersOnly | `$web.writeOptions.headersOnly`| {@link WebResponse}
  * $webResult | `$web.writeOptions.result`| {@link WebResponse}
  * $webRoot | `$web.writeOptions.root`| {@link WebResponse}
- * $webSuccessStatus | `$web.writeOptions.successStatus`| {@link WebResponse}
+ * $webStatus | `$web.writeOptions.status`| {@link WebResponse}
  * $webResultLabel | `$web.writeOptions.resultLabel`| {@link WebResponse}
  *
  * <h2>Command line Variables</h2>

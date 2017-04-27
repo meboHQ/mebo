@@ -77,10 +77,10 @@ describe('Web metadata option vars:', () => {
     );
   });
 
-  it('Should test $webSuccessStatus var', () => {
+  it('Should test $webStatus var', () => {
     assert.equal(
-      Metadata.optionVar('$webSuccessStatus'),
-      'handler.web.writeOptions.successStatus',
+      Metadata.optionVar('$webStatus'),
+      'handler.web.writeOptions.status',
     );
   });
 

@@ -588,7 +588,7 @@ Metadata.registerOptionVar('$webHeaders', '$web.writeOptions.headers');
 Metadata.registerOptionVar('$webHeadersOnly', '$web.writeOptions.headersOnly');
 Metadata.registerOptionVar('$webResult', '$web.writeOptions.result');
 Metadata.registerOptionVar('$webRoot', '$web.writeOptions.root');
-Metadata.registerOptionVar('$webSuccessStatus', '$web.writeOptions.successStatus');
+Metadata.registerOptionVar('$webStatus', '$web.writeOptions.status');
 Metadata.registerOptionVar('$webResultLabel', '$web.writeOptions.resultLabel');
 
 // registering handler
