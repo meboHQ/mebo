@@ -26,8 +26,8 @@ const _response = Symbol('response');
  * headers | plain object containing the header names (in camel case convention) \
  * that should be used in the response | `{}`
  * headersOnly | if enabled ends the response without any data | ::false::
- * successStatus | success status code (the error status code is driven by the \
- * status defined as a member of the exception) | `200`
+ * status | success status code (the error status code is driven by the status \
+ * defined as a member of the exception) | `200`
  * root | plain object that gets deep merged at the root of the json output\
  * of a success result, for instance:<br>`{data: {...}, <rootContentsA>: ..., \
  * <rootContentsB> : ...}` | `{}`
@@ -81,7 +81,7 @@ class WebResponse extends Writer{
     this.setOption('root', {
       apiVersion: Settings.get('apiVersion'),
     });
-    this.setOption('successStatus', 200);
+    this.setOption('status', 200);
   }
 
   /**
@@ -169,7 +169,7 @@ class WebResponse extends Writer{
     const result = super._successOutput();
 
     // setting the status code for the response
-    this.response().status(this.option('successStatus'));
+    this.response().status(this.option('status'));
 
     // setting header
     this._setResponseHeaders();

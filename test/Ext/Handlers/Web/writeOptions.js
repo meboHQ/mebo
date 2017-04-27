@@ -24,7 +24,7 @@ describe('Web Write Options:', () => {
   class SuccessStatus extends testutils.Actions.Shared.Sum{
     constructor(){
       super();
-      this.setMetadata('$webSuccessStatus', 201);
+      this.setMetadata('$webStatus', 201);
     }
   }
 
