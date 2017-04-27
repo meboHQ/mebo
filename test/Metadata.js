@@ -104,7 +104,7 @@ describe('Metadata:', () => {
       throw new Error('Should have failed!');
     }
     catch(err){
-      if (!minimatch(err.message, 'Path variable * is undefined')){
+      if (!minimatch(err.message, 'Option variable * is undefined')){
         throw err;
       }
     }
@@ -118,7 +118,7 @@ describe('Metadata:', () => {
       throw new Error('Should have failed!');
     }
     catch(err){
-      if (!minimatch(err.message, 'Path variable * is undefined')){
+      if (!minimatch(err.message, 'Option variable * is undefined')){
         throw err;
       }
     }
@@ -131,7 +131,7 @@ describe('Metadata:', () => {
       throw new Error('Should have failed!');
     }
     catch(err){
-      if (!minimatch(err.message, 'Path variable * needs to start with: $')){
+      if (!minimatch(err.message, 'Option variable * needs to start with: $')){
         throw err;
       }
     }
@@ -144,7 +144,7 @@ describe('Metadata:', () => {
       throw new Error('Should have failed!');
     }
     catch(err){
-      if (err.message !== 'Path variable cannot be empty'){
+      if (err.message !== 'Option variable cannot be empty'){
         throw err;
       }
     }
@@ -157,7 +157,7 @@ describe('Metadata:', () => {
       throw new Error('Should have failed!');
     }
     catch(err){
-      if (!minimatch(err.message, 'Path variable * contains invalid characters')){
+      if (!minimatch(err.message, 'Option variable * contains invalid characters')){
         throw err;
       }
     }

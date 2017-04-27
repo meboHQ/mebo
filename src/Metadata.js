@@ -187,7 +187,7 @@ class Metadata{
 
     this._validateOptionVarName(name);
     if (!(name in this._optionVariables)){
-      throw new Error(`Path variable ${name} is undefined`);
+      throw new Error(`Option variable ${name} is undefined`);
     }
 
     if (processValue){
@@ -325,18 +325,18 @@ class Metadata{
 
     // check if variable name starts with $
     if (!name.startsWith('$')){
-      throw new Error(`Path variable (${name}) needs to start with: $`);
+      throw new Error(`Option variable (${name}) needs to start with: $`);
     }
 
     // checking if variable is empty
     const cleanVarName = name.slice(1);
     if (!cleanVarName.length){
-      throw new Error('Path variable cannot be empty');
+      throw new Error('Option variable cannot be empty');
     }
 
     // checking for invalid syntax
     else if (!(/^([\w_])+$/gi).test(cleanVarName)){
-      throw new Error(`Path variable (${name}) contains invalid characters`);
+      throw new Error(`Option variable (${name}) contains invalid characters`);
     }
   }
 

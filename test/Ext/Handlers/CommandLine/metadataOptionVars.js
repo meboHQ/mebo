@@ -4,7 +4,7 @@ const Mebo = require('../../../../src');
 const Metadata = Mebo.Metadata;
 
 
-describe('CommandLine metadata path vars:', () => {
+describe('CommandLine metadata option vars:', () => {
 
   it('Should test $commandLine var', () => {
     assert.equal(
