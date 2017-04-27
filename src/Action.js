@@ -678,21 +678,24 @@ class Action{
       }
     }
 
-    // adding the action class name and the registered name to the stack information, for
-    // debugging purposes
-    let actionName = this.constructor.name;
-    const registeredName = this.metadata('action.name');
-    if (registeredName){
-      actionName += ` (${registeredName})`;
-    }
+    // adding the action class name and the registered name as a hint
+    // to the stack (for debugging purposes)
+    if (Object.getOwnPropertyDescriptor(err, 'stack').writable){
+      let actionName = this.constructor.name;
+      const registeredName = this.metadata('action.name');
+      if (registeredName){
+        actionName += ` (${registeredName})`;
+      }
 
-    // including the action name information in a way that includes all action levels
-    // aka: `/TopLevelAction (...)/NestedActionA (...)/NestedActionB (...)!'
-    if (topLevel){
-      actionName += '!\n';
-    }
+      // including the action name information in a way that includes all action levels
+      // aka: `/TopLevelAction (...)/NestedActionA (...)/NestedActionB (...):'
+      if (topLevel){
+        actionName += ':\n';
+      }
 
-    err.stack = `/${actionName}${err.stack}`;
+      // including hint to the stack
+      err.stack = `Oops, error on action /${actionName}${err.stack}`;
+    }
 
     return err;
   }
