@@ -352,7 +352,12 @@ class WebRequest extends Reader{
 
     // adding the cleanup temporary folders to the wrapup tasks
     if (this[_temporaryFolders].length){
-      this.action().session().wrapup().addWrappedPromise(this._cleanupTemporaryFolders.bind(this));
+      this.action().session().wrapup().addWrappedPromise(
+        this._cleanupTemporaryFolders.bind(this),
+        {
+          priority: 1000,
+        },
+      );
     }
   }
 
