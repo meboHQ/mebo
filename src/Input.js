@@ -267,31 +267,45 @@ class Input{
     else if (at !== null && this.isVector()){
       throw new Error(`Can't use at, from a source vector input to a target vector input`);
     }
-    else if (this.isVector() && !sourceInput.isVector()){
-      throw new Error(`Source input is not a vector, can't setup to a vector target input`);
-    }
     else if (at === null && sourceInput.isVector() && !this.isVector()){
       throw new Error(`Target input is not a vector, can't setup from a vector target input without supplying 'at'`);
     }
 
-    // transferring the value
-    if (at === null){
+    // transferring value:
+    // when the source is not a vector, but the target is
+    if (this.isVector() && !sourceInput.isVector()){
+      this.setValue([sourceInput.value()]);
+    }
+    // when source and target are the same either scalar or vector
+    else if (at === null){
       this.setValue(sourceInput.value());
     }
+    // when an index is specific from a source vector to a scalar input
     else{
       this.setValue(sourceInput.value()[at]);
     }
 
-    // transferring the cache to the current input
+    // transferring cache to the current input:
     if (cache && sourceInput.property('immutable') && this.property('immutable')){
       assert(sourceInput.cache() instanceof Util.ImmutableMap);
 
       const sourceCache = sourceInput.cache();
-      if (at === null){
+
+      // when the source is not a vector, but the target is
+      if (this.isVector() && !sourceInput.isVector()){
+        for (const key of sourceCache.keys()){
+          this._setToCache(key.slice(0, -2), sourceCache.get(key), 0);
+        }
+      }
+
+      // when source and target are the same either scalar or vector
+      else if (at === null){
         for (const key of sourceCache.keys()){
           this.cache().set(key, sourceCache.get(key));
         }
       }
+
+      // when an index is specific from a source vector to a scalar input
       else{
         const indexToken = `(${at})`;
         for (const key of sourceCache.keys()){
