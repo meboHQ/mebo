@@ -399,6 +399,33 @@ describe('Web Restful Generic:', () => {
     });
   });
 
+  it('Should use a final rest route that combines the prefix (supplied at restful) and a rest route that does not start with /', (done) => {
+    Mebo.registerAction(testutils.Actions.Shared.Sum, 'sum.testPrefix');
+    Mebo.webfyAction('sum.testPrefix', 'get', {restRoute: 'testPrefixJoin'});
+    Mebo.restful(app, '/myApi');
+
+    request(`http://localhost:${port}/myApi/testPrefixJoin?a=5&b=5`, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+
+      try{
+        assert.equal(response.statusCode, 200);
+
+        const result = JSON.parse(body);
+        assert.equal(result.data.value, 10);
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
   it('Should be able to response to an action that does not have a returning value', (done) => {
 
     request(`http://localhost:${port}/undefinedResult`, (err, response, body) => {
