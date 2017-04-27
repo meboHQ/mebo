@@ -3,7 +3,6 @@ const path = require('path');
 const url = require('url');
 const http = require('http');
 const https = require('https');
-const debug = require('debug')('Mebo');
 const TypeCheck = require('js-typecheck');
 const Input = require('../../Input');
 const ValidationFail = require('../../Error/ValidationFail');
@@ -102,73 +101,59 @@ class Url extends BaseText{
    */
   headers(at=null){
 
+    // returning from cache
+    if (this._isCached('headers', at)){
+      return Promise.resolve(this._getFromCache('headers', at));
+    }
+
+    // otherwise processing headers
     return new Promise((resolve, reject) => {
 
-      if (!this._isCached('headers', at)){
-        this._parseUrl(at);
+      this._parseUrl(at);
 
-        const options = Object.create(null);
-        options.method = 'HEAD';
-        options.protocol = this._getFromCache('urlParsed', at).protocol;
-        options.host = this._getFromCache('urlParsed', at).hostname;
-        options.port = this._getFromCache('urlParsed', at).port;
-        options.path = this._getFromCache('urlParsed', at).path;
+      const options = Object.create(null);
+      options.method = 'HEAD';
+      options.protocol = this._getFromCache('urlParsed', at).protocol;
+      options.host = this._getFromCache('urlParsed', at).hostname;
+      options.port = this._getFromCache('urlParsed', at).port;
+      options.path = this._getFromCache('urlParsed', at).path;
 
-        // checking the protocol
-        const protocol = this.protocol(at);
-        if (['http:', 'https:'].includes(protocol)){
+      // checking the protocol
+      const protocol = this.protocol(at);
+      if (['http:', 'https:'].includes(protocol)){
 
-          /* istanbul ignore next */
-          const httpModule = (protocol === 'http:') ? http : https;
+        /* istanbul ignore next */
+        const httpModule = (protocol === 'http:') ? http : https;
 
-          // doing the request
-          const request = httpModule.request(options, (response) => {
+        // doing the request
+        const request = httpModule.request(options, (response) => {
 
-            let errorStatus = null;
-            let headers = Object.create(null);
-            if (response.statusCode === 200){
-              headers = response.headers;
-            }
-            else{
-              errorStatus = new Error('Could not connect to the url');
-            }
+          let errorStatus = null;
+          let headers = Object.create(null);
+          if (response.statusCode === 200){
+            headers = response.headers;
+          }
+          else{
+            errorStatus = new Error('Could not connect to the url');
+          }
 
+          if (errorStatus){
+            reject(errorStatus);
+          }
+          else{
             this._setToCache('headers', headers, at);
-            this._setToCache('errorStatus', errorStatus, at);
+            resolve(headers);
+          }
+        });
 
-            if (errorStatus){
-              reject(errorStatus);
-            }
-            else{
-              resolve(headers);
-            }
-          });
-
-          /* istanbul ignore next */
-          request.on('error', (err) => {
-            debug(err);
-
-            this._setToCache('headers', {}, at);
-            this._setToCache('errorStatus', new Error('Web error'), at);
-
-            reject(this._getFromCache('errorStatus', at));
-          });
-          request.end();
-        }
-        else{
-          this._setToCache('headers', {}, at);
-          this._setToCache('errorStatus', new Error('Invalid protocol'), at);
-
-          reject(this._getFromCache('errorStatus', at));
-        }
+        /* istanbul ignore next */
+        request.on('error', (err) => {
+          reject(err);
+        });
+        request.end();
       }
       else{
-        if (this._getFromCache('errorStatus', at)){
-          reject(this._getFromCache('errorStatus', at));
-        }
-        else{
-          resolve(this._getFromCache('headers', at));
-        }
+        reject(new Error('Invalid protocol'));
       }
     });
   }

@@ -1,10 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const promisify = require('es6-promisify');
 const debug = require('debug')('Mebo');
 const ValidationFail = require('../../Error/ValidationFail');
 const Input = require('../../Input');
 const BaseText = require('./BaseText');
+
+// promisifying
+const stat = promisify(fs.stat);
 
 
 /**
@@ -103,34 +107,17 @@ class FilePath extends BaseText{
   * tells which value should be used
   * @return {Promise<Object>}
   */
-  stat(at=null){
+  async stat(at=null){
 
-    return new Promise((resolve, reject) => {
+    // returning from cache
+    if (this._isCached('stats', at)){
+      return this._getFromCache('stats', at);
+    }
 
-      if (!this._isCached('stats', at)){
-        const value = this.valueAt(at);
-
-        fs.stat(value, (err, stats) => {
-          this._setToCache('stats', [err, stats], at);
-
-          if (err){
-            reject(err);
-          }
-          else{
-            resolve(stats);
-          }
-        });
-      }
-      else{
-        const stats = this._getFromCache('stats', at);
-        if (stats[0]){
-          reject(stats[0]);
-        }
-        else{
-          resolve(stats[1]);
-        }
-      }
-    });
+    // otherwise processing stats
+    const stats = await stat(this.valueAt(at));
+    this._setToCache('stats', stats, at);
+    return stats;
   }
 
   /**
