@@ -577,7 +577,7 @@ Settings.set('handler/web/requireAuthByDefault', false); // ⚠ BE CAREFUL
 // registering input properties
 Input.registerProperty('filePath', 'restrictWebAccess', true);
 
-// registering path vars
+// registering option vars
 Metadata.registerOptionVar('$web', 'handler.web');
 Metadata.registerOptionVar('$webUploadDirectory', '$web.readOptions.uploadDirectory');
 Metadata.registerOptionVar('$webUploadPreserveName', '$web.readOptions.uploadPreserveName');

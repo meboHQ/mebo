@@ -4,7 +4,7 @@ const Mebo = require('../../../../src');
 const Metadata = Mebo.Metadata;
 
 
-describe('Web metadata path vars:', () => {
+describe('Web metadata option vars:', () => {
 
   it('Should test $web var', () => {
     assert.equal(

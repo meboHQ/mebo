@@ -205,7 +205,7 @@ class CommandLine extends Handler{
 Input.registerProperty(Input, 'cliElementType', 'option');
 Input.registerProperty(Input, 'cliShortOption');
 
-// registering path vars
+// registering option vars
 Metadata.registerOptionVar('$commandLine', 'handler.commandLine');
 Metadata.registerOptionVar('$commandLineDescription', '$commandLine.readOptions.description');
 Metadata.registerOptionVar('$commandLineResult', '$commandLine.writeOptions.result');
