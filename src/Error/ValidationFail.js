@@ -54,7 +54,9 @@ class ValidationFail extends Error{
     /**
      * Boolean telling if this error is not allowed as output ({@link Handler.output})
      * when it has been raised from a nested action (an action created from another
-     * action ({@link Action.createAction})).
+     * action ({@link Action.createAction})). When output is disabled the error
+     * will not be handled by the {@link Writer}, therefore the error will be
+     * emitted by the signal {@link Handler.onErrorDuringOutput}.
      *
      * Value driven by:
      * `Settings.get('error/validationFail/disableOutputInNested')`
