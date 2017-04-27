@@ -3,7 +3,7 @@ const TypeCheck = require('js-typecheck');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
-const _executionOrder = Symbol('executionOrder');
+const _contents = Symbol('contents');
 
 
 /**
@@ -19,7 +19,7 @@ class Tasks{
    * Creates a new instance
    */
   constructor(){
-    this[_executionOrder] = [];
+    this[_contents] = [];
   }
 
   /**
@@ -30,13 +30,21 @@ class Tasks{
    * it's done by using the action's id ({@link Action.id}).
    *
    * @param {Action} action - action instance that should be executed in the wrap up
-   * @param {boolean} [runOnlyOnce=true] - tells if the action should be ignore in case
+   * @param {Object} options - custom options
+   * @param {boolean} [options.runOnlyOnce=true] - tells if the action should be ignore in case
    * it has already been executed previously (it's done by matching the {@link Action.id})
+   * @param {number} [options.priority=100] - tells the priority of the action, this affects
+   * the execution order where a lower numeric value means a higher priority.
    */
-  addAction(action, runOnlyOnce=true){
+  addAction(action, {runOnlyOnce=true, priority=100}={}){
     assert(TypeCheck.isCallable(action.execute), 'Invalid Action');
 
-    this[_executionOrder].push({type: 'action', item: action, onlyOnce: runOnlyOnce});
+    this[_contents].push({
+      type: 'action',
+      item: action,
+      onlyOnce: runOnlyOnce,
+      execPriority: priority,
+    });
   }
 
   /**
@@ -46,16 +54,23 @@ class Tasks{
    * ```javascript
    * tasks.addWrappedPromise(() => Promise.resolve(3))
    * ```
+   * @param {Object} options - custom options
+   * @param {number} [options.priority=100] - tells the priority of the action, this affects
+   * the execution order where a lower numeric value means a higher priority.
    */
-  addWrappedPromise(wrappedPromise){
+  addWrappedPromise(wrappedPromise, {priority=100}={}){
     assert(TypeCheck.isCallable(wrappedPromise), 'Promise needs to wrapped into a function');
 
-    this[_executionOrder].push({type: 'promise', item: wrappedPromise});
+    this[_contents].push({
+      type: 'promise',
+      item: wrappedPromise,
+      execPriority: priority,
+    });
   }
 
   /**
-   * Returns a list ordered by inclusion that contains the actions and
-   * promises which are executed through {@link execute}
+   * Returns a list sorted by priority and inclusion order about the actions and
+   * promises that are executed through {@link execute}
    *
    * @param {boolean} [actions=true] - tells if the result should return the actions
    * @param {boolean} [promises=true] - tells if the result should return the promises
@@ -64,9 +79,24 @@ class Tasks{
   async contents(actions=true, promises=true){
     const result = [];
 
+    const taskOrder = this[_contents].map((data, index) => {
+      return {
+        i: index,
+        contents: data,
+      };
+    });
+
+    taskOrder.sort((a, b) => {
+      if (a.contents.execPriority < b.contents.execPriority) return -1;
+      if (a.contents.execPriority > b.contents.execPriority) return 1;
+      return a.i - b.i;
+    });
+
+    const finalTaskOrder = taskOrder.map(x => x.contents);
+
     let resultIndex = 0;
     const actionIdMap = new Map();
-    for (const task of this[_executionOrder]){
+    for (const task of finalTaskOrder){
       // actions
       if (actions && task.type === 'action'){
         actionIdMap.set(resultIndex, task.item.id());
@@ -94,7 +124,7 @@ class Tasks{
       const actionId = actionIdResults[keyIndex];
       const alreadyIncluded = alreadyAddedIds.includes(actionId);
 
-      if (alreadyIncluded && this[_executionOrder][actionIndex].onlyOnce){
+      if (alreadyIncluded && this[_contents][actionIndex].onlyOnce){
         result.splice(actionIndex - removedCount, 1);
 
         removedCount++;
@@ -106,7 +136,6 @@ class Tasks{
       keyIndex++;
     }
 
-
     return result;
   }
 
@@ -116,7 +145,7 @@ class Tasks{
    * @return {boolean}
    */
   isEmpty(){
-    return this[_executionOrder].length === 0;
+    return this[_contents].length === 0;
   }
 
   /**
@@ -124,25 +153,53 @@ class Tasks{
    *
    */
   clear(){
-    this[_executionOrder].length = 0;
+    this[_contents].length = 0;
   }
 
   /**
-   * Executes the actions and promises inside of the tasks (provided by {@link contents})
+   * Executes the actions and promises inside of the tasks
+   * (provided by {@link contents}). All tasks get executed even if an error occurs
+   * during the execution of an specific task.
+   *
+   * Failed tasks are reported through an exception raised after all tasks have been executed,
+   * this error provides the `taskErrors` member that contains a list about the errors raised
+   * during the execution of the tasks.
    *
    * @return {Promise<Array>} Returns an array containing each result of the tasks
    */
   async execute(){
     const contents = await this.contents();
+    const taskErrors = [];
+    const result = [];
 
-    return Promise.all(contents.map((x) => {
-      // promise
-      if (TypeCheck.isCallable(x)){
-        return x();
+    // executing tasks
+    for (const task of contents){
+      try{
+        result.push(
+          await ((TypeCheck.isCallable(task)) ? task() : task.execute()), // eslint-disable-line no-await-in-loop
+        );
       }
-      // action
-      return x.execute();
-    }));
+      catch(err){
+        taskErrors.push(err);
+      }
+    }
+
+    // throwing a new exception about the failed tasks
+    if (taskErrors.length){
+      const error = new Error(`Failed to execute ${taskErrors.length} tasks (out of ${contents.length})`);
+
+      // including the stack trace information from the failed tasks (debugging purposes)
+      for (const taskError of taskErrors){
+        error.stack += `\n\nTask stack trace:\n${taskError.stack}`;
+      }
+
+      // also, including the task errors to the error itself (debugging purposes)
+      error.taskErrors = taskErrors;
+
+      throw error;
+    }
+
+    return result;
   }
 }
 

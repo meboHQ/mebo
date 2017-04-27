@@ -230,9 +230,10 @@ describe('Handler:', () => {
     Handler.registerWriter(CustomWriter, 'sessionErrorHandler');
 
     SessionErrorHandler.onErrorDuringOutput((err, name, mask) => {
-      if (err.message === 'Should fail'
+      if (err.message === 'Failed to execute 1 tasks (out of 1)'
         && name === 'sessionErrorHandler'.toLowerCase()
-        && mask === '*'){
+        && mask === '*'
+        && err.taskErrors[0].message === 'Should fail'){
         done();
       }
       else{

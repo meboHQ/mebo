@@ -67,9 +67,69 @@ describe('Tasks:', () => {
 
       const tasks = new Tasks();
       tasks.addAction(actionA1);
-      tasks.addAction(actionA1, false);
+      tasks.addAction(actionA1, {runOnlyOnce: false});
 
       assert.equal((await tasks.contents()).length, 2);
+    })();
+  });
+
+  it('Should test the execution priority', () => {
+
+    return (async () => {
+      const actionA1 = Mebo.createAction('tasksActionA');
+      actionA1.input('a').setValue(10);
+      actionA1.input('b').setValue(10);
+
+      const tasks = new Tasks();
+      tasks.addAction(actionA1, {priority: 5});
+
+      const actionA2 = Mebo.createAction('tasksActionA');
+      actionA2.input('a').setValue(12);
+      actionA2.input('b').setValue(13);
+      tasks.addAction(actionA2, {priority: 10});
+
+      const actionB = Mebo.createAction('tasksActionB');
+      actionB.input('a').setValue(12);
+      actionB.input('b').setValue(10);
+      actionB.input('c').setValue(10);
+      tasks.addAction(actionB, {priority: 1});
+
+      const contents = await tasks.contents();
+      assert.equal(contents.length, 3);
+      assert.equal(contents[0], actionB);
+      assert.equal(contents[1], actionA1);
+      assert.equal(contents[2], actionA2);
+
+    })();
+  });
+
+  it('Should test the default execution priority (100)', () => {
+
+    return (async () => {
+      const actionA1 = Mebo.createAction('tasksActionA');
+      actionA1.input('a').setValue(10);
+      actionA1.input('b').setValue(10);
+
+      const tasks = new Tasks();
+      tasks.addAction(actionA1, {priority: 101});
+
+      const actionDefaultPriority = Mebo.createAction('tasksActionA');
+      actionDefaultPriority.input('a').setValue(12);
+      actionDefaultPriority.input('b').setValue(13);
+      tasks.addAction(actionDefaultPriority);
+
+      const actionB = Mebo.createAction('tasksActionB');
+      actionB.input('a').setValue(12);
+      actionB.input('b').setValue(10);
+      actionB.input('c').setValue(10);
+      tasks.addAction(actionB, {priority: 99});
+
+      const contents = await tasks.contents();
+      assert.equal(contents.length, 3);
+      assert.equal(contents[0], actionB);
+      assert.equal(contents[1], actionDefaultPriority);
+      assert.equal(contents[2], actionA1);
+
     })();
   });
 
