@@ -18,9 +18,8 @@ const _metadata = Symbol('metadata');
 /**
  * A handler is used to bridge an execution method to Mebo.
  *
- * The data used by the handler is parsed through a {@link Reader}. This data
- * is then loaded to the action during the execution time through
- * {@link Handler.execute}.
+ * The data used to perform the execution of action through a handler
+ * ({@link Handler.execute}) is parsed using a reader {@link Reader}.
  *
  * The result of a handler is done through a {@link Writer}. Writers are designed
  * to support reporting a success output and an error output as well. The way the
@@ -426,8 +425,8 @@ class Handler{
    * or during the finalization of the session ({@link Session.finalize}).
    * This event passes as argument: error, handlerName and handlerMask.
    *
-   * Currently this event is static to make easy for developers to hook it when
-   * it occurs, if none listener is registered to it then the error is thrown,
+   * Currently this event is static to make easy to hook it in your application,
+   * if none listener is registered to it then the error is thrown,
    * a stack trace is printed, and the Node.js process exits.
    *
    * ```
