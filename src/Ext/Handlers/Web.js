@@ -31,8 +31,9 @@ const _response = Symbol('response');
  * ```
  *
  * In case of actions that require authentication (`auth: true`) Mebo checks if
- * the authentication has ben executed. Therefore a passport authentication middleware
- * can be defined via {@link addBeforeAuthAction}:
+ * the authentication has been executed before executing the action. Therefore,
+ * a passport authentication is required to be defined beforehand which can
+ * be done through {@link addBeforeAuthAction}:
  *
  * ```
  * Mebo.addBeforeAuthAction(passport);
