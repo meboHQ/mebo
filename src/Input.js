@@ -16,12 +16,12 @@ const _cache = Symbol('cache');
  * An input holds a value that is used for the execution of the {@link Action}.
  *
  * The value carried by the input gets checked through a wide range of validations
- * that makes sure the value meets the necessary requirements for  the execution
+ * that make sure the value meets the necessary requirements for  the execution
  * of the {@link Action}.
  *
  * The validations are performed asynchronously which enables an implementation
  * that can go far beyond checking the data type or matching the value through
- * a regex. In most cases these validations are driven by `properties`. They are
+ * a regex. In most cases these validations are driven by `properties`. Properties are
  * usually defined at construction time. Also, non-generic validations can be
  * implemented through `extendedValidation`, making possible to define validations
  * that are tied with an action itself.
