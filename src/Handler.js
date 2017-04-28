@@ -224,12 +224,17 @@ class Handler{
    * directly to the output method override them.
    *
    * If `finalizeSession` is enabled (default) the {@link Handler.session} gets finalized
-   * in the end of the output process.
+   * at the end of the output process.
    *
-   * In case of any error raised inside of the output process the handler emits the signal
-   * {@link Handler.onErrorDuringOutput}. Errors passed as output are able to drive
-   * the output behavior by having the member `output` defined, further information
-   * can be found at the write error output documentation ({@link Writer._errorOutput}).
+   * By default the {@link Writer._errorOutput} tries to handle the error as output.
+   * However you can tell a writer to do not handle specific errors, by doing that the writer
+   * will raise the errors instead of trying to handle them. This can be achieved
+   * by having `output` defined as member of the error (`error.output = false`),
+   * further information can be found at the error output documentation
+   * ({@link Writer._errorOutput}).
+   *
+   * In case of any error raised during the output process the handler emits the signal
+   * {@link Handler.onErrorDuringOutput}.
    *
    * @param {*} value - raw value that should be resulted by the handler
    * @param {Object} [options] - plain object containing options that should be used
