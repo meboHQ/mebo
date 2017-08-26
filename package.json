@@ -64,7 +64,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-spellcheck": "0.0.8",
     "express": "^4.15.2",
-    "madge": "^1.6.0",
+    "madge": "^2.1.0",
     "mocha": "^3.2.0",
     "nyc": "^10.2.0",
     "passport": "^0.3.2",
