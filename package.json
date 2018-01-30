@@ -42,7 +42,7 @@
   "dependencies": {
     "compare-versions": "^3.0.1",
     "debug": "^2.6.3",
-    "es6-promisify": "^5.0.0",
+    "es6-promisify": "^6.0.0",
     "formidable": "^1.1.1",
     "ip": "^1.1.5",
     "js-typecheck": "^0.6.0",
