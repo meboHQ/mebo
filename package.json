@@ -48,7 +48,7 @@
     "js-typecheck": "^0.6.0",
     "lru-cache": "^4.0.2",
     "minimatch": "^3.0.3",
-    "neodoc": "^1.4.0",
+    "neodoc": "^2.0.1",
     "object-sizeof": "^1.2.0",
     "uuid": "^3.0.1"
   },
