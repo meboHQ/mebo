@@ -1,5 +1,5 @@
-const assert = require('assert');
 const stream = require('stream');
+const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const Input = require('../Input');
 const Metadata = require('../Metadata');
@@ -229,7 +229,15 @@ class App extends Handler{
    * @param {function} [options.initializedCallback] - callback executed when the
    * initialization is done, it passes the value used by the output
    */
-  static init(defaultAppName, {argv=process.argv, stdout=process.stdout, stderr=process.stderr, initializedCallback=null}={}){
+  static init(
+    defaultAppName,
+    {
+      argv=process.argv,
+      stdout=process.stdout,
+      stderr=process.stderr,
+      initializedCallback=null,
+    }={},
+  ){
 
     assert(TypeCheck.isString(defaultAppName), 'defaultAppName needs to be defined as string');
 

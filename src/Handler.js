@@ -756,9 +756,13 @@ class Handler{
   }
 
   static _outputEventEmitter = new EventEmitter();
+
   static _registeredHandlers = new Map();
+
   static _registeredWriters = new Map();
+
   static _registeredReaders = new Map();
+
   static _addedActions = new Map();
 }
 

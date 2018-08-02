@@ -1,14 +1,13 @@
-const assert = require('assert');
-const Mebo = require('../../../../src');
-const testutils = require('../../../../testutils');
-
 // the modules bellow are optional integrations, only required as devDependencies
 // for testing purpose
 const request = require('request'); // eslint-disable-line
 const express = require('express'); // eslint-disable-line
 const passport = require('passport'); // eslint-disable-line
 const BasicStrategy = require('passport-http').BasicStrategy; // eslint-disable-line
-
+// regular modules
+const assert = require('assert');
+const Mebo = require('../../../../src');
+const testutils = require('../../../../testutils');
 
 describe('Web Restful Auth:', () => {
 
@@ -54,22 +53,24 @@ describe('Web Restful Auth:', () => {
     // auth 1
     passport.use(new BasicStrategy(
       (username, password, authDone) => {
-        if (username.valueOf() === 'user' &&
-          password.valueOf() === '1234'){
+        if (username.valueOf() === 'user'
+          && password.valueOf() === '1234'){
           return authDone(null, 'user');
         }
         return authDone(null, false);
-      }));
+      },
+    ));
 
     // auth 2
     const customBasicStrategy = new BasicStrategy(
       (username, password, authDone) => {
-        if (username.valueOf() === 'user2' &&
-          password.valueOf() === '12345'){
+        if (username.valueOf() === 'user2'
+          && password.valueOf() === '12345'){
           return authDone(null, 'user2');
         }
         return authDone(null, false);
-      });
+      },
+    );
     customBasicStrategy.name = 'basic2';
     passport.use(customBasicStrategy);
 
@@ -282,7 +283,7 @@ describe('Web Restful Auth:', () => {
       a: 'A value',
 
       file: {
-        value: new Buffer([1, 2, 3]),
+        value: Buffer.from([1, 2, 3]),
         options: {
           filename: 'foo.bin',
           contentType: 'application/bin',
@@ -290,13 +291,15 @@ describe('Web Restful Auth:', () => {
       },
     };
 
-    request.put({url: `http://localhost:${port}/B`,
+    request.put({
+      url: `http://localhost:${port}/B`,
       auth: {
         user: 'user2',
         pass: '12345',
         sendImmediately: true,
       },
-      formData: postFormData}, (err, response, body) => {
+      formData: postFormData,
+    }, (err, response, body) => {
 
       if (err){
         return done(err);

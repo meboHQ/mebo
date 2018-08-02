@@ -1,16 +1,16 @@
-const assert = require('assert');
-const Mebo = require('../../../src');
-const testutils = require('../../../testutils');
-
-const Action = Mebo.Action;
-const Settings = Mebo.Settings;
-
 // the modules bellow are optional integrations, only required as devDependencies
 // for testing purpose
 const request = require('request'); // eslint-disable-line
 const express = require('express'); // eslint-disable-line
 const passport = require('passport'); // eslint-disable-line
 const BasicStrategy = require('passport-http').BasicStrategy; // eslint-disable-line
+// regular modules
+const assert = require('assert');
+const Mebo = require('../../../src');
+const testutils = require('../../../testutils');
+
+const Action = Mebo.Action;
+const Settings = Mebo.Settings;
 
 
 describe('Web Upload:', () => {
@@ -58,12 +58,13 @@ describe('Web Upload:', () => {
     // auth
     passport.use(new BasicStrategy(
       (username, password, authDone) => {
-        if (username.valueOf() === 'user' &&
-          password.valueOf() === '1234'){
+        if (username.valueOf() === 'user'
+          && password.valueOf() === '1234'){
           return authDone(null, 'user');
         }
         return authDone(null, false);
-      }));
+      },
+    ));
 
     // express server
     app = express();
@@ -144,7 +145,7 @@ describe('Web Upload:', () => {
       a: 'A value',
 
       file: {
-        value: new Buffer([1, 2, 3]),
+        value: Buffer.from([1, 2, 3]),
         options: {
           filename: 'foo.bin',
           contentType: 'application/bin',
@@ -180,7 +181,7 @@ describe('Web Upload:', () => {
       a: 'A value',
 
       file: {
-        value: new Buffer([1, 2, 3]),
+        value: Buffer.from([1, 2, 3]),
         options: {
           filename: 'foo|:?*"\0<>.bin',
           contentType: 'application/bin',
@@ -220,21 +221,21 @@ describe('Web Upload:', () => {
 
       file: [
         {
-          value: new Buffer([1, 2, 3]),
+          value: Buffer.from([1, 2, 3]),
           options: {
             filename: 'foo.bin',
             contentType: 'application/bin',
           },
         },
         {
-          value: new Buffer([1, 2]),
+          value: Buffer.from([1, 2]),
           options: {
             filename: 'foo1.bin',
             contentType: 'application/bin',
           },
         },
         {
-          value: new Buffer([1, 2]),
+          value: Buffer.from([1, 2]),
           options: {
             filename: 'foo2.bin',
             contentType: 'application/bin',

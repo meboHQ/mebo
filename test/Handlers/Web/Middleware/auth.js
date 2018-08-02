@@ -1,15 +1,15 @@
-const assert = require('assert');
-const Mebo = require('../../../../src');
-const testutils = require('../../../../testutils');
-
-const Action = Mebo.Action;
-
 // the modules bellow are optional integrations, only required as devDependencies
 // for testing purpose
 const request = require('request'); // eslint-disable-line
 const express = require('express'); // eslint-disable-line
 const passport = require('passport'); // eslint-disable-line
 const BasicStrategy = require('passport-http').BasicStrategy; // eslint-disable-line
+// regular modules
+const assert = require('assert');
+const Mebo = require('../../../../src');
+const testutils = require('../../../../testutils');
+
+const Action = Mebo.Action;
 
 
 describe('Web Middleware Auth:', () => {
@@ -22,6 +22,7 @@ describe('Web Middleware Auth:', () => {
       super();
       this.createInput('a: numeric', {autofill: 'customValue'});
     }
+
     _perform(data){
       return data.a;
     }
@@ -37,12 +38,13 @@ describe('Web Middleware Auth:', () => {
     // auth
     passport.use(new BasicStrategy(
       (username, password, authDone) => {
-        if (username.valueOf() === 'user' &&
-          password.valueOf() === '123456'){
+        if (username.valueOf() === 'user'
+          && password.valueOf() === '123456'){
           return authDone(null, 'user');
         }
         return authDone(null, false);
-      }));
+      },
+    ));
 
     // express server
     app = express();

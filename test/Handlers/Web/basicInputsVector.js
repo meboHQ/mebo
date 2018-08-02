@@ -1,12 +1,12 @@
-const assert = require('assert');
-const Mebo = require('../../../src');
-
-const Action = Mebo.Action;
-
 // the modules bellow are optional integrations, only required as devDependencies
 // for testing purpose
 const request = require('request'); // eslint-disable-line
 const express = require('express'); // eslint-disable-line
+// regular modules
+const assert = require('assert');
+const Mebo = require('../../../src');
+
+const Action = Mebo.Action;
 
 
 describe('Web Basic Inputs (Vector):', () => {

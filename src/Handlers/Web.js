@@ -563,8 +563,11 @@ class Web extends Handler{
   }
 
   static _beforeAuthActionMiddlewares = [];
+
   static _beforeActionMiddlewares = [];
+
   static _webActions = [];
+
   static _actionMethodToWebfiedIndex = {};
 }
 

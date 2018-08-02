@@ -1,7 +1,7 @@
-const ValidationFail = require('../Errors/ValidationFail');
-const Input = require('../Input');
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
+const ValidationFail = require('../Errors/ValidationFail');
+const Input = require('../Input');
 const BaseText = require('./BaseText');
 
 

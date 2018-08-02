@@ -1,15 +1,15 @@
-const assert = require('assert');
-const path = require('path');
-const crypto = require('crypto');
-const Mebo = require('../../../src');
-const testutils = require('../../../testutils');
-
 // the modules bellow are optional integrations, only required as devDependencies
 // for testing purpose
 const request = require('request'); // eslint-disable-line
 const express = require('express'); // eslint-disable-line
 const passport = require('passport'); // eslint-disable-line
 const BasicStrategy = require('passport-http').BasicStrategy; // eslint-disable-line
+// regular modules
+const assert = require('assert');
+const path = require('path');
+const crypto = require('crypto');
+const Mebo = require('../../../src');
+const testutils = require('../../../testutils');
 
 
 describe('Web Stream:', () => {

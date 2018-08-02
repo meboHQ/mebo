@@ -1,6 +1,6 @@
+const stream = require('stream');
 const assert = require('assert');
 const Mebo = require('../../../src');
-const stream = require('stream');
 
 
 describe('App Write Options:', () => {

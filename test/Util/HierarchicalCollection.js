@@ -63,12 +63,18 @@ describe('Util HierarchicalCollection:', () => {
 
     const collection = new HierarchicalCollection();
 
-    collection.insert('test.level', {
-      a: 1,
-    });
-    collection.insert('test.level', {
-      b: 2,
-    },
+    collection.insert(
+      'test.level',
+      {
+        a: 1,
+      },
+    );
+
+    collection.insert(
+      'test.level',
+      {
+        b: 2,
+      },
       false,
     );
 

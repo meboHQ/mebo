@@ -1,7 +1,7 @@
+const nodeIp = require('ip');
 const ValidationFail = require('../Errors/ValidationFail');
 const Input = require('../Input');
 const BaseText = require('./BaseText');
-const nodeIp = require('ip');
 
 
 /**

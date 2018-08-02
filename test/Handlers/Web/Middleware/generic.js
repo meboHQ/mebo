@@ -20,6 +20,7 @@ describe('Web Middleware Generic:', () => {
       super();
       this.createInput('a: numeric', {autofill: 'customValue'});
     }
+
     _perform(data){
       return data.a;
     }

@@ -1,6 +1,6 @@
+const stream = require('stream');
 const Mebo = require('../../../src');
 const testutils = require('../../../testutils');
-const stream = require('stream');
 
 const App = Mebo.Handlers.App;
 
@@ -33,7 +33,7 @@ describe('App Init:', () => {
     }
 
     _perform(data){
-      //console.log(data);
+      return data;
     }
   }
 
@@ -52,7 +52,6 @@ describe('App Init:', () => {
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
     options.initializedCallback = ((result) => {
-      console.log(result);
       done();
     });
 
@@ -66,7 +65,6 @@ describe('App Init:', () => {
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
     options.initializedCallback = ((result) => {
-      console.log(result);
       done();
     });
 

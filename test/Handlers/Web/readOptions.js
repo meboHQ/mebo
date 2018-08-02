@@ -1,3 +1,8 @@
+// the modules bellow are optional integrations, only required as devDependencies
+// for testing purpose
+const request = require('request'); // eslint-disable-line
+const express = require('express'); // eslint-disable-line
+// regular modules
 const assert = require('assert');
 const fs = require('fs');
 const uuid = require('uuid');
@@ -6,12 +11,6 @@ const Mebo = require('../../../src');
 const testutils = require('../../../testutils');
 
 const Settings = Mebo.Settings;
-
-// the modules bellow are optional integrations, only required as devDependencies
-// for testing purpose
-const request = require('request'); // eslint-disable-line
-const express = require('express'); // eslint-disable-line
-
 
 describe('Web Read Options:', () => {
 
@@ -100,7 +99,7 @@ describe('Web Read Options:', () => {
       a: 'A value',
 
       file: {
-        value: new Buffer([1, 2, 3]),
+        value: Buffer.from([1, 2, 3]),
         options: {
           filename: 'foo.bin',
           contentType: 'application/bin',
@@ -140,21 +139,21 @@ describe('Web Read Options:', () => {
       a: 'A value',
       file: [
         {
-          value: new Buffer([1, 2, 3]),
+          value: Buffer.from([1, 2, 3]),
           options: {
             filename: 'foo.bin',
             contentType: 'application/bin',
           },
         },
         {
-          value: new Buffer([1, 2]),
+          value: Buffer.from([1, 2]),
           options: {
             filename: 'foo1.bin',
             contentType: 'application/bin',
           },
         },
         {
-          value: new Buffer([1, 2, 4]),
+          value: Buffer.from([1, 2, 4]),
           options: {
             filename: 'foo2.bin',
             contentType: 'application/bin',
@@ -210,7 +209,7 @@ describe('Web Read Options:', () => {
       folder: customUploadDirectory,
 
       file: {
-        value: new Buffer([1, 2]),
+        value: Buffer.from([1, 2]),
         options: {
           filename: 'foo.bin',
           contentType: 'application/bin',

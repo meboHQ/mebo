@@ -221,8 +221,8 @@ class Input{
    * @return {boolean} If the input is empty
    */
   isEmpty(){
-    return TypeCheck.isNone(this.value()) || (this.property('vector') &&
-      TypeCheck.isList(this.value()) && this.value().length === 0);
+    return TypeCheck.isNone(this.value()) || (this.property('vector')
+      && TypeCheck.isList(this.value()) && this.value().length === 0);
   }
 
   /**
@@ -317,7 +317,7 @@ class Input{
     }
   }
 
- /**
+  /**
   * Returns the cache used by the input
   *
   * This method is called by ({@link setupFrom}) to setup the input based on an
@@ -529,8 +529,8 @@ class Input{
     // Due the overhead that may occur on going through recursively and freezing
     // the whole hierarchy of the value, it freezes only value itself. In case
     // this is not enough consider in changing it to perform a deep-freeze instead
-    this._value = (!this.property('immutable') || TypeCheck.isNone(value)) ||
-      value instanceof Buffer ? value : Object.freeze(value);
+    this._value = (!this.property('immutable') || TypeCheck.isNone(value))
+      || value instanceof Buffer ? value : Object.freeze(value);
 
     // flushing the cache when a new value is set
     this.clearCache();
@@ -967,7 +967,9 @@ class Input{
   }
 
   static _propertiesCache = new Map();
+
   static _registeredInputs = new Map();
+
   static _registeredProperties = new Map();
 }
 

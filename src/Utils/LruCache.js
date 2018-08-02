@@ -132,7 +132,8 @@ class LruCache{
         maxAge: this[_lifespan],
         length: (n, k) => {
           return n.memorySize;
-        }});
+        },
+      });
     }
 
     const resultHolder = Object.create(null);

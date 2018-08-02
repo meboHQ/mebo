@@ -307,7 +307,7 @@ class AppArgs extends Reader{
 
         for (const value of serializedValue){
 
-          if (TypeCheck.isString(value) && isNaN(value)){
+          if (TypeCheck.isString(value) && Number.isNaN(Number(value))){
             const scapedValue = value.replace(new RegExp('"', 'g'), '\\"');
             defaultValue.push(`"${scapedValue}"`);
           }

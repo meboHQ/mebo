@@ -341,7 +341,9 @@ class Metadata{
   }
 
   static _optionVariables = {};
+
   static _cachedOptionVariables = {};
+
   static _maxDepth = 1000;
 }
 

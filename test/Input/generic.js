@@ -1,5 +1,4 @@
 const assert = require('assert');
-const TypeCheck = require('js-typecheck');
 const minimatch = require('minimatch');
 const Mebo = require('../../src');
 

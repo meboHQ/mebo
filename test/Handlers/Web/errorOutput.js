@@ -1,15 +1,14 @@
+// the modules bellow are optional integrations, only required as devDependencies
+// for testing purpose
+const request = require('request'); // eslint-disable-line
+const express = require('express'); // eslint-disable-line
+// regular modules
 const assert = require('assert');
 const EventEmitter = require('events');
 const Mebo = require('../../../src');
 const testutils = require('../../../testutils');
 
 const Action = Mebo.Action;
-
-// the modules bellow are optional integrations, only required as devDependencies
-// for testing purpose
-const request = require('request'); // eslint-disable-line
-const express = require('express'); // eslint-disable-line
-
 
 describe('Web Error Output:', () => {
 

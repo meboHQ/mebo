@@ -167,6 +167,12 @@
         "requireReturn": false
       }
     ],
+    "prefer-destructuring": ["error", {
+      "AssignmentExpression": {
+        "array": false,
+        "object": false
+      }
+    }],
     "no-warning-comments": [
       1,
       {
