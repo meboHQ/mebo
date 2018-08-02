@@ -5,6 +5,7 @@ node_modules
 dist
 .nyc_output
 npm-debug.log
+package-lock.json
 
 # OS
 Desktop.ini
