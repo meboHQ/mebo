@@ -44,6 +44,6 @@ class Delete extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Delete, 'file.delete');
+Mebo.Action.register(Delete, 'file.delete');
 
 module.exports = Delete;

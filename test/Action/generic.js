@@ -45,15 +45,15 @@ describe('Action Generic:', () => {
 
   before(() => {
     // registrations
-    Mebo.registerAction(MultiplyAction);
-    Mebo.registerAction(CacheableAction);
+    Mebo.Action.register(MultiplyAction, 'multiplyAction');
+    Mebo.Action.register(CacheableAction, 'cacheableAction');
   });
 
   // execute
   it('Value received in resultCallback should match the one returned by _perform method', (done) => {
 
-    const multiplyAction = Mebo.createAction('multiplyAction');
-    multiplyAction.execute().then((value) => {
+    const multiplyAction = Mebo.Action.create('multiplyAction');
+    multiplyAction.run().then((value) => {
 
       let error = null;
 
@@ -74,33 +74,23 @@ describe('Action Generic:', () => {
   it("LRU cache: should return the value from the cache when it's called multiple times with the same input configuration", () => {
 
     return (async () => {
-      const cacheableAction = Mebo.createAction('cacheableAction');
+      const cacheableAction = Mebo.Action.create('cacheableAction');
 
       cacheableAction.input('a').setValue(2);
       cacheableAction.input('b').setValue(2);
 
-      await cacheableAction.execute();
-      await cacheableAction.execute();
-      await cacheableAction.execute();
+      await cacheableAction.run();
+      await cacheableAction.run();
+      await cacheableAction.run();
 
       assert.equal(cacheableAction.counter, 1);
     })();
   });
 
-  it('Should let null to be assigned as session value', () => {
-    const action = Mebo.createAction('cacheableAction');
-    action.setSession(new Session());
-
-    // replacing session to null
-    action.setSession(null);
-
-    assert.equal(action.session(), null);
-  });
-
   it('LRU cache: Should return a different id when the input is set with a different value', () => {
 
     return (async () => {
-      const cacheableAction = Mebo.createAction('cacheableAction');
+      const cacheableAction = Mebo.Action.create('cacheableAction');
       const cacheIdA = await cacheableAction.id();
 
       cacheableAction.input('a').setValue(1);
@@ -112,21 +102,21 @@ describe('Action Generic:', () => {
   it('LRU cache: Test the value returned from the cache', () => {
 
     return (async () => {
-      const cacheableAction = Mebo.createAction('cacheableAction');
+      const cacheableAction = Mebo.Action.create('cacheableAction');
       cacheableAction.input('a').setValue(2);
 
       // asking twice for the same value (the second one returns from the cache)
-      let result = await cacheableAction.execute();
+      let result = await cacheableAction.run();
       assert.equal(result, 10);
 
-      let cacheResult = await cacheableAction.execute();
+      let cacheResult = await cacheableAction.run();
       assert.equal(result, cacheResult);
 
       // same test with a different value
       cacheableAction.input('a').setValue(1);
 
-      result = await cacheableAction.execute();
-      cacheResult = await cacheableAction.execute();
+      result = await cacheableAction.run();
+      cacheResult = await cacheableAction.run();
 
       assert.equal(result, cacheResult);
 
@@ -153,11 +143,11 @@ describe('Action Generic:', () => {
     return (async () => {
 
       const session = new Session();
-      const wrapUpAction = Mebo.createAction('multiplyAction');
+      const wrapUpAction = Mebo.Action.create('multiplyAction');
 
       wrapUpAction.input('a').setValue(2);
       wrapUpAction.input('b').setValue(2);
-      session.wrapup().addAction(wrapUpAction);
+      session.wrapup().grantAction(wrapUpAction);
 
       let wrapupPromiseWasCalled = false;
 
@@ -171,19 +161,7 @@ describe('Action Generic:', () => {
       await session.finalize();
       assert(wrapUpAction.wasCalled);
       assert(wrapupPromiseWasCalled);
-
-      // it should raise an exception when trying to finalize the session again
-      let failed = false;
-      try{
-        await session.finalize();
-      }
-      catch(err){
-        failed = true;
-      }
-
-      if (!failed){
-        throw new Error('It should have failed when finalize is triggered multiple times');
-      }
+      assert(session.wrapup().isEmpty());
     })();
   });
 

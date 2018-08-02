@@ -120,6 +120,10 @@
           "revalidate",
           "metadata",
           "cryptographic",
+          "init",
+          "app",
+          "apps",
+          "utils",
 
           // modules
           "promisify",

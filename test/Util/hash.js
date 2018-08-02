@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const hash = Mebo.Util.hash;
+const hash = Mebo.Utils.hash;
 
 // optional dependency (requires node-gyp)
 let xxhash = null;

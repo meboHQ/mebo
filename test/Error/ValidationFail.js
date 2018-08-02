@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const ValidationFail = Mebo.Error.ValidationFail;
+const ValidationFail = Mebo.Errors.ValidationFail;
 
 
 describe('ValidationFail:', () => {

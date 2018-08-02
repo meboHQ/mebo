@@ -4,7 +4,7 @@ const assert = require('assert');
 const path = require('path');
 const Mebo = require('../../src');
 
-const mkdirs = Mebo.Util.mkdirs;
+const mkdirs = Mebo.Utils.mkdirs;
 
 
 describe('Util mkdirs:', () => {

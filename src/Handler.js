@@ -7,7 +7,7 @@ const Action = require('./Action');
 const Metadata = require('./Metadata');
 const Reader = require('./Reader');
 const Writer = require('./Writer');
-const Util = require('./Util');
+const Utils = require('./Utils');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -19,7 +19,7 @@ const _metadata = Symbol('metadata');
  * A handler is used to bridge an execution method to Mebo.
  *
  * The data used to perform the execution of action through a handler
- * ({@link Handler.execute}) is parsed using a reader {@link Reader}.
+ * ({@link Handler.runAction}) is parsed using a reader {@link Reader}.
  *
  * The result of a handler is done through a {@link Writer}. Writers are designed
  * to support reporting a success output and an error output as well. The way the
@@ -44,7 +44,7 @@ const _metadata = Symbol('metadata');
  *
  *      // change 'name' for the registration name of the handler you
  *      // want to define the read & write options
- *      this.setMetadata('handler.name', {
+ *      this.setMeta('handler.name', {
  *        readOptions: {
  *          someReadOption: true,
  *        },
@@ -54,13 +54,13 @@ const _metadata = Symbol('metadata');
  *      });
  *    }
  * }
- * Mebo.registerAction(MyAction);
+ * Mebo.Action.register(MyAction, 'myAction');
  * ```
  *
  * Defining options directly through the handler:
  * ```
  * // read options
- * myHandler.execute('myAction', {
+ * myHandler.runAction('myAction', {
  *  someReadOption: true,
  * })
  *
@@ -70,15 +70,15 @@ const _metadata = Symbol('metadata');
  * })
  * ```
  *
- * Handlers are created by their registration name ({@link Handler.registerHandler}),
- * the creation is done by {@link Handler.create} or `Mebo.createHandler`:
+ * Handlers are created by their registration name ({@link Handler.register}),
+ * the creation is done by {@link Handler.create}:
  *
  * ```
  * // creating a handle based on the handler registration name
- * const handler = Mebo.createHandler('myHandler');
+ * const handler = Mebo.Handler.create('myHandler');
  *
  * // loading the parsed information to the action
- * handler.execute('actionName').then((result) => {
+ * handler.runAction('actionName').then((result) => {
  *
  *    // success output
  *    handler.output(result);
@@ -96,13 +96,21 @@ class Handler{
 
   /**
    * Creates a Handler
-   * @param {Session} session - Session object instance
    */
-  constructor(session){
-    assert(session instanceof Session, 'Invalid session');
-
-    this[_session] = session;
+  constructor(){
     this[_metadata] = new Metadata();
+  }
+
+  /**
+   * Associates a {@link Session} with the handler. The session assigned to
+   * the handler is cloned during the assignment ({@link Session.clone}).
+   *
+   * @param {Session} session - session object
+   */
+  setSession(session){
+    assert(session instanceof Session, 'Invalid session!');
+
+    this[_session] = session.clone();
   }
 
   /**
@@ -111,6 +119,12 @@ class Handler{
    * @return {Session}
    */
   session(){
+
+    // creating session on demanding
+    if (!this[_session]){
+      this[_session] = new Session();
+    }
+
     return this[_session];
   }
 
@@ -125,7 +139,7 @@ class Handler{
    * not found for the path
    * @return {*}
    */
-  metadata(path, defaultValue=undefined){
+  meta(path, defaultValue=undefined){
     assert(TypeCheck.isString(path), 'path needs to be defined as string');
 
     return this[_metadata].value(path, defaultValue);
@@ -145,7 +159,7 @@ class Handler{
    * last level is already existing under the collection, if the value should be
    * either merged (default) or overridden.
    */
-  setMetadata(path, value, merge=true){
+  setMeta(path, value, merge=true){
     assert(TypeCheck.isString(path), 'path needs to be defined as string');
 
     this[_metadata].setValue(path, value, merge);
@@ -171,18 +185,17 @@ class Handler{
    * for the handler should be fetched.
    * @return {*} result of the action
    */
-  async execute(actionName, options={}){
+  async runAction(actionName, options={}){
 
     const action = Action.create(actionName, this.session());
-    assert(action, `Action ${actionName} not found!`);
 
     // collecting read options from the action
     let actionHandlerName = this._actionHandlerName(action);
 
-    if (actionHandlerName){
-      this.setMetadata(
+    if (actionHandlerName.length){
+      this.setMeta(
         'readOptions',
-        action.metadata(`handler.${actionHandlerName}.readOptions`, {}),
+        action.meta(`handler.${actionHandlerName}.readOptions`, {}),
       );
     }
 
@@ -190,21 +203,21 @@ class Handler{
     let result;
     await this._load(action, options);
     try{
-      result = await action.execute();
+      result = await action.run();
     }
     finally{
 
       // handler metadata can be defined later during
       // for this reason querying it again if it was not defined previously
-      if (!actionHandlerName){
+      if (!actionHandlerName.length){
         actionHandlerName = this._actionHandlerName(action);
       }
 
       // collecting write options from the action
-      if (actionHandlerName){
-        this.setMetadata(
+      if (actionHandlerName.length){
+        this.setMeta(
           'writeOptions',
-          action.metadata(`handler.${actionHandlerName}.writeOptions`, {}),
+          action.meta(`handler.${actionHandlerName}.writeOptions`, {}),
         );
       }
     }
@@ -218,7 +231,7 @@ class Handler{
    * In case the value is an exception then it's treated as {@link Writer._errorOutput}
    * otherwise the value is treated as {@link Writer._successOutput}.
    *
-   * When an action is executed through the handler ({@link Handler.execute})
+   * When an action is executed through the handler ({@link Handler.runAction})
    * it can define writing options that are used by the output. These
    * options are stored under the {@link Handler.metadata} where any options passed
    * directly to the output method override them.
@@ -244,7 +257,7 @@ class Handler{
    */
   output(value, options={}, finalizeSession=true){
 
-    const writeOptions = Util.deepMerge(this.metadata('writeOptions', {}), options);
+    const writeOptions = Utils.deepMerge(this.meta('writeOptions', {}), options);
     const writer = this._createWriter(value, writeOptions);
     try{
       writer.serialize();
@@ -268,7 +281,7 @@ class Handler{
   /**
    * Creates a handler based on the registered name
    *
-   * Alternatively this method can be called directly from Mebo as `Mebo.createHandler(...)`
+   * Alternatively this method can be called directly from Mebo as `Mebo.Handler.create(...)`
    *
    * Also, the handler name gets included in the session as arbitrary data, it can be
    * retrieved through 'handler'. This name follows the registration pattern where this
@@ -280,27 +293,22 @@ class Handler{
    * @param {string} [mask='*'] - optional mask that supports a glob syntax used
    * to match a custom registered handler (it allows to have
    * custom handler implementations for specific masks)
-   * @param {Session} [session] - session used by the handler, if not specified it creates
-   * a new session instance
+   * @param {...args} args - custom args passed to the constructor during factoring
    * @return {Handler}
    */
-  static create(handlerName, mask='*', session=new Session()){
+  static create(handlerName, mask='*', ...args){
     const HandlerClass = this.registeredHandler(handlerName, mask);
 
     // creates a new instance
-    if (!HandlerClass){
-      throw new Error(`Execution Handler: ${handlerName}, is not registered!`);
-    }
-
-    const handler = new HandlerClass(session);
+    const handler = new HandlerClass(...args);
 
     // adding the handler name used to factory the handler under the metadata
     const normalizedHandlerName = handlerName.toLowerCase();
-    handler.setMetadata('handler.name', normalizedHandlerName);
-    handler.setMetadata('handler.mask', mask.toLowerCase());
+    handler.setMeta('handler.name', normalizedHandlerName);
+    handler.setMeta('handler.mask', mask.toLowerCase());
 
     // also, adding the handler name under the session arbitrary data
-    session.set('handler', normalizedHandlerName);
+    handler.session().set('handler', normalizedHandlerName);
 
     return handler;
   }
@@ -316,7 +324,7 @@ class Handler{
    * to match a custom registered handler (it allows to have
    * custom handler implementations for specific masks)
    */
-  static registerHandler(handlerClass, handlerName='', handlerMask='*'){
+  static register(handlerClass, handlerName='', handlerMask='*'){
     assert(TypeCheck.isSubClassOf(handlerClass, Handler), 'Invalid handler type!');
     const handlerNameFinal = ((handlerName === '') ? handlerClass.name : handlerName);
 
@@ -354,39 +362,72 @@ class Handler{
   }
 
   /**
-   * Returns the handler type based on the registration name
+   * Returns the registered handler
+   *
+   * (it can be also done via {@link Handler.registeredHandler}).
+   *
+   * @param {string} handlerName - registered handler name
+   * @param {string} [handlerMask] - optional handler mask
+   * @return {Handler}
+   */
+  static get(handlerName, handlerMask='*'){
+    return this.registeredHandler(handlerName, handlerMask);
+  }
+
+  /**
+   * Returns the registered handler
+   *
+   * (it can be also done via {@link Handler.get})
    *
    * @param {string} handlerName - name of the registered handler type
    * @param {string} [handlerMask='*'] - optional mask that supports a glob syntax used
    * to match a custom registered handler
-   * @return {Handler|null}
+   * @return {Handler}
    */
   static registeredHandler(handlerName, handlerMask='*'){
-    return this._registered(this._registeredHandlers, handlerName, handlerMask);
+    const result = this._registered(this._registeredHandlers, handlerName, handlerMask);
+
+    if (result){
+      return result;
+    }
+
+    throw new Error(`Handler ${handlerName} is not registered!`);
   }
 
   /**
-   * Returns the reader factory function based on the registration name
+   * Returns the reader registered for the handler
    *
    * @param {string} handlerName - name of the registered handler type
    * @param {string} [handlerMask='*'] - optional mask that supports a glob syntax used
    * to match a custom registered handler
-   * @return {function|null}
+   * @return {Reader}
    */
   static registeredReader(handlerName, handlerMask='*'){
-    return this._registered(this._registeredReaders, handlerName, handlerMask);
+    const result = this._registered(this._registeredReaders, handlerName, handlerMask);
+
+    if (result){
+      return result;
+    }
+
+    throw new Error(`Reader is not registered for handler ${handlerName}!`);
   }
 
   /**
-   * Returns the writer factory function based on the registration name
+   * Returns the writer registered for the handler
    *
    * @param {string} handlerName - name of the registered handler type
    * @param {string} [handlerMask='*'] - optional mask that supports a glob syntax used
    * to match a custom registered handler
-   * @return {function|null}
+   * @return {Writer}
    */
   static registeredWriter(handlerName, handlerMask='*'){
-    return this._registered(this._registeredWriters, handlerName, handlerMask);
+    const result = this._registered(this._registeredWriters, handlerName, handlerMask);
+
+    if (result){
+      return result;
+    }
+
+    throw new Error(`Writer is not registered for handler ${handlerName}!`);
   }
 
   /**
@@ -425,6 +466,52 @@ class Handler{
   }
 
   /**
+   * Grants the execution of the action through the handler
+   *
+   * @param {string} handlerName - registered name of the handler
+   * @param {string} actionName - registered action name
+   * @param {...args} args - custom args passed to {@link Handler._grantingAction}
+   */
+  static grantAction(handlerName, actionName, ...args){
+    assert(TypeCheck.isString(handlerName), 'handlerName needs to be defined as string');
+
+    // making sure the action is registered, otherwise throws an exception
+    Action.registeredAction(actionName);
+
+    const normalizedHandlerName = handlerName.toLowerCase();
+    const handlerMasks = this.registeredHandlerMasks(normalizedHandlerName);
+    for (const handleMask of handlerMasks){
+      const HandlerClass = this.registeredHandler(normalizedHandlerName, handleMask);
+      HandlerClass._grantingAction.call(HandlerClass, normalizedHandlerName, actionName, ...args);
+    }
+
+    assert(handlerMasks.length, `Handler ${handlerName} is not registered`);
+    if (!this._addedActions.has(normalizedHandlerName)){
+      this._addedActions.set(normalizedHandlerName, new Set());
+    }
+
+    this._addedActions.get(normalizedHandlerName).add(actionName.toLowerCase());
+  }
+
+  /**
+   * Returns a list granted actions for the input handler
+   *
+   * @param {string} handlerName - registered handler name
+   * @return {Array<string>}
+   */
+  static grantedActionNames(handlerName){
+    assert(TypeCheck.isString(handlerName), 'handlerName needs to be defined as string');
+
+    const normalizedHandlerName = handlerName.toLowerCase();
+
+    if (this._addedActions.has(normalizedHandlerName)){
+      return [...this._addedActions.get(normalizedHandlerName).values()];
+    }
+
+    return [];
+  }
+
+  /**
    * Adds a listener to an exception raised during the {@link Handler.output} process.
    * It can happen either during the serialization process ({@link Writer.serialize})
    * or during the finalization of the session ({@link Session.finalize}).
@@ -444,7 +531,19 @@ class Handler{
    * @param {function} listener - listener function
    */
   static onErrorDuringOutput(listener){
-    this._output.on('error', listener);
+    this._outputEventEmitter.on('error', listener);
+  }
+
+  /**
+   * This method can be re-implemented by derived classes to hook when an {@link Action}
+   * is granted for a handler ({@link Handler.grantAction})
+   *
+   * @param {string} handlerName - registered handler name
+   * @param {string} actionName - registered action name
+   * @param {...args} args - custom args passed during {@link Handler.grantAction}
+   * @protected
+   */
+  static _grantingAction(handlerName, actionName, ...args){
   }
 
   /**
@@ -452,17 +551,18 @@ class Handler{
    *
    * @param {Action} action - action instance used by the reader to parse the values
    * @param {Object} options - plain object containing the options passed to the reader
+   * @param {...additionalArgs} additionalArgs - additional args passed to the
+   * constructor during factoring of the reader (should be used by derived classes)
    * @return {Reader}
    * @protected
    */
-  _createReader(action, options){
+  _createReader(action, options, ...additionalArgs){
     const ReaderClass = Handler.registeredReader(
-      this.metadata('handler.name'),
-      this.metadata('handler.mask'),
+      this.meta('handler.name'),
+      this.meta('handler.mask'),
     );
 
-    assert(ReaderClass, 'Invalid registered reader!');
-    const reader = new ReaderClass(action);
+    const reader = new ReaderClass(action, ...additionalArgs);
 
     // passing options to the reader
     for (const option in options){
@@ -477,17 +577,18 @@ class Handler{
    *
    * @param {*} value - arbitrary value passed to the writer
    * @param {Object} options - plain object containing the options passed to the writer
+   * @param {...additionalArgs} additionalArgs - additional args passed to the
+   * constructor during factoring of the reader (should be used by derived classes)
    * @return {Writer}
    * @protected
    */
-  _createWriter(value, options){
+  _createWriter(value, options, ...additionalArgs){
     const WriterClass = Handler.registeredWriter(
-      this.metadata('handler.name'),
-      this.metadata('handler.mask'),
+      this.meta('handler.name'),
+      this.meta('handler.mask'),
     );
 
-    assert(WriterClass, 'Invalid registered writer!');
-    const writer = new WriterClass(value);
+    const writer = new WriterClass(value, ...additionalArgs);
 
     // passing options to the writer
     for (const option in options){
@@ -499,7 +600,7 @@ class Handler{
 
   /**
    * Loads the {@link Reader} information to the {@link Action} and {@link Session}. This
-   * process is called during the execution ({@link Handler.execute}).
+   * process is called during the execution ({@link Handler.runAction}).
    *
    * Changes done by this method to the action:
    * - Assigns the {@link Handler.session} to the action ({@link Action.session})
@@ -517,7 +618,7 @@ class Handler{
 
     assert(action instanceof Action, 'Invalid action');
 
-    const readOptions = Util.deepMerge(this.metadata('readOptions', {}), options);
+    const readOptions = Utils.deepMerge(this.meta('readOptions', {}), options);
     const reader = this._createReader(action, readOptions);
 
     // collecting the reader values
@@ -567,17 +668,17 @@ class Handler{
 
   /**
   * Auxiliary method that returns the handler name defined as metadata inside
-  * of the action
+  * of the action, if not defined returns an empty string
   *
   * @param {Action} action - action that should be used
-  * @return {string|null}
+  * @return {string}
   * @private
   */
   _actionHandlerName(action){
-    let result = null;
+    let result = '';
 
-    const registeredHandlerName = this.metadata('handler.name');
-    for (const handlerName in action.metadata('handler', {})){
+    const registeredHandlerName = this.meta('handler.name');
+    for (const handlerName in action.meta('handler', {})){
 
       // the searching for the handler name (case insensitive)
       if (handlerName.toLowerCase() === registeredHandlerName){
@@ -645,19 +746,20 @@ class Handler{
    */
   _emitOutputError(err){
     process.nextTick(() => {
-      this.constructor._output.emit(
+      this.constructor._outputEventEmitter.emit(
         'error',
         err,
-        this.metadata('handler.name'),
-        this.metadata('handler.mask'),
+        this.meta('handler.name'),
+        this.meta('handler.mask'),
       );
     });
   }
 
-  static _output = new EventEmitter();
+  static _outputEventEmitter = new EventEmitter();
   static _registeredHandlers = new Map();
   static _registeredWriters = new Map();
   static _registeredReaders = new Map();
+  static _addedActions = new Map();
 }
 
 module.exports = Handler;

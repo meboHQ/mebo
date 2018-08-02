@@ -14,16 +14,18 @@ class UploadAction extends Mebo.Action{
 
     return {
       a: data.a,
-      fileHash: await checksum.execute(),
+      fileHash: await checksum.run(),
       fileName: this.input('file').basename(),
     };
   }
 
   async _finalize(err, value){
     // deleting the file
-    const deleteAction = this.createAction('file.delete');
-    deleteAction.input('file').setupFrom(this.input('file'));
-    await deleteAction.execute();
+    if (!this.input('file').isEmpty()){
+      const deleteAction = this.createAction('file.delete');
+      deleteAction.input('file').setupFrom(this.input('file'));
+      await deleteAction.run();
+    }
 
     return Mebo.Action.prototype._finalize.call(this, err, value);
   }

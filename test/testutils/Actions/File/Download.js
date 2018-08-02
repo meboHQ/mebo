@@ -46,13 +46,13 @@ describe('Download Action:', () => {
 
     (async () => {
 
-      const downloadAction = Mebo.createAction('file.download');
+      const downloadAction = Mebo.Action.create('file.download');
 
       downloadAction.input('createTargetDirectories').setValue(false);
       downloadAction.input('inputUrl').setValue(`http://localhost:${port}/${fileName}`);
       downloadAction.input('targetFolder').setValue(path.join(temporaryFolder, '/invalidSubDir'));
 
-      await downloadAction.execute();
+      await downloadAction.run();
 
     })().then((result) => {
       done(new Error('Unexpected value'));
@@ -66,18 +66,18 @@ describe('Download Action:', () => {
 
     return (async () => {
 
-      const downloadAction = Mebo.createAction('file.download');
+      const downloadAction = Mebo.Action.create('file.download');
 
       downloadAction.input('inputUrl').setValue(`http://localhost:${port}/${fileName}`);
       downloadAction.input('targetFolder').setValue(path.join(temporaryFolder, 'folder'));
-      const downloadedFile = await downloadAction.execute();
+      const downloadedFile = await downloadAction.run();
 
       assert.equal(path.extname(downloadedFile), '.foo');
 
-      const checksumAction = Mebo.createAction('file.checksum');
+      const checksumAction = Mebo.Action.create('file.checksum');
       checksumAction.input('file').setValue(downloadedFile);
 
-      const result = await checksumAction.execute();
+      const result = await checksumAction.run();
 
       // no more need for this file
       fs.unlinkSync(downloadedFile);
@@ -94,18 +94,18 @@ describe('Download Action:', () => {
 
     return (async () => {
 
-      const downloadAction = Mebo.createAction('file.download');
+      const downloadAction = Mebo.Action.create('file.download');
 
       downloadAction.input('inputUrl').setValue(`http://localhost:${port}/${fileNameWithoutExt}`);
       downloadAction.input('targetFolder').setValue(path.join(temporaryFolder, 'folder'));
-      const downloadedFile = await downloadAction.execute();
+      const downloadedFile = await downloadAction.run();
 
       assert.equal(path.extname(downloadedFile), '');
 
-      const checksumAction = Mebo.createAction('file.checksum');
+      const checksumAction = Mebo.Action.create('file.checksum');
       checksumAction.input('file').setValue(downloadedFile);
 
-      const result = await checksumAction.execute();
+      const result = await checksumAction.run();
 
       // no more need for this file
       fs.unlinkSync(downloadedFile);
@@ -122,10 +122,10 @@ describe('Download Action:', () => {
 
     (async () => {
 
-      const downloadAction = Mebo.createAction('file.download');
+      const downloadAction = Mebo.Action.create('file.download');
       downloadAction.input('inputUrl').setValue(`http://localhost:${port}/${fileName}_Invalid`);
       downloadAction.input('targetFolder').setValue(temporaryFolder);
-      await downloadAction.execute();
+      await downloadAction.run();
 
     })().then((result) => {
       done(new Error('Unexpected result'));

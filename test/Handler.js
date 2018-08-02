@@ -7,7 +7,6 @@ const testutils = require('../testutils');
 const Handler = Mebo.Handler;
 const Reader = Mebo.Reader;
 const Writer = Mebo.Writer;
-const Session = Mebo.Session;
 
 
 describe('Handler:', () => {
@@ -80,31 +79,27 @@ describe('Handler:', () => {
 
   before(() => {
     // registering handler
-    Handler.registerHandler(CustomHandler);
+    Handler.register(CustomHandler);
     Handler.registerReader(CustomReader, 'customHandler');
     Handler.registerWriter(CustomWriter, 'customHandler');
 
     // registering actions
-    Mebo.registerAction(HiddenInput);
-    Mebo.registerAction(testutils.Actions.Shared.PlainObjectResult, 'plainObjectResult');
+    Mebo.Action.register(HiddenInput, 'hiddenInput');
+    Mebo.Action.register(testutils.Actions.Shared.PlainObjectResult, 'plainObjectResult');
   });
 
   it('Should check if the handler has been registered', () => {
-    assert(Mebo.createHandler('CustomHandler') instanceof CustomHandler);
+    assert(Mebo.Handler.create('CustomHandler') instanceof CustomHandler);
   });
 
   it('Should fail when trying to create an invalid handler', () => {
-    let error = null;
-
     try{
-      Mebo.createHandler('invalid');
+      Mebo.Handler.create('invalid');
     }
     catch(err){
-      error = err;
-    }
-
-    if (!(error && minimatch(error.message, 'Execution Handler: *, is not registered!'))){
-      throw error || new Error('Unexpected result');
+      if (!minimatch(err.message, 'Handler * is not registered!')){
+        throw err;
+      }
     }
   });
 
@@ -113,12 +108,12 @@ describe('Handler:', () => {
     class CustomReaderB extends CustomReader{}
     class CustomWriterB extends CustomWriter{}
 
-    Handler.registerHandler(CustomHandlerB, 'customHandlerBName');
+    Handler.register(CustomHandlerB, 'customHandlerBName');
     Handler.registerReader(CustomReaderB, 'customHandlerBName');
     Handler.registerWriter(CustomWriterB, 'customHandlerBName');
 
     assert.equal(Handler.registeredHandler('customHandlerBName'), CustomHandlerB);
-    assert(Mebo.createHandler('customHandlerBName') instanceof CustomHandlerB);
+    assert(Mebo.Handler.create('customHandlerBName') instanceof CustomHandlerB);
 
     assert.equal(Handler.registeredReader('customHandlerBName'), CustomReaderB);
     assert.equal(Handler.registeredWriter('customHandlerBName'), CustomWriterB);
@@ -127,10 +122,10 @@ describe('Handler:', () => {
   it('Should check the registered handler names', () => {
     const beforeRegistratorNames = Handler.registeredHandlerNames();
     assert(!beforeRegistratorNames.includes('test'));
-    Handler.registerHandler(CustomHandler, 'test');
+    Handler.register(CustomHandler, 'test');
 
     // the second registration should override the previous one (instead of adding a new one)
-    Handler.registerHandler(CustomHandler, 'test');
+    Handler.register(CustomHandler, 'test');
 
     const afterRegistratorNames = Handler.registeredHandlerNames();
     assert(Handler.registeredHandlerNames().includes('test'));
@@ -140,7 +135,7 @@ describe('Handler:', () => {
   it('Should check the registered handler masks', () => {
 
     class CustomHandlerMasksA extends CustomHandler{}
-    Handler.registerHandler(CustomHandlerMasksA, 'customHandlerMasks');
+    Handler.register(CustomHandlerMasksA, 'customHandlerMasks');
 
     let registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
     assert.equal(registeredHandleNames.length, 1);
@@ -148,7 +143,7 @@ describe('Handler:', () => {
 
     // registering a handler for using a custom mask
     class CustomHandlerMasksB extends CustomHandler{}
-    Handler.registerHandler(CustomHandlerMasksB, 'customHandlerMasks', 'a.b.*');
+    Handler.register(CustomHandlerMasksB, 'customHandlerMasks', 'a.b.*');
     registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
     assert.equal(registeredHandleNames.length, 2);
     assert.equal(registeredHandleNames[0], 'a.b.*');
@@ -156,7 +151,7 @@ describe('Handler:', () => {
 
     // registering a handler for using a custom mask (2)
     class CustomHandlerMasksC extends CustomHandler{}
-    Handler.registerHandler(CustomHandlerMasksC, 'customHandlerMasks', 'a.b.c.*');
+    Handler.register(CustomHandlerMasksC, 'customHandlerMasks', 'a.b.c.*');
     registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
     assert.equal(registeredHandleNames.length, 3);
     assert.equal(registeredHandleNames[0], 'a.b.c.*');
@@ -170,24 +165,16 @@ describe('Handler:', () => {
     assert(Handler.create('customHandlerMasks').constructor === CustomHandlerMasksA);
   });
 
-  it('Should create an handler with a custom session', () => {
-
-    const session = new Session();
-    session.setAutofill('myValue', 100);
-    const handler = Mebo.createHandler('CustomHandler', '*', session);
-    assert.equal(session.autofill('myValue'), handler.session().autofill('myValue'));
-  });
-
   it('Should perform an action through the handler', () => {
     return (async () => {
-      Handler.registerHandler(CustomHandler);
-      const handler = Mebo.createHandler('CustomHandler');
+      Handler.register(CustomHandler);
+      const handler = Mebo.Handler.create('CustomHandler');
       handler.testData = {
         a: 'text',
         b: 20,
       };
 
-      const result = await handler.execute('plainObjectResult');
+      const result = await handler.runAction('plainObjectResult');
 
       // testing the result of the action
       assert.equal(result.a, handler.testData.a);
@@ -198,14 +185,14 @@ describe('Handler:', () => {
 
   it('Should perform and render an action through the handler', () => {
     return (async () => {
-      Handler.registerHandler(CustomHandler);
-      const handler = Mebo.createHandler('CustomHandler');
+      Handler.register(CustomHandler);
+      const handler = Mebo.Handler.create('CustomHandler');
       handler.testData = {
         a: 'A value',
         b: 30,
       };
 
-      const result = await handler.execute('plainObjectResult');
+      const result = await handler.runAction('plainObjectResult');
       handler.output(result);
 
       // testing the result of the action
@@ -222,10 +209,10 @@ describe('Handler:', () => {
   it('Should throw an exception when trying to finalize the session with a broken task inside of the handler output', (done) => {
 
     class SessionErrorHandler extends CustomHandler{
-      static _output = new EventEmitter();
+      static _outputEventEmitter = new EventEmitter();
     }
 
-    Handler.registerHandler(SessionErrorHandler);
+    Handler.register(SessionErrorHandler);
     Handler.registerReader(CustomReader, 'sessionErrorHandler');
     Handler.registerWriter(CustomWriter, 'sessionErrorHandler');
 
@@ -242,14 +229,14 @@ describe('Handler:', () => {
     });
 
     (async () => {
-      const handler = Mebo.createHandler('sessionErrorHandler');
+      const handler = Mebo.Handler.create('sessionErrorHandler');
       handler.session().wrapup().addWrappedPromise(() => Promise.reject(new Error('Should fail')));
       handler.testData = {
         a: 'A value',
         b: 30,
       };
 
-      const result = await handler.execute('plainObjectResult');
+      const result = await handler.runAction('plainObjectResult');
       handler.output(result);
 
     })().then().catch(done);
@@ -258,10 +245,10 @@ describe('Handler:', () => {
   it('Should throw an exception when trying to serialize the error that  has been set as output=false inside of the handler output', (done) => {
 
     class OutputErrorHandler extends CustomHandler{
-      static _output = new EventEmitter();
+      static _outputEventEmitter = new EventEmitter();
     }
 
-    Handler.registerHandler(OutputErrorHandler);
+    Handler.register(OutputErrorHandler);
     Handler.registerReader(CustomReader, 'outputErrorHandler');
     Handler.registerWriter(CustomWriter, 'outputErrorHandler');
 
@@ -278,9 +265,9 @@ describe('Handler:', () => {
 
     (async () => {
       let failed = true;
-      const handler = Mebo.createHandler('outputErrorHandler');
+      const handler = Mebo.Handler.create('outputErrorHandler');
       try{
-        await handler.execute('hiddenInput');
+        await handler.runAction('hiddenInput');
         failed = false;
       }
       catch(err){
@@ -294,33 +281,33 @@ describe('Handler:', () => {
 
   it('Should not finalize the session when finalizeSession disabled inside of the handler output', () => {
     return (async () => {
-      Handler.registerHandler(CustomHandler);
-      const handler = Mebo.createHandler('CustomHandler');
+      Handler.register(CustomHandler);
+      const handler = Mebo.Handler.create('CustomHandler');
       handler.session().wrapup().addWrappedPromise(() => Promise.reject(new Error('Should fail')));
       handler.testData = {
         a: 'A value',
         b: 30,
       };
 
-      const result = await handler.execute('plainObjectResult');
+      const result = await handler.runAction('plainObjectResult');
       handler.output(result, {}, false);
     })();
   });
 
   it('Should test if the exception is being emitted by the Handler during a session finalize error', () => {
     return (async () => {
-      const handler = Mebo.createHandler('CustomHandler');
+      const handler = Mebo.Handler.create('CustomHandler');
 
       // leaving the value empty on purpose
       let failed = true;
       let error;
       try{
-        await handler.execute('plainObjectResult');
+        await handler.runAction('plainObjectResult');
         failed = false;
       }
       catch(err){
         error = err;
-        if (!(err instanceof Mebo.Error.ValidationFail)){
+        if (!(err instanceof Mebo.Errors.ValidationFail)){
           throw err;
         }
         else{
@@ -338,8 +325,8 @@ describe('Handler:', () => {
 
   it('Handler name should be included inside of the session arbitrary data', () => {
     return (async () => {
-      Handler.registerHandler(CustomHandler);
-      const handler = Mebo.createHandler('customHandler');
+      Handler.register(CustomHandler);
+      const handler = Mebo.Handler.create('customHandler');
 
       assert.equal(handler.session().get('handler'), 'customHandler'.toLowerCase());
     })();

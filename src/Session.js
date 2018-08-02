@@ -1,15 +1,12 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const Tasks = require('./Tasks');
-const Settings = require('./Settings');
-const LruCache = require('./Util/LruCache');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
 const _arbitraryData = Symbol('arbitraryData');
 const _autofill = Symbol('autofill');
 const _wrapup = Symbol('wrapup');
-const _resultCache = Symbol('resultCache');
 const _terminated = Symbol('terminated');
 
 
@@ -26,15 +23,12 @@ class Session{
    *
    * @param {Tasks} [wrapup] - task object used to hold actions and promises that are triggered
    * when finalizing ({@link finalize}) the session
-   * @param {LruCache} [resultCache] - cache used to store results of cacheable actions
    */
-  constructor(wrapup=null, resultCache=null){
+  constructor(wrapup=null){
 
     assert(wrapup === null || wrapup instanceof Tasks, 'wrapup needs to defined with a Tasks object or null');
-    assert(resultCache === null || resultCache instanceof LruCache, 'resultCache needs to defined with a LruCache object or null');
 
     this[_wrapup] = wrapup || new Tasks();
-    this[_resultCache] = resultCache || new LruCache(Settings.get('session/lruCacheSize'), Settings.get('session/lruCacheLifespan') * 1000);
     this[_terminated] = false;
 
     // container used to store autofill values inside of the session
@@ -55,15 +49,6 @@ class Session{
    */
   wrapup(){
     return this[_wrapup];
-  }
-
-  /**
-   * Returns the {@link LruCache} cache used to store results of cacheable actions
-   *
-   * @return {LruCache}
-   */
-  resultCache(){
-    return this[_resultCache];
   }
 
   /**
@@ -179,7 +164,7 @@ class Session{
 
   /**
    * Terminates the session by executing the {@link wrapup}
-   * tasks and flushing the {@link lruCache}.
+   * tasks.
    *
    * This is called by the {@link Handler} during the execution of
    * {@link Handler.output}.
@@ -188,19 +173,12 @@ class Session{
    */
   async finalize(){
 
-    if (this[_terminated]){
-      throw new Error('Session has been already finalized!');
-    }
-
-    this[_terminated] = true;
     const wrapup = this.wrapup();
     if (!wrapup.isEmpty()){
 
-      await wrapup.execute();
+      await wrapup.run();
       wrapup.clear();
     }
-
-    this.resultCache().flush();
 
     return true;
   }
@@ -214,12 +192,12 @@ class Session{
    * of nested actions reflect back in the session used by the parent actions.
    * Therefore, acting as scope for changes in the autofill & arbitrary data.
    *
-   * The current wrapup and resultCache are also assigned to the cloned version.
+   * The current wrapup is also assigned to the cloned version.
    *
    * @return {Session}
    */
   clone(){
-    const result = new Session(this.wrapup(), this.resultCache());
+    const result = new Session(this.wrapup());
 
     // transferring autofill data
     for (const autofillKey in this[_autofill]){
@@ -234,18 +212,5 @@ class Session{
     return result;
   }
 }
-
-// Setting the default settings:
-
-// lruCacheSize
-// Sets in bytes the size of the LRU cache available for the execution of actions.
-// (default: `20 mb`)
-Settings.set('session/lruCacheSize', 20 * 1012 * 1024);
-
-// lruCacheLifespan
-// Sets in seconds the amount of time that an item under LRU cache should
-// be kept alive. This cache is defined by {@link Session.resultCache}
-// (default: `10 seconds`)
-Settings.set('session/lruCacheLifespan', 10);
 
 module.exports = Session;

@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const ImmutableMap = Mebo.Util.ImmutableMap;
+const ImmutableMap = Mebo.Utils.ImmutableMap;
 
 
 describe('Util ImmutableMap:', () => {

@@ -3,7 +3,6 @@ const Mebo = require('../src');
 
 const Session = Mebo.Session;
 const Tasks = Mebo.Tasks;
-const LruCache = Mebo.Util.LruCache;
 
 
 describe('Session:', () => {
@@ -12,7 +11,6 @@ describe('Session:', () => {
     const session = new Session();
 
     assert(session.wrapup() instanceof Tasks);
-    assert(session.resultCache() instanceof LruCache);
 
     // autofill data should start empty
     assert.equal(session.autofillKeys().length, 0);
@@ -21,18 +19,14 @@ describe('Session:', () => {
     assert.equal(session.keys().length, 0);
   });
 
-  it('Should create a session with customized options', () => {
+  it('Should create a session with customized option', () => {
     const wrapup = new Mebo.Tasks();
     wrapup.addWrappedPromise(() => {
       Promise.resolve(true);
     });
-
-    const resultCache = new Mebo.Util.LruCache(10 * 1024 * 1024, 60 * 1000);
-    resultCache.set('test', 10);
-    const session = new Session(wrapup, resultCache);
+    const session = new Session(wrapup);
 
     assert(!session.wrapup().isEmpty());
-    assert.equal(session.resultCache().keys()[0], 'test');
   });
 
   it('Should test setting the arbitrary data', () => {
@@ -108,9 +102,6 @@ describe('Session:', () => {
 
     // wrapup
     assert.equal(session.wrapup(), clonedSession.wrapup());
-
-    // result cache
-    assert.equal(session.resultCache(), clonedSession.resultCache());
   });
 
   it('Cloned session should have a different autofill', () => {

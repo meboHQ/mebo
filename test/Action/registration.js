@@ -8,14 +8,14 @@ const Action = Mebo.Action;
 
 describe('Action Registration:', () => {
   it('Should register an action with a valid name', () => {
-    Action.registerAction(testutils.Actions.Shared.Multiply, 'customActionName_.-1');
+    Action.register(testutils.Actions.Shared.Multiply, 'customActionName_.-1');
   });
 
   it('Should fail to register an action with invalid name', () => {
 
     let error = null;
     try{
-      Mebo.registerAction(testutils.Actions.Shared.Multiply, 'customActionName$');
+      Mebo.Action.register(testutils.Actions.Shared.Multiply, 'customActionName$');
     }
     catch(err){
       error = err;
@@ -30,15 +30,23 @@ describe('Action Registration:', () => {
     const currentValue = Action.registeredActionNames();
 
     // registering a new action
-    Action.registerAction(testutils.Actions.Shared.Multiply, 'customNewRegisteredAction');
+    Action.register(testutils.Actions.Shared.Multiply, 'customNewRegisteredAction');
     assert.equal(Action.registeredActionNames().length, currentValue.length + 1);
 
     // overriding the a registered a new action
-    Action.registerAction(testutils.Actions.Shared.Multiply, 'customNewRegisteredAction');
+    Action.register(testutils.Actions.Shared.Multiply, 'customNewRegisteredAction');
     assert.equal(Action.registeredActionNames().length, currentValue.length + 1);
   });
 
-  it("Should return null when can't find registered action name", () => {
-    assert.equal(Mebo.createAction('invalid_action_name'), null);
+  it("Should raise an exception when can't find registered action name", () => {
+
+    try{
+      Mebo.Action.create('invalid_action_name');
+    }
+    catch(err){
+      if (err.message !== 'Action invalid_action_name is not registered!'){
+        throw err;
+      }
+    }
   });
 });

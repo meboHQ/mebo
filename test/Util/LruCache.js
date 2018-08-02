@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const LruCache = Mebo.Util.LruCache;
+const LruCache = Mebo.Utils.LruCache;
 
 
 describe('Util LruCache:', () => {

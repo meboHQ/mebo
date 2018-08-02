@@ -4,6 +4,7 @@ const TypeCheck = require('js-typecheck');
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
 const _contents = Symbol('contents');
+const _executedCount = Symbol('executedIndex');
 
 
 /**
@@ -20,6 +21,7 @@ class Tasks{
    */
   constructor(){
     this[_contents] = [];
+    this[_executedCount] = 0;
   }
 
   /**
@@ -36,8 +38,8 @@ class Tasks{
    * @param {number} [options.priority=100] - tells the priority of the action, this affects
    * the execution order where a lower numeric value means a higher priority.
    */
-  addAction(action, {runOnlyOnce=true, priority=100}={}){
-    assert(TypeCheck.isCallable(action.execute), 'Invalid Action');
+  grantAction(action, {runOnlyOnce=true, priority=100}={}){
+    assert(TypeCheck.isCallable(action.run), 'Invalid Action');
 
     this[_contents].push({
       type: 'action',
@@ -154,12 +156,14 @@ class Tasks{
    */
   clear(){
     this[_contents].length = 0;
+    this[_executedCount] = 0;
   }
 
   /**
    * Executes the actions and promises inside of the tasks
    * (provided by {@link contents}). All tasks get executed even if an error occurs
-   * during the execution of an specific task.
+   * during the execution of an specific task. In case this method is triggered
+   * multiple times it ensures each task is only executed once.
    *
    * Failed tasks are reported through an exception raised after all tasks have been executed,
    * this error provides the `taskErrors` member that contains a list about the errors raised
@@ -167,21 +171,34 @@ class Tasks{
    *
    * @return {Promise<Array>} Returns an array containing each result of the tasks
    */
-  async execute(){
+  async run(){
+
     const contents = await this.contents();
     const taskErrors = [];
     const result = [];
 
-    // executing tasks
+    let currentIndex = 0;
     for (const task of contents){
+
+      // skipping tasks that have been executed previously
+      currentIndex++;
+      if (this[_executedCount] >= currentIndex){
+        continue;
+      }
+      else{
+        this[_executedCount]++;
+      }
+
+      // executing task
       try{
         result.push(
-          await ((TypeCheck.isCallable(task)) ? task() : task.execute()), // eslint-disable-line no-await-in-loop
+          await ((TypeCheck.isCallable(task)) ? task() : task.run()), // eslint-disable-line no-await-in-loop
         );
       }
       catch(err){
         taskErrors.push(err);
       }
+
     }
 
     // throwing a new exception about the failed tasks

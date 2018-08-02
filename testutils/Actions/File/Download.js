@@ -52,7 +52,7 @@ class Download extends Action{
 
     // creating sub-folders
     if (data.createTargetDirectories){
-      await Mebo.Util.mkdirs(targetFolder);
+      await Mebo.Utils.mkdirs(targetFolder);
     }
 
     // extension
@@ -115,6 +115,6 @@ class Download extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Download, 'file.download');
+Mebo.Action.register(Download, 'file.download');
 
 module.exports = Download;

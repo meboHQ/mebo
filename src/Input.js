@@ -1,7 +1,7 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
-const ValidationFail = require('./Error/ValidationFail');
-const Util = require('./Util');
+const ValidationFail = require('./Errors/ValidationFail');
+const Utils = require('./Utils');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -69,7 +69,7 @@ const _cache = Symbol('cache');
  * }
  * ```
  *
- * To register a new input type, take a look at {@link Input.registerInput}
+ * To register a new input type, take a look at {@link Input.register}
  *
  * <h2>Property Summary</h2>
  *
@@ -82,7 +82,7 @@ const _cache = Symbol('cache');
  * the input value setter, in order to prevent it you can set an input as \
  * {@link readOnly} | ::on:: | ::true::
  * defaultValue | default value of the input | ::on:: | ::null::
- * cliElementType | tells how the input should be presented via {@link CommandLine}: \
+ * elementType | tells how the input should be presented via {@link App}: \
  * `'option'` or `'argument'` ({@link http://docopt.org}) | ::on:: | `'option'`
  * vector | boolean telling if the input holds a vector value (defined \
  * at the construction time) | ::on:: | ::auto::
@@ -92,9 +92,9 @@ const _cache = Symbol('cache');
  * value is used to initialize the input. It occurs when a session is assigned \
  * to an action ({@link Action.setSession}) | ::off:: | ::none::
  * description | description about the input, currently this information is displayed \
- * when an action is running through {@link CommandLine} | ::off:: | ::none::
- * cliShortOption | short version of the input name used to speficy when running \
- * through the {@link CommandLine} | ::off:: | ::none::
+ * when an action is running through {@link App} | ::off:: | ::none::
+ * shortOption | short version of the input name used to speficy when running \
+ * through the {@link App} | ::off:: | ::none::
  *
  * <br/>The assignment of a property value can be done at construction time or through
  * the setter {@link Input.assignProperty}. A property value can be queried by the
@@ -123,13 +123,13 @@ class Input{
 
     // validating input name
     assert(name.length, 'input name cannot be empty!');
-    assert((/^([\w_-])+$/gi).test(name), `Illegal input name: ${name}`);
+    assert((/^([\w_.-])+$/gi).test(name), `Illegal input name: ${name}`);
 
     this[_name] = name;
     this[_readOnly] = false;
     this[_properties] = new Map();
     this[_lockedProperties] = new Set();
-    this[_cache] = new Util.ImmutableMap();
+    this[_cache] = new Utils.ImmutableMap();
 
     // defining custom properties that may override the default ones
     for (const propertyKey in properties){
@@ -146,7 +146,7 @@ class Input{
   }
 
   /**
-   * Creates an input instance (also available as `Mebo.createInput`)
+   * Creates an input instance.
    *
    * @param {string} inputInterface - string followed by either the pattern `name: type`
    * or `name?: type` in case of optional {@link Input}. The type is case-insensitive
@@ -287,7 +287,7 @@ class Input{
 
     // transferring cache to the current input:
     if (cache && sourceInput.property('immutable') && this.property('immutable')){
-      assert(sourceInput.cache() instanceof Util.ImmutableMap);
+      assert(sourceInput.cache() instanceof Utils.ImmutableMap);
 
       const sourceCache = sourceInput.cache();
 
@@ -348,13 +348,19 @@ class Input{
       // required check
       if (this.isEmpty()){
         if (this.isRequired() !== false){
-          throw new ValidationFail('Input is required, it cannot be empty!', Input.errorCodes[0]);
+          throw new ValidationFail(
+            'Input is required, it cannot be empty!',
+            '28a03a60-a405-4737-b94d-2b695b6ce156',
+          );
         }
       }
 
       // vector check
       else if (this.isVector() && !TypeCheck.isList(this.value())){
-        throw new ValidationFail('Input needs to be a vector!', Input.errorCodes[1]);
+        throw new ValidationFail(
+          'Input needs to be a vector!',
+          'e03709a0-6c31-4a33-9f63-fa751948a6cb',
+        );
       }
 
       // otherwise perform the asynchronous validations
@@ -724,14 +730,13 @@ class Input{
 
   /**
    * Registers a new input type to the available inputs
-   * (also available as `Mebo.registerInput`)
    *
    * @param {Input} inputClass - input implementation that will be registered
    * @param {string} [name] - string containing the registration name for the
    * input. In case of an empty string, the registration is done by using the name
    * of the type (this information is stored in lowercase)
    */
-  static registerInput(inputClass, name=''){
+  static register(inputClass, name=''){
     assert(TypeCheck.isSubClassOf(inputClass, Input), 'Invalid input type!');
     assert(TypeCheck.isString(name), 'Invalid optional registration name!');
 
@@ -747,7 +752,7 @@ class Input{
    * Returns the input type based on the registration name
    *
    * @param {string} name - name of the registered input type
-   * @return {Input|null}
+   * @return {Input}
    */
   static registeredInput(name){
     assert(TypeCheck.isString(name), 'Invalid name!');
@@ -758,7 +763,7 @@ class Input{
       return this._registeredInputs.get(normalizedName);
     }
 
-    return null;
+    throw new Error(`Input ${name} is not registered!`);
   }
 
   /**
@@ -792,11 +797,11 @@ class Input{
   }
 
   /**
-   * Registers a property for the input type (also available as `Mebo.registerProperty`)
+   * Registers a property for the input type (also available as `Mebo.Input.registerProperty`)
    *
    * ```
    * // example of registering a new property
-   * Mebo.registerProperty('text', 'myCustomProperty', 'A initial value if necessary')
+   * Mebo.Input.registerProperty('text', 'myCustomProperty', 'A initial value if necessary')
    * ```
    *
    * @param {string|Input} inputClassOrRegisteredName - registered input name or input class
@@ -960,12 +965,6 @@ class Input{
 
     return this._propertiesCache.get(inputType);
   }
-
-  // codes used by error validations
-  static errorCodes = [
-    '28a03a60-a405-4737-b94d-2b695b6ce156',
-    'e03709a0-6c31-4a33-9f63-fa751948a6cb',
-  ];
 
   static _propertiesCache = new Map();
   static _registeredInputs = new Map();

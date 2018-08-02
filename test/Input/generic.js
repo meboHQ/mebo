@@ -4,7 +4,7 @@ const minimatch = require('minimatch');
 const Mebo = require('../../src');
 
 const Input = Mebo.Input;
-const ValidationFail = Mebo.Error.ValidationFail;
+const ValidationFail = Mebo.Errors.ValidationFail;
 
 
 describe('Input Generic:', () => {
@@ -144,30 +144,6 @@ describe('Input Generic:', () => {
     assert.equal(i.value(), 10);
     i.setValue('foo');
     assert.equal(i.value(), 'foo');
-  });
-
-  it('Should not have duplicated error codes', () => {
-    const passedErrorCodes = [];
-
-    // base input
-    for (const code of Input.errorCodes){
-      if (passedErrorCodes.includes(code)){
-        throw new Error(`Error code duplicated: ${code}`);
-      }
-      passedErrorCodes.push(code);
-    }
-
-    // bundle inputs
-    for (const inputName in Mebo.Ext.Inputs){
-      if (TypeCheck.isSubClassOf(Mebo.Ext.Inputs[inputName], Input)){
-        for (const code of Mebo.Ext.Inputs[inputName].errorCodes){
-          if (passedErrorCodes.includes(code)){
-            throw new Error(`Error code duplicated: ${code}`);
-          }
-          passedErrorCodes.push(code);
-        }
-      }
-    }
   });
 
   it('Should not be able to set a value in a read-only input', () => {

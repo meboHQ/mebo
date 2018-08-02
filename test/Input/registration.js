@@ -10,8 +10,8 @@ describe('Input Registration:', () => {
 
     class CustomInput extends Input{}
 
-    Input.registerInput(CustomInput);
-    Input.registerInput(CustomInput, 'CustomInputName_.-1');
+    Input.register(CustomInput);
+    Input.register(CustomInput, 'CustomInputName_.-1');
 
     assert(Input.registeredInputNames().includes('CustomInput'.toLowerCase()));
     assert(Input.registeredInputNames().includes('CustomInputName_.-1'.toLowerCase()));
@@ -21,11 +21,11 @@ describe('Input Registration:', () => {
 
     class CustomInput extends Input{}
 
-    Input.registerInput(CustomInput);
+    Input.register(CustomInput);
 
     let error = null;
     try{
-      Input.registerInput(CustomInput, 'CustomInputName$');
+      Input.register(CustomInput, 'CustomInputName$');
     }
     catch(err){
       error = err;
@@ -42,7 +42,7 @@ describe('Input Registration:', () => {
 
     class A extends Input{}
 
-    Input.registerInput(A);
+    Input.register(A);
     assert(Input.create('input: A') instanceof A);
 
     // testing the full creation interface
@@ -76,7 +76,7 @@ describe('Input Registration:', () => {
 
   it('Should fail to create an input through using a wrong syntax', () => {
     class A extends Input{}
-    Input.registerInput(A);
+    Input.register(A);
 
     let error = null;
 
@@ -90,23 +90,31 @@ describe('Input Registration:', () => {
     assert.equal(error.message, "Invalid input interface, it should follow the pattern: 'name: type'");
   });
 
-  it('When querying an input name that is not registered it should return null', () => {
-    assert.equal(Input.registeredInput('InvalidRegisteredName'), null);
+  it('When querying an input name that is not registered it should raise an exception', () => {
+
+    try{
+      Input.registeredInput('InvalidRegisteredName');
+    }
+    catch(err){
+      if (err.message !== 'Input InvalidRegisteredName is not registered!'){
+        throw err;
+      }
+    }
   });
 
-  it('Should register an input using Mebo.registerInput', () => {
+  it('Should register an input using Mebo.Input.register', () => {
 
     class CustomInput extends Input{}
 
-    Mebo.registerInput(CustomInput, 'customNameUsingRegShortcut');
+    Mebo.Input.register(CustomInput, 'customNameUsingRegShortcut');
     assert(Input.registeredInputNames().includes('customNameUsingRegShortcut'.toLowerCase()));
   });
 
-  it('Should create an input using Mebo.createInput', () => {
+  it('Should create an input using Mebo.Input.create', () => {
 
     class CustomInput extends Input{}
 
-    Mebo.registerInput(CustomInput, 'customNameUsingCreateShortcut');
-    assert(Mebo.createInput('input: customNameUsingCreateShortcut') instanceof CustomInput);
+    Mebo.Input.register(CustomInput, 'customNameUsingCreateShortcut');
+    assert(Mebo.Input.create('input: customNameUsingCreateShortcut') instanceof CustomInput);
   });
 });

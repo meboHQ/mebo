@@ -1,7 +1,7 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const Action = require('./Action');
-const Util = require('./Util');
+const Utils = require('./Utils');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -11,7 +11,7 @@ const _result = Symbol('result');
 
 
 /**
- * A reader is used by the handler during the execution ({@link Handler.execute})
+ * A reader is used by the handler during the execution ({@link Handler.runAction})
  * to query {@link Input} and {@link Session} information that is going be used
  * during the execution of the action.
  *
@@ -46,13 +46,13 @@ const _result = Symbol('result');
  * <br/>**Options:**
  * Custom options can be assigned to readers ({@link Reader.setOption}). They are
  * passed from the handler to the reader during the handler's execution
- * ({@link Handler.execute}).
+ * ({@link Handler.runAction}).
  *
  * ```
- * const myHandler = Mebo.createHandler('someHandler');
+ * const myHandler = Mebo.Handler.create('someHandler');
  *
  * // setting reading options
- * myHandler.execute('myAction', {
+ * myHandler.runAction('myAction', {
  *  someOption: 10,
  * });
  * ```
@@ -67,14 +67,14 @@ const _result = Symbol('result');
  *      super();
  *
  *      // defining a custom reading option
- *      this.setMetadata('$myOption', {
+ *      this.setMeta('$myOption', {
  *        someOption: 10,
  *      });
  *
  *      // ...
  *    }
  * }
- * Mebo.registerAction(MyAction);
+ * Mebo.Action.register(MyAction, 'myAction');
  * ```
  *
  * **Hiding inputs from readers:**
@@ -97,10 +97,9 @@ class Reader{
   /**
    * Creates a reader.
    *
-   * @param {Action} action - action used for the querying of the value
+   * @param {Action} action - action used for the querying the values
    */
   constructor(action){
-    assert(action instanceof Action, 'Invalid action instance');
 
     // note: currently reader & writer are completely separated entities that don't
     // have a common parent class (aka HandlerOperation). The reason for
@@ -108,13 +107,13 @@ class Reader{
     // common is the option. In case they start to share more characteristics in common
     // then a base class should be created.
 
-    this[_action] = action;
+    this._setAction(action);
     this[_result] = null;
-    this[_options] = new Util.HierarchicalCollection();
+    this[_options] = new Utils.HierarchicalCollection();
   }
 
   /**
-   * Returns the action that is associated with the reader.
+   * Returns the action associated with the reader.
    *
    * @return {Action}
    */
@@ -241,6 +240,17 @@ class Reader{
    */
   _perform(inputList){
     return Promise.reject(new Error('Not implemented'));
+  }
+
+  /**
+   * Sets the action associated with the reader.
+   *
+   * @param {Action} value - action instance
+   */
+  _setAction(value){
+    assert(value instanceof Action, 'Invalid action');
+
+    this[_action] = value;
   }
 
   /**

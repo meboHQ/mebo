@@ -1,6 +1,6 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
-const Util = require('./Util');
+const Utils = require('./Utils');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -15,7 +15,7 @@ const _collection = Symbol('collection');
  *
  * This is done by defining {@link Reader} & {@link Writer} options through
  * the metadata. By doing that the options are passed from the action to the
- * handler during the handler's execution ({@link Handler.execute}).
+ * handler during the handler's execution ({@link Handler.runAction}).
  *
  * You can define options by either using the full option location or using
  * option variables:
@@ -33,7 +33,7 @@ const _collection = Symbol('collection');
  *    _perform(data){
  *
  *      // location (not recommended, see option var)
- *      this.setMetadata('handler.web.writeOptions.headers', {
+ *      this.setMeta('handler.web.writeOptions.headers', {
  *        someOption: 'foo',
  *      });
  *
@@ -52,7 +52,7 @@ const _collection = Symbol('collection');
  *
  *      // defining a custom header by using the `$webHeaders` variable, rather
  *      // than the full option location (`handler.web.writeOptions.headers`)
- *      this.setMetadata('$webHeaders', {
+ *      this.setMeta('$webHeaders', {
  *        someOption: 'foo',
  *      });
  *
@@ -82,13 +82,13 @@ const _collection = Symbol('collection');
  * $webStatus | `$web.writeOptions.status`| {@link WebResponse}
  * $webResultLabel | `$web.writeOptions.resultLabel`| {@link WebResponse}
  *
- * <h2>Command line Variables</h2>
+ * <h2>App Variables</h2>
  *
  * Variable name | Value | Value used by
  * --- | --- | ---
- * $commandLine` | `handler.commandLine` |
- * $commandLineDescription` | `$commandLine.readOptions.description` | {@link CommandLineArgs}
- * $commandLineResult` | `$commandLine.writeOptions.result` | {@link CommandLineOutput}
+ * $app` | `handler.app` |
+ * $appDescription` | `$app.readOptions.description` | {@link AppArgs}
+ * $appResult` | `$app.writeOptions.result` | {@link AppOutput}
  */
 class Metadata{
 
@@ -96,7 +96,7 @@ class Metadata{
    * Creates a metadata
    */
   constructor(){
-    this[_collection] = new Util.HierarchicalCollection();
+    this[_collection] = new Utils.HierarchicalCollection();
   }
 
   /**

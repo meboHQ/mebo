@@ -47,6 +47,6 @@ class Move extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Move, 'file.move');
+Mebo.Action.register(Move, 'file.move');
 
 module.exports = Move;

@@ -39,7 +39,7 @@ You write once and Mebo takes care of getting the evaluations up running across 
 
 - **RESTful support**. Evaluations can be executed through REST automatically
 
-- **Console support**. By using Mebo your evaluations can be executed through command-line interfaces following docopt specifications.
+- **Command support**. By using Mebo your evaluations can be executed through command-line interfaces following docopt specifications.
 
 [<img src="https://mebohq.github.io/docs/data/intro.png?v=1"/>](data/manual/INTRODUCTION.md)
 

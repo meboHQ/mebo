@@ -21,7 +21,7 @@ class StreamOutput extends Mebo.Action{
       bufferStream.end(new Buffer('test'));
 
       // setting a custom content type
-      this.setMetadata('handler.web.writeOptions', {
+      this.setMeta('handler.web.writeOptions', {
         headers: {
           contentType: 'text/plain',
         },
