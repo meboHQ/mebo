@@ -205,11 +205,6 @@ class Input{
     // found in the registration
     propertiesFinal.type = propertiesFinal.type.toLowerCase();
 
-    // creates a new instance
-    if (!InputTypeClass){
-      throw new Error(`Invalid input type: ${propertiesFinal.type}`);
-    }
-
     return new InputTypeClass(inputInterfaceParts[0], propertiesFinal, extendedValidation);
   }
 

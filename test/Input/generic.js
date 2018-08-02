@@ -44,6 +44,14 @@ describe('Input Generic:', () => {
     assert.equal(b.cache().get('value'), undefined);
   });
 
+  it('When parsing an empty string for the value, it should assign null instead', () => {
+
+    const inputA = new Input('input');
+    inputA.setValue("test")
+    inputA.parseValue('');
+    assert.equal(inputA.value(), null);
+  });
+
   it('Value assigned to the input should be set as immutable by default', () => {
 
     const inputA = new Input('input', {vector: true});

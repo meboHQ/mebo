@@ -49,4 +49,17 @@ describe('Action Registration:', () => {
       }
     }
   });
+
+  it("Should raise an exception when trying to get the action name based on a non-registered action", () => {
+    class NonRegisteredMyActionTest extends Action{};
+
+    try{
+      Mebo.Action.registeredActionName(NonRegisteredMyActionTest);
+    }
+    catch(err){
+      if (err.message !== 'There is no action registered for the class NonRegisteredMyActionTest!'){
+        throw err;
+      }
+    }
+  });
 });

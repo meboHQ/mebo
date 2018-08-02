@@ -103,6 +103,24 @@ describe('Tasks:', () => {
     })();
   });
 
+  it('Should skip actions that have been previously executed', () => {
+
+    return (async () => {
+      const actionA1 = Mebo.Action.create('tasksActionA');
+      actionA1.input('a').setValue(10);
+      actionA1.input('b').setValue(10);
+
+      const tasks = new Tasks();
+      tasks.grantAction(actionA1, {priority: 101});
+
+      const result1 = await tasks.run();
+      const result2 = await tasks.run();
+
+      assert.equal(result1.length, 1);
+      assert.equal(result2.length, 0);
+    })();
+  });
+
   it('Should test the default execution priority (100)', () => {
 
     return (async () => {

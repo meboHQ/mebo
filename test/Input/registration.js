@@ -18,7 +18,6 @@ describe('Input Registration:', () => {
   });
 
   it('Should fail to register a custom input type with invalid name', () => {
-
     class CustomInput extends Input{}
 
     Input.register(CustomInput);
@@ -40,6 +39,8 @@ describe('Input Registration:', () => {
 
   it('Should factory a registered input through create', () => {
 
+    @Mebo.property('testA', 1)
+    @Mebo.property('testB', 2)
     class A extends Input{}
 
     Input.register(A);
@@ -62,6 +63,11 @@ describe('Input Registration:', () => {
     }
 
     assert(syntaxFailed, 'It should fail when the syntax is not properly defined');
+
+    // checking the properties test A and test B
+    const a = Input.create('input: A');
+    assert.equal(a.property('testA'), 1);
+    assert.equal(a.property('testB'), 2);
 
     // should fail when the type defined in the creation syntax is not found
     let typeFailed = false;

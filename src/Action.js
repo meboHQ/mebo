@@ -529,7 +529,7 @@ class Action{
       }
     }
 
-    throw new InvalidActionError(`action ${actionClass.name} is not registered!`);
+    throw new InvalidActionError(`There is no action registered for the class ${actionClass.name}!`);
   }
 
   /**
