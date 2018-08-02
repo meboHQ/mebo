@@ -1,11 +1,11 @@
-const promisify = require('es6-promisify');
 const fs = require('fs');
+const util = require('util');
 const Mebo = require('../../../src');
 
 const Action = Mebo.Action;
 
 // promisifying
-const unlink = promisify(fs.unlink);
+const unlink = util.promisify(fs.unlink);
 
 
 /**

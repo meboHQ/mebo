@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const promisify = require('es6-promisify');
+const util = require('util');
 
 // promisifying
-const stat = promisify(fs.stat);
-const mkdir = promisify(fs.mkdir);
+const stat = util.promisify(fs.stat);
+const mkdir = util.promisify(fs.mkdir);
 
 
 /**

@@ -1,9 +1,9 @@
 const stream = require('stream');
-const promisify = require('es6-promisify');
+const util = require('util');
 const fs = require('fs');
 const Mebo = require('../../../src');
 
-const readFile = promisify(fs.readFile);
+const readFile = util.promisify(fs.readFile);
 
 class StreamOutput extends Mebo.Action{
   constructor(){

@@ -1,14 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const promisify = require('es6-promisify');
 const debug = require('debug')('Mebo');
 const ValidationFail = require('../Errors/ValidationFail');
 const Input = require('../Input');
 const BaseText = require('./BaseText');
 
 // promisifying
-const stat = promisify(fs.stat);
+const stat = util.promisify(fs.stat);
 
 
 /**

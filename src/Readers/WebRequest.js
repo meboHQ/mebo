@@ -1,9 +1,9 @@
 const os = require('os');
 const fs = require('fs');
+const util = require('util');
 const path = require('path');
 const assert = require('assert');
 const formidable = require('formidable');
-const promisify = require('es6-promisify');
 const TypeCheck = require('js-typecheck');
 const Settings = require('../Settings');
 const Handler = require('../Handler');
@@ -11,10 +11,10 @@ const Reader = require('../Reader');
 const Utils = require('../Utils');
 
 // promisifying
-const mkdtemp = promisify(fs.mkdtemp);
-const rename = promisify(fs.rename);
-const stat = promisify(fs.stat);
-const rmdir = promisify(fs.rmdir);
+const mkdtemp = util.promisify(fs.mkdtemp);
+const rename = util.promisify(fs.rename);
+const stat = util.promisify(fs.stat);
+const rmdir = util.promisify(fs.rmdir);
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
