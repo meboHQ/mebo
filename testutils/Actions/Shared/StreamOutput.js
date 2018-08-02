@@ -18,7 +18,7 @@ class StreamOutput extends Mebo.Action{
     if (data.type === 'text'){
       const bufferStream = new stream.PassThrough();
 
-      bufferStream.end(new Buffer('test'));
+      bufferStream.end(Buffer.from('test'));
 
       // setting a custom content type
       this.setMeta('handler.web.writeOptions', {
