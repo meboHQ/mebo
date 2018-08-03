@@ -53,9 +53,12 @@ describe('App Generic:', () => {
     }
   }
 
+  class NonGrantedAppAction extends Action{}
+
   before(() => {
     Mebo.Action.register(FullSpec, 'fullSpec');
     Mebo.Action.register(MultipleArgs, 'multipleArgs');
+    Mebo.Action.register(NonGrantedAppAction, 'nonGrantedAppAction');
 
     Mebo.Handler.grantAction('app', 'fullSpec');
     Mebo.Handler.grantAction('app', 'multipleArgs');
@@ -77,6 +80,21 @@ describe('App Generic:', () => {
         assert.equal(`${err.message}\n`, fs.readFileSync(path.join(__dirname, 'usageHelp.txt'), 'utf8'));
       }
     })();
+  });
+
+  it('Should fail to create an app that contains a non granted action', () => {
+    const errStream = new WriteStream();
+    const app = Mebo.Handlers.App.init(
+      'invalidApp',
+      {
+        stderr: errStream,
+      },
+    );
+
+    const stdout = Buffer.concat(errStream.data).toString('ascii');
+
+    assert.equal(stdout, "Could not initialize 'invalidapp', app not found!\n");
+
   });
 
   it('Should fail when the arguments do not conform to the requirements', () => {

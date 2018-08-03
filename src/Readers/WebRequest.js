@@ -456,7 +456,7 @@ class WebRequest extends Reader{
     return rmdir(folder).then((result) => {
       // runaway promise
       return null;
-    }).catch((err) => {
+    }).catch(/* istanbul ignore next */ (err) => {
       if (!(['ENOTEMPTY', 'ENOENT'].includes(err.code))){
         throw err;
       }

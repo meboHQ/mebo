@@ -32,7 +32,7 @@ class ImmutableMap extends Map{
       return value;
     }
 
-    // freezing all property
+    // freezing all properties
     for (const propertyName of Object.getOwnPropertyNames(value)){
       const property = value[propertyName];
 
@@ -42,7 +42,6 @@ class ImmutableMap extends Map{
       }
     }
 
-    // freeze self (no-op if already frozen)
     return Object.freeze(value);
   }
 }

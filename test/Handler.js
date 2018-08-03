@@ -70,6 +70,8 @@ describe('Handler:', () => {
     }
   }
 
+  class EmptyHandler extends Handler{}
+
   class HiddenInput extends Mebo.Action{
     constructor(){
       super();
@@ -82,14 +84,59 @@ describe('Handler:', () => {
     Handler.register(CustomHandler);
     Handler.registerReader(CustomReader, 'customHandler');
     Handler.registerWriter(CustomWriter, 'customHandler');
+    Handler.register(EmptyHandler);
 
     // registering actions
     Mebo.Action.register(HiddenInput, 'hiddenInput');
     Mebo.Action.register(testutils.Actions.Shared.PlainObjectResult, 'plainObjectResult');
+    Handler.grantAction('customHandler', 'hiddenInput');
+  });
+
+  it('Should assign a session to the handler (during the assignment the session should be cloned)', () => {
+    const handler = Mebo.Handler.create('CustomHandler');
+    const session = new Mebo.Session();
+    session.set('test', 100);
+    handler.setSession(session);
+
+    assert.notEqual(handler.session(), session);
+    assert.equal(session.get('test'), handler.session().get('test'));
   });
 
   it('Should check if the handler has been registered', () => {
     assert(Mebo.Handler.create('CustomHandler') instanceof CustomHandler);
+  });
+
+  it('Should return an empty list of action names granted for the handler', () => {
+    const grantedActionNames = Handler.grantedActionNames("emptyHandler");
+    assert.equal(grantedActionNames.length, 0);
+  });
+
+  it('Should return the list of action names granted for the handler', () => {
+    const grantedActionNames = Handler.grantedActionNames("customHandler");
+    assert.equal(grantedActionNames.length, 1);
+    assert.equal(grantedActionNames[0], 'hiddeninput');
+  });
+
+  it('Should fail when trying to query for a registered reader', () => {
+    try{
+      Mebo.Handler.registeredReader('EmptyHandler');
+    }
+    catch(err){
+      if (!minimatch(err.message, 'Reader is not registered for handler *!')){
+        throw err;
+      }
+    }
+  });
+
+  it('Should fail when trying to query for a registered writer', () => {
+    try{
+      Mebo.Handler.registeredWriter('EmptyHandler');
+    }
+    catch(err){
+      if (!minimatch(err.message, 'Writer is not registered for handler *!')){
+        throw err;
+      }
+    }
   });
 
   it('Should fail when trying to create an invalid handler', () => {

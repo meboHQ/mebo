@@ -22,9 +22,10 @@ describe('Util LruCache:', () => {
 
   it('Should flush the cache', () => {
     const cache = new LruCache(1024, 1000);
+    cache.flush();
+
     cache.set('test', 10);
     cache.set('test2', 10);
-
     cache.flush();
 
     assert.equal(cache.length, 0);

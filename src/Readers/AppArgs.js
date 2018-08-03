@@ -288,14 +288,7 @@ class AppArgs extends Reader{
 
     // adding the value type to the argument
     const isBoolInput = input instanceof Inputs.Bool;
-
-    // boolean inputs can very the description defined
-    // as an array as well, therefore providing a custom
-    // description for true and false states.
     let description = input.property('description') || '';
-    if (isBoolInput && TypeCheck.isList(description)){
-      description = description[Number(input.value())];
-    }
 
     if ((isBoolInput && input.isVector()) || !isBoolInput){
 

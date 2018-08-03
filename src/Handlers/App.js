@@ -290,7 +290,7 @@ class App extends Handler{
     else{
       handler.runAction(availableApps[useAppName]).then((result) => {
         _handlerOutput(result);
-      }).catch((err) => {
+      }).catch(/* istanbul ignore next */ (err) => {
         _handlerOutput(err);
       });
     }

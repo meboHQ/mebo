@@ -46,7 +46,6 @@ describe('App Init:', () => {
 
   it('Should initialize the app', (done) => {
 
-    // Buffer.concat(stderr.data).toString('ascii')
     const options = {};
     options.argv = ['executable', 'file', '--app', '--help'];
     options.stdout = new WriteStream();
