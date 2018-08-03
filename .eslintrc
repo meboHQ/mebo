@@ -29,6 +29,8 @@
         "identifiers": false,
         "lang": "en_US",
         "skipWords": [
+          "hiddeninput",
+          "'invalidapp'",
           "param",
           "pre",
           "mebo",
