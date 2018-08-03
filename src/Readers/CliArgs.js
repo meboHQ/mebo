@@ -13,9 +13,9 @@ const Reader = require('../Reader');
 const _args = Symbol('args');
 
 /**
- * App arguments reader.
+ * command-line arguments reader.
  *
- * This reader is used by the {@link App} handler. It supports most of
+ * This reader is used by the {@link Cli} handler. It supports most of
  * the docopt specification. Also, if the reader finds an error it's capable of
  * reporting it in user-friendly way. This is used to report `-h/--help` and
  * missing arguments.
@@ -57,7 +57,7 @@ const _args = Symbol('args');
  *
  * @see http://docopt.org
  */
-class AppArgs extends Reader{
+class CliArgs extends Reader{
 
   /**
    * Creates an args reader
@@ -660,6 +660,6 @@ class AppArgs extends Reader{
 }
 
 // registering reader
-Handler.registerReader(AppArgs, 'app');
+Handler.registerReader(CliArgs, 'cli');
 
-module.exports = AppArgs;
+module.exports = CliArgs;

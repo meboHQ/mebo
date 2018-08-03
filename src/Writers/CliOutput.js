@@ -12,12 +12,12 @@ const _stderr = Symbol('stderr');
 /**
  * Command output writer.
  *
- * This writer is used by the output of the app handler
- * ({@link App}).
+ * This writer is used by the output of the cli handler
+ * ({@link Cli}).
  *
  * In case the value is an exception then it's treated as
- * {@link AppOutput._errorOutput} otherwise the value is treated as
- * {@link AppOutput._successOutput}.
+ * {@link CliOutput._errorOutput} otherwise the value is treated as
+ * {@link CliOutput._successOutput}.
  *
  * <h2>Options Summary</h2>
  *
@@ -26,12 +26,12 @@ const _stderr = Symbol('stderr');
  * result | Overrides the value returned by {@link Writer.value} to an arbitrary \
  * value (only affects the success output) | ::none::
  * parsingErrorStatusCode | Custom error status code used to identify when the \
- * app args could not be parsed | `700`
+ * cli args could not be parsed | `700`
  */
-class AppOutput extends Writer{
+class CliOutput extends Writer{
 
   /**
-   * Creates an app output writer
+   * Creates the cli output writer
    *
    * @param {*} value - arbitrary value passed to the writer
    * @param {stream} stdout - stream used as stdout
@@ -88,7 +88,7 @@ class AppOutput extends Writer{
   /**
    * Implements the response for a success value.
    *
-   * Readable streams are piped to {@link App.stdout}, otherwise
+   * Readable streams are piped to {@link Cli.stdout}, otherwise
    * the value is serialized using json.
    *
    * @protected
@@ -141,6 +141,6 @@ class AppOutput extends Writer{
 }
 
 // registering writer
-Handler.registerWriter(AppOutput, 'app');
+Handler.registerWriter(CliOutput, 'cli');
 
-module.exports = AppOutput;
+module.exports = CliOutput;

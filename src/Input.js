@@ -82,7 +82,7 @@ const _cache = Symbol('cache');
  * the input value setter, in order to prevent it you can set an input as \
  * {@link readOnly} | ::on:: | ::true::
  * defaultValue | default value of the input | ::on:: | ::null::
- * elementType | tells how the input should be presented via {@link App}: \
+ * elementType | tells how the input should be presented via {@link Cli}: \
  * `'option'` or `'argument'` ({@link http://docopt.org}) | ::on:: | `'option'`
  * vector | boolean telling if the input holds a vector value (defined \
  * at the construction time) | ::on:: | ::auto::
@@ -92,9 +92,9 @@ const _cache = Symbol('cache');
  * value is used to initialize the input. It occurs when a session is assigned \
  * to an action ({@link Action.setSession}) | ::off:: | ::none::
  * description | description about the input, currently this information is displayed \
- * when an action is running through {@link App} | ::off:: | ::none::
+ * when an action is running through {@link Cli} | ::off:: | ::none::
  * shortOption | short version of the input name used to speficy when running \
- * through the {@link App} | ::off:: | ::none::
+ * through the {@link Cli} | ::off:: | ::none::
  *
  * <br/>The assignment of a property value can be done at construction time or through
  * the setter {@link Input.assignProperty}. A property value can be queried by the

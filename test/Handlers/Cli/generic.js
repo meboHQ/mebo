@@ -7,7 +7,7 @@ const Mebo = require('../../../src');
 const Action = Mebo.Action;
 
 
-describe('App Generic:', () => {
+describe('Cli Generic:', () => {
 
   class WriteStream extends stream.Writable{
     constructor(){
@@ -53,21 +53,21 @@ describe('App Generic:', () => {
     }
   }
 
-  class NonGrantedAppAction extends Action{}
+  class NonGrantedCliAction extends Action{}
 
   before(() => {
     Mebo.Action.register(FullSpec, 'fullSpec');
     Mebo.Action.register(MultipleArgs, 'multipleArgs');
-    Mebo.Action.register(NonGrantedAppAction, 'nonGrantedAppAction');
+    Mebo.Action.register(NonGrantedCliAction, 'nonGrantedCliAction');
 
-    Mebo.Handler.grantAction('app', 'fullSpec');
-    Mebo.Handler.grantAction('app', 'multipleArgs');
+    Mebo.Handler.grantAction('cli', 'fullSpec');
+    Mebo.Handler.grantAction('cli', 'multipleArgs');
   });
 
-  it('Should list the help about the app', () => {
+  it('Should list the help about the cli', () => {
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs(['node', 'file', '-h']);
@@ -84,8 +84,8 @@ describe('App Generic:', () => {
 
   it('Should fail to create an app that contains a non granted action', () => {
     const errStream = new WriteStream();
-    Mebo.Handlers.App.init(
-      'invalidApp',
+    Mebo.Handlers.Cli.init(
+      'invalidCli',
       {
         stderr: errStream,
       },
@@ -93,7 +93,7 @@ describe('App Generic:', () => {
 
     const stdout = Buffer.concat(errStream.data).toString('ascii');
 
-    assert.equal(stdout, "Could not initialize 'invalidapp', app not found!\n");
+    assert.equal(stdout, "Could not initialize 'invalidcli', cli not found!\n");
 
   });
 
@@ -101,7 +101,7 @@ describe('App Generic:', () => {
 
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs([
@@ -130,7 +130,7 @@ describe('App Generic:', () => {
 
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs([
@@ -173,7 +173,7 @@ describe('App Generic:', () => {
 
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs([
@@ -216,7 +216,7 @@ describe('App Generic:', () => {
 
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs([
@@ -260,7 +260,7 @@ describe('App Generic:', () => {
 
     return (async () => {
 
-      const app = Mebo.Handler.create('app');
+      const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
       app.setArgs([
@@ -302,7 +302,7 @@ describe('App Generic:', () => {
 
   it('Should test the app success render output', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());
     app.setArgs([
@@ -352,7 +352,7 @@ describe('App Generic:', () => {
 
   it('Should test the app fail render output (usage)', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());
     app.setArgs([
@@ -383,7 +383,7 @@ describe('App Generic:', () => {
 
   it('Should test the app fail render output (validation fail)', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());
     app.setArgs([
@@ -426,7 +426,7 @@ describe('App Generic:', () => {
 
   it('Should test passing an argument that receives multiple values', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());
     app.setArgs([

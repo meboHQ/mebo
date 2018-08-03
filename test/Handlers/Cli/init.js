@@ -2,10 +2,10 @@ const stream = require('stream');
 const Mebo = require('../../../src');
 const testutils = require('../../../testutils');
 
-const App = Mebo.Handlers.App;
+const Cli = Mebo.Handlers.Cli;
 
 
-describe('App Init:', () => {
+describe('Cli Init:', () => {
 
   class WriteStream extends stream.Writable{
     constructor(){
@@ -20,11 +20,11 @@ describe('App Init:', () => {
   }
 
   Mebo.Action.register(testutils.Actions.Shared.Multiply, 'multiply');
-  Mebo.Handler.grantAction('app', 'multiply', {initName: 'multi'});
+  Mebo.Handler.grantAction('cli', 'multiply', {initName: 'multi'});
 
-  @Mebo.grant('app', {initName: 'customApp'})
-  @Mebo.register('myApp')
-  class MyApp extends Mebo.Action{
+  @Mebo.grant('cli', {initName: 'customCli'})
+  @Mebo.register('myCli')
+  class MyCli extends Mebo.Action{
 
     constructor(){
       super();
@@ -37,11 +37,11 @@ describe('App Init:', () => {
     }
   }
 
-  Mebo.Action.register(MyApp, 'customApp2');
+  Mebo.Action.register(MyCli, 'customCli2');
 
-  const originalAppArgs = process.argv.slice();
+  const originalCliArgs = process.argv.slice();
   after(() => {
-    process.argv = originalAppArgs;
+    process.argv = originalCliArgs;
   });
 
   it('Should initialize the app', (done) => {
@@ -54,7 +54,7 @@ describe('App Init:', () => {
       done();
     });
 
-    App.init('multiply', options);
+    Cli.init('multiply', options);
   });
 
   it('Should initialize the app2', (done) => {
@@ -67,6 +67,6 @@ describe('App Init:', () => {
       done();
     });
 
-    Mebo.Handler.get('app').init('myApp', options);
+    Mebo.Handler.get('cli').init('myCli', options);
   });
 });

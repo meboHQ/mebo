@@ -12,21 +12,21 @@ const _stdout = Symbol('stdout');
 const _stderr = Symbol('stderr');
 
 // handler name (used for registration)
-const _handlerName = 'app';
+const _handlerName = 'cli';
 
 
 /**
 * Handles the command line integration based on docopt specification.
 *
 * It enables the execution of actions triggered as command line applications
-* by reading ({@link AppArgs}) the arguments which are passed to the action
-* during the execution ({@link App.run}).
-* The result of this handler ({@link App.output}) is done through
-* the {@link AppOutput} writer.
+* by reading ({@link CliArgs}) the arguments which are passed to the action
+* during the execution ({@link Cli.run}).
+* The result of this handler ({@link Cli.output}) is done through
+* the {@link CliOutput} writer.
 *
-* Using app handler:
+* Using cli handler:
 *
-* **Creating an action that is going be executed through the app handler**
+* **Creating an action that is going be executed through the cli handler**
 * ```
 * class MyAction extends Mebo.Action{
 *   constructor(){
@@ -53,30 +53,30 @@ const _handlerName = 'app';
 * // making sure the script is called directly
 * if (require.main === module) {
 *
-*   // creating an app handler which is used to load the arguments
+*   // creating an cli handler which is used to load the arguments
 *   // arguments to the action and to output the result back to the stream
-*   const app = Mebo.Handler.create('app');
+*   const cli = Mebo.Handler.create('cli');
 *
 *   // loading the parsed information to the action
-*   app.runAction('myAction', {description: 'Welcome'}).then((result) => {
+*   cli.runAction('myAction', {description: 'Welcome'}).then((result) => {
 *
-*     // success output
-*     app.output(result);
+*   // success output
+*   cli.output(result);
 *
 *   // error output
 *   }).catch((err) => {
-*     app.output(err);
+*     cli.output(err);
 *   });
 * }
 * ```
-* You can list the app help by invoking `-h` or `--help` where a help interface
+* You can list the cli help by invoking `-h` or `--help` where a help interface
 * is generated automatically for the action, for instance:
 *
-* `node myapp.js --help`
+* `node mycli.js --help`
 * ```
 * Welcome.
 *
-* Usage: myapp.js [options] <my-argument>
+* Usage: mycli.js [options] <my-argument>
 *
 * Arguments:
 *   my-argument  my argument (text type).
@@ -87,10 +87,10 @@ const _handlerName = 'app';
 *
 * @see http://docopt.org
 */
-class App extends Handler{
+class Cli extends Handler{
 
   /**
-   * Creates an app handler
+   * Creates an cli handler
    *
    * @param {Array<string>} argv - argument list
    * @param {stream} stdout - stream used as stdout
@@ -168,9 +168,9 @@ class App extends Handler{
   }
 
   /**
-   * Initializes a registered action as app.
+   * Initializes a registered action as cli.
    *
-   * *`Apps/Default.js`: defining an action as app:*
+   * *`CliActions/Default.js`: defining an action as cli:*
    * ```
    * const Mebo = require('mebo');
    *
@@ -186,51 +186,51 @@ class App extends Handler{
    *  }
    * }
    *
-   * Mebo.Action.register(Default, 'app.default');
-   * Mebo.Handler.grantAction('app', 'app.default', {initName: 'default'});
+   * Mebo.Action.register(Default, 'cli.default');
+   * Mebo.Handler.grantAction('cli', 'cli.default', {initName: 'default'});
    * ```
    *
    * *`index.js`:*
    * ```
    * const Mebo = require('mebo');
-   * require('Apps/Default.js');
+   * require('Clis/Default.js');
    *
    * // ...
    *
-   * Mebo.Handler.get('app').init('default');
+   * Mebo.Handler.get('cli').init('default');
    * ```
    *
-   * *Listing available apps:*
+   * *Listing available actions:*
    * ```
-   * node myFile.js --app
+   * node myFile.js --cli
    * // or
-   * node myFile.js --app --help
+   * node myFile.js --cli --help
    * ```
    *
    * *Showing help from the app:*
    * ```
-   * node myFile.js --app myApp --help
+   * node myFile.js --cli myCli --help
    * ```
    *
-   * *Executing an app by specifying custom args:*
+   * *Executing an cli by specifying custom args:*
    * ```
-   * node myFile.js --app myApp --arg-a=1 --arg-b=2
+   * node myFile.js --cli myCli --arg-a=1 --arg-b=2
    * ```
    *
-   * @param {string} defaultAppName - default app name used when none
-   * app is specified through `--app <app>`
+   * @param {string} defaultCliName - default name used when none
+   * cli is specified through `--cli <name>`
    * @param {Object} options - plain object containing custom options
    * @param {Array<string>} [options.argv] - custom list of arguments, if not specified
-   * it uses the `process.argv` (this information is passed to the creation of app handler)
+   * it uses the `process.argv` (this information is passed to the creation of cli handler)
    * @param {stream} [options.stdout] - custom writable stream, if not specified it uses
-   * `process.stdout` (this information is passed to the creation of app handler)
+   * `process.stdout` (this information is passed to the creation of cli handler)
    * @param {stream} [options.stderr] - custom writable stream, if not specified it uses
-   * `process.stderr` (this information is passed to the creation of app handler)
+   * `process.stderr` (this information is passed to the creation of cli handler)
    * @param {function} [options.initializedCallback] - callback executed when the
    * initialization is done, it passes the value used by the output
    */
   static init(
-    defaultAppName,
+    defaultCliName,
     {
       argv=process.argv,
       stdout=process.stdout,
@@ -239,10 +239,10 @@ class App extends Handler{
     }={},
   ){
 
-    assert(TypeCheck.isString(defaultAppName), 'defaultAppName needs to be defined as string');
+    assert(TypeCheck.isString(defaultCliName), 'defaultCliName needs to be defined as string');
 
-    const appIndex = argv.indexOf('--app');
-    const parsedArgs = [...argv.slice(0, 2), ...((appIndex !== -1) ? argv.slice(appIndex + 2) : [])];
+    const cliIndex = argv.indexOf('--cli');
+    const parsedArgs = [...argv.slice(0, 2), ...((cliIndex !== -1) ? argv.slice(cliIndex + 2) : [])];
     const handler = Handler.create(_handlerName, '*', parsedArgs, stdout, stderr);
 
     const _handlerOutput = (value) => {
@@ -256,39 +256,39 @@ class App extends Handler{
       }
     };
 
-    let useAppName = (appIndex !== -1) ? argv[appIndex + 1] : defaultAppName;
-    if (useAppName){
-      useAppName = useAppName.toLowerCase();
+    let useCliName = (cliIndex !== -1) ? argv[cliIndex + 1] : defaultCliName;
+    if (useCliName){
+      useCliName = useCliName.toLowerCase();
     }
 
-    // list the available app names
-    const availableApps = this._initNames[_handlerName] || {};
-    if (['-h', '--help', undefined].includes(useAppName)){
+    // list the available action names grated for cli
+    const availableClis = this._initNames[_handlerName] || {};
+    if (['-h', '--help', undefined].includes(useCliName)){
       const result = [];
-      result.push('Available apps:');
-      const initNames = Object.keys(availableApps);
+      result.push('Available actions granted for command-line:');
+      const initNames = Object.keys(availableClis);
 
       for (const initName of initNames.sort()){
-        const defaultApp = (initName === defaultAppName) ? '(Default)' : '';
+        const defaultCli = (initName === defaultCliName) ? '(Default)' : '';
 
-        const item = (defaultApp.length) ? '◉' : '◯';
-        result.push(`  ${item} ${initName} ${defaultApp}`);
+        const item = (defaultCli.length) ? '◉' : '◯';
+        result.push(`  ${item} ${initName} ${defaultCli}`);
       }
 
       const error = new Error(result.join('\n'));
       error.status = 700;
       _handlerOutput(error);
     }
-    // app not found
-    else if (!(useAppName in availableApps)){
+    // cli not found
+    else if (!(useCliName in availableClis)){
 
-      const error = new Error(`Could not initialize '${useAppName}', app not found!`);
+      const error = new Error(`Could not initialize '${useCliName}', cli not found!`);
       error.status = 700;
       _handlerOutput(error);
     }
-    // found app, initializing from it
+    // found cli, initializing from it
     else{
-      handler.runAction(availableApps[useAppName]).then((result) => {
+      handler.runAction(availableClis[useCliName]).then((result) => {
         _handlerOutput(result);
       }).catch(/* istanbul ignore next */ (err) => {
         _handlerOutput(err);
@@ -303,7 +303,7 @@ class App extends Handler{
    * @param {string} handlerName - registered handler name
    * @param {string} actionName - registered action name
    * @param {object} options - custom options passed during {@link Handler.grantAction}
-   * @param {string} [options.initName] - custom name used to initialize the app, otherwise
+   * @param {string} [options.initName] - custom name used to initialize the cli, otherwise
    * if not defined the actionName is used instead
    * @protected
    */
@@ -321,7 +321,7 @@ class App extends Handler{
 
   /**
    * Creates an instance of a reader for the current handler.
-   * This passes the {@link App.args} to the reader.
+   * This passes the {@link Cli.args} to the reader.
    *
    * @param {Action} action - action instance used by the reader to parse the values
    * @param {Object} options - plain object containing the options passed to the reader
@@ -340,7 +340,7 @@ class App extends Handler{
   /**
    * Creates an instance of a writer for the current handler
    *
-   * This passes the {@link App.stdout} and {@link App.stderr}
+   * This passes the {@link Cli.stdout} and {@link Cli.stderr}
    * to the writer.
    *
    * @param {*} value - arbitrary value passed to the writer
@@ -366,11 +366,11 @@ Input.registerProperty(Input, 'elementType', 'option');
 Input.registerProperty(Input, 'shortOption');
 
 // registering option vars
-Metadata.registerOptionVar('$app', `handler.${_handlerName}`);
-Metadata.registerOptionVar('$appDescription', '$app.readOptions.description');
-Metadata.registerOptionVar('$appResult', '$app.writeOptions.result');
+Metadata.registerOptionVar('$cli', `handler.${_handlerName}`);
+Metadata.registerOptionVar('$cliDescription', '$cli.readOptions.description');
+Metadata.registerOptionVar('$cliResult', '$cli.writeOptions.result');
 
 // registering handler
-Handler.register(App, _handlerName);
+Handler.register(Cli, _handlerName);
 
-module.exports = App;
+module.exports = Cli;

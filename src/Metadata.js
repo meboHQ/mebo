@@ -82,13 +82,13 @@ const _collection = Symbol('collection');
  * $webStatus | `$web.writeOptions.status`| {@link WebResponse}
  * $webResultLabel | `$web.writeOptions.resultLabel`| {@link WebResponse}
  *
- * <h2>App Variables</h2>
+ * <h2>Cli Variables</h2>
  *
  * Variable name | Value | Value used by
  * --- | --- | ---
- * $app` | `handler.app` |
- * $appDescription` | `$app.readOptions.description` | {@link AppArgs}
- * $appResult` | `$app.writeOptions.result` | {@link AppOutput}
+ * $cli` | `handler.cli` |
+ * $cliDescription` | `$cli.readOptions.description` | {@link CliArgs}
+ * $cliResult` | `$cli.writeOptions.result` | {@link CliOutput}
  */
 class Metadata{
 
