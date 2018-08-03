@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const HierarchicalCollection = Mebo.Util.HierarchicalCollection;
+const HierarchicalCollection = Mebo.Utils.HierarchicalCollection;
 
 
 describe('Util HierarchicalCollection:', () => {
@@ -63,12 +63,18 @@ describe('Util HierarchicalCollection:', () => {
 
     const collection = new HierarchicalCollection();
 
-    collection.insert('test.level', {
-      a: 1,
-    });
-    collection.insert('test.level', {
-      b: 2,
-    },
+    collection.insert(
+      'test.level',
+      {
+        a: 1,
+      },
+    );
+
+    collection.insert(
+      'test.level',
+      {
+        b: 2,
+      },
       false,
     );
 

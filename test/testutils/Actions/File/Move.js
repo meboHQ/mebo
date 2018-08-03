@@ -23,11 +23,11 @@ describe('Move Action:', () => {
 
     return (async () => {
 
-      const moveAction = Mebo.createAction('file.move');
+      const moveAction = Mebo.Action.create('file.move');
       moveAction.input('sourceFile').setValue(sourceFilePath);
       moveAction.input('targetFile').setValue(targetFilePath);
 
-      await moveAction.execute();
+      await moveAction.run();
 
       fs.lstatSync(targetFilePath);
 

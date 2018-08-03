@@ -59,6 +59,6 @@ class Checksum extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Checksum, 'file.checksum');
+Mebo.Action.register(Checksum, 'file.checksum');
 
 module.exports = Checksum;

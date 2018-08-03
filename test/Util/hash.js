@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const hash = Mebo.Util.hash;
+const hash = Mebo.Utils.hash;
 
 // optional dependency (requires node-gyp)
 let xxhash = null;
@@ -31,7 +31,7 @@ describe('Util hash:', () => {
     it('Should return a hash using xxHash with a different seed', () => {
       const value = Buffer.from('my value');
 
-      assert.equal(hash(value, {seed: 0xFF}), 'AA68285E48BB1A4F'.toLowerCase() /* to ignore spell-check lint*/);
+      assert.equal(hash(value, {seed: 0xFF}), 'AA68285E48BB1A4F'.toLowerCase() /* to ignore spell-check lint */);
     });
   }
 });

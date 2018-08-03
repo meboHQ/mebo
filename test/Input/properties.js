@@ -161,11 +161,11 @@ describe('Input Property:', () => {
     assert.equal(inputA.value()[1], 'new value');
   });
 
-  it('Should register a property using Mebo.registerProperty', () => {
+  it('Should register a property using Mebo.Input.registerProperty', () => {
 
     class CustomPropertyInput extends Input{}
-    Mebo.registerInput(CustomPropertyInput);
-    Mebo.registerProperty(CustomPropertyInput, 'myCustomProperty', true);
+    Mebo.Input.register(CustomPropertyInput);
+    Mebo.Input.registerProperty(CustomPropertyInput, 'myCustomProperty', true);
     assert(Input.registeredPropertyNames(CustomPropertyInput).includes('myCustomProperty'));
   });
 });

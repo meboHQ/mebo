@@ -5,13 +5,13 @@ const debug = require('debug')('Mebo');
 const http = require('http');
 const https = require('https');
 const uuid = require('uuid');
-const promisify = require('es6-promisify');
+const util = require('util');
 const Mebo = require('../../../src');
 
 const Action = Mebo.Action;
 
 // promisifying
-const unlink = promisify(fs.unlink);
+const unlink = util.promisify(fs.unlink);
 
 
 /**
@@ -52,7 +52,7 @@ class Download extends Action{
 
     // creating sub-folders
     if (data.createTargetDirectories){
-      await Mebo.Util.mkdirs(targetFolder);
+      await Mebo.Utils.mkdirs(targetFolder);
     }
 
     // extension
@@ -115,6 +115,6 @@ class Download extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Download, 'file.download');
+Mebo.Action.register(Download, 'file.download');
 
 module.exports = Download;

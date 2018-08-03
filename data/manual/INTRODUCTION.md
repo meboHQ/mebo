@@ -33,21 +33,21 @@ Mebo comes bundled with the inputs types:
 
 | Type        | Data Example |
 | ------------- |-------------|
-| [Bool](https://mebohq.github.io/docs/class/src/Ext/Inputs/Bool.js~Bool.html) | ```true``` |
-| [Numeric](https://mebohq.github.io/docs/class/src/Ext/Inputs/Numeric.js~Numeric.html) | ```10``` |
-| [Text](https://mebohq.github.io/docs/class/src/Ext/Inputs/Text.js~Text.html) | ```'Test'``` |
-| [FilePath](https://mebohq.github.io/docs/class/src/Ext/Inputs/FilePath.js~FilePath.html) | ```/tmp/someFile.txt``` |
-| [Url](https://mebohq.github.io/docs/class/src/Ext/Inputs/Url.js~Url.html) | ```http://www.google.com``` |
-| [Email](https://mebohq.github.io/docs/class/src/Ext/Inputs/Email.js~Email.html) | ```user@domain.com``` |
-| [Ip](https://mebohq.github.io/docs/class/src/Ext/Inputs/Ip.js~Ip.html) | ```192.168.0.1``` |
-| [Timestamp](https://mebohq.github.io/docs/class/src/Ext/Inputs/Timestamp.js~Timestamp.html) | ```new Date()``` |
-| [Hex](https://mebohq.github.io/docs/class/src/Ext/Inputs/Hex.js~Hex.html) | ```ffff00```|
-| [Hash](https://mebohq.github.io/docs/class/src/Ext/Inputs/Hash.js~Hash.html) | ```d41d8cd98f00b204e9800998ecf8427e```|
-| [UUID](https://mebohq.github.io/docs/class/src/Ext/Inputs/UUID.js~UUID.html) | ```10ec58a-a0f2-4ac4-8393-c866d813b8d1```|
-| [Version](https://mebohq.github.io/docs/class/src/Ext/Inputs/Version.js~Version.html) | ```0.1.12```|
-| [Stream](https://mebohq.github.io/docs/class/src/Ext/Inputs/Stream.js~Stream.html) | ```new stream.Writable()```|
-| [Buffer](https://mebohq.github.io/docs/class/src/Ext/Inputs/Buf.js~Buf.html) | ```new Buffer([2, 3, 4])```|
-| [Any](https://mebohq.github.io/docs/class/src/Ext/Inputs/Any.js~Any.html) | ```{a: 1, b: 2}```|
+| [Bool](https://mebohq.github.io/docs/class/src/Inputs/Bool.js~Bool.html) | ```true``` |
+| [Numeric](https://mebohq.github.io/docs/class/src/Inputs/Numeric.js~Numeric.html) | ```10``` |
+| [Text](https://mebohq.github.io/docs/class/src/Inputs/Text.js~Text.html) | ```'Test'``` |
+| [FilePath](https://mebohq.github.io/docs/class/src/Inputs/FilePath.js~FilePath.html) | ```/tmp/someFile.txt``` |
+| [Url](https://mebohq.github.io/docs/class/src/Inputs/Url.js~Url.html) | ```http://www.google.com``` |
+| [Email](https://mebohq.github.io/docs/class/src/Inputs/Email.js~Email.html) | ```user@domain.com``` |
+| [Ip](https://mebohq.github.io/docs/class/src/Inputs/Ip.js~Ip.html) | ```192.168.0.1``` |
+| [Timestamp](https://mebohq.github.io/docs/class/src/Inputs/Timestamp.js~Timestamp.html) | ```new Date()``` |
+| [Hex](https://mebohq.github.io/docs/class/src/Inputs/Hex.js~Hex.html) | ```ffff00```|
+| [Hash](https://mebohq.github.io/docs/class/src/Inputs/Hash.js~Hash.html) | ```d41d8cd98f00b204e9800998ecf8427e```|
+| [UUID](https://mebohq.github.io/docs/class/src/Inputs/UUID.js~UUID.html) | ```10ec58a-a0f2-4ac4-8393-c866d813b8d1```|
+| [Version](https://mebohq.github.io/docs/class/src/Inputs/Version.js~Version.html) | ```0.1.12```|
+| [Stream](https://mebohq.github.io/docs/class/src/Inputs/Stream.js~Stream.html) | ```new stream.Writable()```|
+| [Buffer](https://mebohq.github.io/docs/class/src/Inputs/Buf.js~Buf.html) | ```new Buffer([2, 3, 4])```|
+| [Any](https://mebohq.github.io/docs/class/src/Inputs/Any.js~Any.html) | ```{a: 1, b: 2}```|
 
 > You can easily implement your own type, if you are interested take a look at
 the input inplementations bundled with Mebo
@@ -115,7 +115,8 @@ any validation that's bundled with the input.
 ```javascript
 const Mebo = require('mebo');
 
-class CustomAction extends Mebo.Action{
+@Mebo.register('myAction')
+class MyAction extends Mebo.Action{
   constructor(){
     super();
 
@@ -138,12 +139,12 @@ class CustomAction extends Mebo.Action{
 **Executing an action a registerd action**
 
 ```javascript
-const myAction = Mebo.createAction('myAction');
+const myAction = Mebo.Action.create('myAction');
 
 myAction.input('myInput').setValue('Some Text');
 
 // executing the action
-myAction.execute().then((result) => {
+myAction.run().then((result) => {
   console.log(result);
 }).catch((err) => {
   throw err;
@@ -155,10 +156,24 @@ myAction.execute().then((result) => {
 First we need to tell our Action to be available through
 web requests, it's done by webfying them:
 
+*Decorator support:*
 ```javascript
+// In the registration of the action add the handler support:
+@Mebo.grant('web', {auth: true})
+@Mebo.register('myAction')
+class MyAction extends Mebo.Action{
+  // ...
+}
+```
 
-// In the registration of the action add the line bellow
-Mebo.webfyAction(MyAction, 'get');
+*Registration support:*
+```javascript
+class MyAction extends Mebo.Action{
+  // ...
+}
+
+Mebo.Action.register(MyAction, 'myAction');
+Mebo.Handler.grantAction('web', 'myAction', {auth: true});
 ```
 
 You can enable authentication prior to the execution of any action, this is done
@@ -166,7 +181,7 @@ by webfying the action with the option ```auth=true```:
 
 ```javascript
 // In the registration of the action add the line bellow
-Mebo.webfyAction(MyAction, 'get', {auth: true});
+Mebo.Handler.grantAction('web', 'myAction', {auth: true});
 ```
 
 Also, you can tell if the action is visible by the restful support, by defining
@@ -174,7 +189,7 @@ a route for it ```restRoute='/api/myAction'```.
 
 ```javascript
 // In the registration of the action add the line bellow
-Mebo.webfyAction(MyAction, 'get', {auth: true, restRoute: '/api/myAction'});
+Mebo.Handler.grantAction('web', 'myAction', {auth: true, restRoute: '/api/myAction'});
 ```
 
 When an action requires auth you need to tell what is the passport
@@ -183,11 +198,11 @@ this is done by adding a middleware that gets executed before the action
 
 ```javascript
 const passport = require('passport');
-Mebo.addBeforeAuthAction(passport.authenticate('...'));
+Mebo.Handler.get('web').addBeforeAuthAction(passport.authenticate('...'));
 ```
 
 Alternatively a custom authentication method can be defined per handler basis, if
-you are interested checkout about the [Web Handler](https://mebohq.github.io/docs/class/src/Ext/Handlers/Web.js~Web.html)
+you are interested checkout about the [Web Handler](https://mebohq.github.io/docs/class/src/Handlers/Web.js~Web.html)
 
 
 **Calling the action through middleware**
@@ -195,7 +210,7 @@ you are interested checkout about the [Web Handler](https://mebohq.github.io/doc
 ```javascript
 // adding add a middleware which is going to execute the action
 const app = express();
-app.get('/xxx', Mebo.middleware('myAction', (err, result, req, res) => {
+app.get('/xxx', Mebo.Handler.get('web').middleware('myAction', (err, result, req, res) => {
   if (err) return next(err);
   res.send(`result: ${result}`);
 }));
@@ -213,13 +228,13 @@ to access the action.
 
 ```javascript
 // webfying an action with support for rest requests
-Mebo.webfyAction(MyAction, 'get', {auth: true, restRoute: '/api/myAction'});
+Mebo.Handler.grantAction('web', 'myAction', {auth: true, restRoute: '/api/myAction'});
 ```
 
 ```javascript
 // adding the rest support to the express app
 const app = express();
-app.use(Mebo.restful());
+app.use(Mebo.Handler.get('web').restful());
 ```
 
 Executing it
@@ -249,7 +264,7 @@ Mebo lets you to postpone an action execution by baking them into JSON, it can b
 console operations
 
 ```javascript
-const myAction = Mebo.createAction('myAction');
+const myAction = Mebo.Action.create('myAction');
 myAction.input('myInput').setValue('Text');
 
 // serializing the action into json
@@ -259,7 +274,7 @@ actionA.bakeToJSON().then((json) => {
   const myAction2 = Mebo.Action.createFromJSON(json);
 
   // executing it
-  return myAction2.execute();
+  return myAction2.run();
 
 }).catch((err) => {
   throw err;

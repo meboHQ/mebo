@@ -1,15 +1,19 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
-const Util = require('./Util');
-const Metadata = require('./Metadata');
-const Input = require('./Input');
+const Utils = require('./Utils');
+const Settings = require('./Settings');
 const Session = require('./Session');
+const Input = require('./Input');
+const Metadata = require('./Metadata');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
 const _inputs = Symbol('inputs');
-const _metadata = Symbol('metadata');
 const _session = Symbol('session');
+const _metadata = Symbol('metadata');
+
+class InvalidActionError extends Error{
+}
 
 
 /**
@@ -26,7 +30,7 @@ const _session = Symbol('session');
  * }
  *
  * const action = new HelloWorld();
- * action.execute().then(...) //  HelloWorld
+ * action.run().then(...) //  HelloWorld
  * ```
  *
  * The data used to perform an evaluation is held by inputs ({@link Action.createInput}).
@@ -47,23 +51,22 @@ const _session = Symbol('session');
  *
  * const action = new HelloWorld();
  * action.input('repeat').setValue(3);
- * action.execute().then(...) //  HelloWorld HelloWorld HelloWorld
+ * action.run().then(...) //  HelloWorld HelloWorld HelloWorld
  * ```
  *
- * An evaluation is triggered through {@link Action.execute} which internally calls
+ * An evaluation is triggered through {@link Action.run} which internally calls
  * {@link Action._perform}. Use `perform` to implement the evaluation of your action.
  * Also, you can implement {@link Action._finalize} to execute secondary routines.
  *
- * Actions are registered via {@link Action.registerAction}
- * (also available as `Mebo.registerAction`), in case you want to use a compound name
- * with a prefix common across some group of actions you can use '.' as separator.
- * Also, there are two ways to create actions:
+ * Actions are registered via {@link Action.register}, in case you want
+ * to use a compound name with a prefix common across some group of
+ * actions you can use '.' as separator. Also, there are two ways to create actions:
  *
  * - {@link Action.createAction} - allows actions to be created from inside of another action.
  * By doing that it creates actions that share the same {@link Session}.
  *
- * - {@link Action.create} - factory an action (also available as `Mebo.createAction`) with
- * custom session when supplied otherwise it creates a new session.
+ * - {@link Action.create} - factory an action with custom session when supplied
+ * otherwise it creates a new session.
  *
  * Also, actions can take advantage of the caching mechanism designed to improve the performance
  * by avoiding re-evaluations in actions that might be executed multiple times. This can enabled
@@ -72,74 +75,11 @@ const _session = Symbol('session');
 class Action{
 
   /**
-   * Creates an action
+   * creates an action
    */
   constructor(){
-
     this[_inputs] = new Map();
-    this[_session] = null;
     this[_metadata] = new Metadata();
-
-    // Adding the api input, all actions will inherit this input.
-    // This input is used to make sure that the version requested
-    // is still compatible with the action.
-    // To set a minimum require api version, use the property: minimumRequired
-    // example:
-    // this.input('api').assignProperty('minimumRequired', '10.1.0');
-    this.createInput('api?: version', {description: 'version used to make sure that the api is still compatible'});
-  }
-
-  /**
-   * Associates a {@link Session} with the action. By doing this all inputs that
-   * are flagged with 'autofill' property will be initialized with the
-   * session value. The session assigned to the action is cloned during the assignment
-   * ({@link Session.clone}).
-   *
-   * @param {Session|null} session - session object or null
-   */
-  setSession(session){
-    assert(session === null || session instanceof Session, 'session must be an instance of Session or null');
-
-    if (session !== null){
-      this[_session] = session.clone();
-
-      // setting the session inputs
-      const autofillKeys = this[_session].autofillKeys();
-      for (const input of this[_inputs].values()){
-
-        // setting the autofill inputs
-        const autofillName = input.property('autofill');
-        if (autofillName && autofillKeys.includes(autofillName)){
-          input.setValue(this[_session].autofill(autofillName));
-        }
-      }
-    }
-    else{
-      this[_session] = null;
-    }
-  }
-
-  /**
-   * Returns the session object
-   *
-   * @return {Session|null}
-   */
-  session(){
-    return this[_session];
-  }
-
-  /**
-  * Returns a boolean telling if the action is cacheable (`false` by default).
-  *
-  * This method should be overridden by derived classes to tell if the action
-  * is cacheable. This information is used by {@link Action.execute}.
-  *
-  * The configuration about the LRU cache can be found under the {@link Session}.
-  *
-  * @return {boolean}
-  */
-  isCacheable(){
-    return false;
   }
 
   /**
@@ -204,20 +144,53 @@ class Action{
   }
 
   /**
+   * Runs the validations of all inputs
+   *
+   * @return {Promise}
+   */
+  validate(){
+    return Promise.all([...this[_inputs].values()].map(input => input.validate()));
+  }
+
+  /**
+  * Returns a boolean telling if the action is cacheable (`false` by default).
+  *
+  * This method should be overridden by derived classes to tell if the action
+  * is cacheable. This information is used by {@link Action.run}.
+  *
+  * The configuration about the LRU cache can be found under the {@link Session}.
+  *
+  * @return {boolean}
+  */
+  isCacheable(){
+    return false;
+  }
+
+  /**
    * Executes the action and returns the result through a promise
    *
    * @param {boolean} [useCache=true] - tells if the action should try to use the LRU
    * cache to avoid the execution. This option is only used when the action is {@link Action.isCacheable}
    * @return {Promise<*>}
    */
-  async execute(useCache=true){
-    let result = null;
-    let err = null;
+  async run(useCache=true){
+
+    // in case the result cache does not exist yet, creating it as an arbitrary
+    // data under the session, therefore when the session is cloned by nested
+    // actions this cache will be shared across them
+    let resultCache = this.session().get('_actionResultCache');
+    if (!resultCache){
+      resultCache = new Utils.LruCache(
+        Settings.get('action/lruCacheSize'),
+        Settings.get('action/lruCacheLifespan') * 1000,
+      );
+      this.session().set('_actionResultCache', resultCache);
+    }
 
     // pulling out result from the cache (if applicable)
     let actionSignature = null;
-    const resultCache = this.session().resultCache();
     if (useCache && this.isCacheable()){
+
       actionSignature = await this.id();
 
       // checking if the input hash is under the cache
@@ -226,61 +199,21 @@ class Action{
       }
     }
 
-    const data = Object.create(null);
-    const readOnlyOriginalValues = new Map();
-
-    // making inputs read-only during the execution, otherwise it would be very dangerous
-    // since a modified input would not get validated until the next execution.
-    // The original read-only value is restored in the end of the execution. Also,
-    // this process collects the input values that are stored under 'data' which
-    // is later passed as argument of _perform method, it's used as a more convenient
-    // way to query the value of the inputs
-    for (const [name, input] of this[_inputs]){
-      readOnlyOriginalValues.set(input, input.readOnly());
-
-      // making input as readOnly
-      input.setReadOnly(true);
-
-      // input value
-      data[name] = input.value();
-    }
-
-    // checking if the inputs are valid (it throws an exception in case an input fails)
-    try{
-      await this._inputsValidation();
-    }
-    catch(errr){
-      // restoring the read-only
-      for (const [input, originalReadOnly] of readOnlyOriginalValues){
-        input.setReadOnly(originalReadOnly);
-      }
-
-      throw this._processError(errr);
-    }
-
     // the action is performed inside of a try/catch block to call the _finalize
     // no matter what, since that can be used to perform clean-up operations...
+    let result = null;
+    let err = null;
     try{
-      // performing the action
-      result = await this._perform(data);
+      // calling super class validations & executing action
+      result = await this._execute();
     }
     catch(errr){
-      err = errr;
+      err = this._processError(errr);
+      throw err;
     }
-
-    // running the finalize (it can even affect the final result which is not recommended at all)
-    try{
-      result = await this._finalize(err, result);
-    }
-    catch(errr){
-      throw this._processError(errr);
-    }
+    // running the finalize
     finally{
-
-      // restoring the read-only
-      for (const [input, originalReadOnly] of readOnlyOriginalValues){
-        input.setReadOnly(originalReadOnly);
-      }
+      await this._finalize(err, result);
     }
 
     // adding the result to the cache
@@ -320,7 +253,7 @@ class Action{
       id: this.id(),
       inputs: actionInputs,
       metadata: {
-        action: this.metadata('action', {}),
+        action: this.meta('action', {}),
       },
       session: {
         autofill: autofillData,
@@ -345,6 +278,160 @@ class Action{
   }
 
   /**
+   * Returns an unique signature based on the action's current state. It's based
+   * on the input types, input values and meta data information about the action.
+   *
+   * For a more reliable signature make sure that the action has been created through
+   * the factory method ({@link Action.create}).
+   *
+   * @return {Promise<string>}
+   */
+  async id(){
+    let actionSignature = '';
+    const separator = ';\n';
+
+    // header
+    const actionRegisteredName = this.meta('action.name');
+    if (actionRegisteredName){
+      actionSignature = actionRegisteredName;
+    }
+    // using the class name can be very flawed, make sure to always creating actions
+    // via their registration name
+    else{
+      actionSignature = `!${this.constructor.name}`;
+    }
+    actionSignature += separator;
+    actionSignature += this.inputNames().length;
+    actionSignature += separator;
+
+    // contents
+    const actionInputs = await this._serializeInputs(false);
+    for (const inputName in actionInputs){
+      actionSignature += `${inputName}: ${actionInputs[inputName]}${separator}`;
+    }
+
+    return Utils.hash(Buffer.from(actionSignature));
+  }
+
+  /**
+   * Allows the creation of an action based on the current action. By doing this it passes
+   * the current {@link Action.session} to the static create method ({@link Action.create}).
+   * Therefore creating an action that shares the same session.
+   *
+   * @param {string} actionName - registered action name (case-insensitive)
+   * @return {Action}
+   */
+  createAction(actionName){
+    const action = Action.create(actionName, this.session());
+
+    // overriding the metadata information about the origin of the action, by telling
+    // it has been created from inside of another action
+    action.setMeta('action.origin', 'nested');
+
+    return action;
+  }
+
+  /**
+   * Creates an action based on the registered action name, in case the action does
+   * not exist `null` is returned instead
+   *
+   * @param {string} actionName - registered action name (case-insensitive)
+   * @param {Session} [session] - optional custom session object
+   * @return {Action}
+   */
+  static create(actionName, session=null){
+    assert(TypeCheck.isString(actionName), 'Action name needs to be defined as string');
+
+    const RegisteredAction = this.registeredAction(actionName);
+
+    // creating action
+    const action = new RegisteredAction();
+
+    // setting session
+    if (session){
+      action.setSession(session);
+    }
+
+    // adding the action name used to create the action under the metadata
+    action.setMeta('action.name', actionName.toLowerCase());
+
+    // adding a metadata information telling the action is a top level one
+    // it has not being created inside of another action through the
+    // Action.createAction
+    action.setMeta('action.origin', 'topLevel');
+
+    return action;
+  }
+
+  /**
+   * Creates an action based on the serialized input which is generated by
+   * {@link Action.bakeToJSON}
+   *
+   * @param {string} serializedAction - json encoded action
+   * @param {boolean} [autofill=true] - tells if the autofill information should be
+   * loaded
+   * @return {Action}
+   */
+  static createFromJSON(serializedAction, autofill=true){
+    assert(TypeCheck.isString(serializedAction), 'serializedAction needs to be defined as string!');
+
+    const actionContents = JSON.parse(serializedAction);
+    const name = actionContents.metadata.action.name;
+
+    assert(TypeCheck.isString(name), 'Could not find the action information');
+    const action = this.create(name);
+
+    assert(action, `Action not found: ${name}`);
+
+    action._loadContents(actionContents, autofill);
+
+    return action;
+  }
+
+  /**
+   * Associates a {@link Session} with the action. By doing this all inputs that
+   * are flagged with 'autofill' property will be initialized with the
+   * session value. The session assigned to the action is cloned during the assignment
+   * ({@link Session.clone}). A session is always assigned to an action,
+   * during the factoring ({@link Action.create}).
+   *
+   * @param {Session} session - session object
+   */
+  setSession(session){
+    assert(session instanceof Session, 'Invalid session!');
+
+    this[_session] = session.clone();
+
+    // setting the session inputs
+    const autofillKeys = this[_session].autofillKeys();
+    for (const inputName of this.inputNames()){
+
+      const input = this.input(inputName);
+
+      // setting the autofill inputs
+      const autofillName = input.property('autofill');
+      if (autofillName && autofillKeys.includes(autofillName)){
+        input.setValue(this[_session].autofill(autofillName));
+      }
+    }
+  }
+
+  /**
+   * Returns the session object
+   *
+   * @return {Session}
+   */
+  session(){
+
+    // creating session on demanding
+    if (!this[_session]){
+      this[_session] = new Session();
+    }
+
+    return this[_session];
+  }
+
+  /**
    * Returns a value under the action's metadata.
    *
    * @param {string} path - path about where the value is localized (the levels
@@ -355,7 +442,7 @@ class Action{
    * not found for the path
    * @return {*}
    */
-  metadata(path, defaultValue=undefined){
+  meta(path, defaultValue=undefined){
     assert(TypeCheck.isString(path), 'path needs to be defined as string');
 
     return this[_metadata].value(path, defaultValue);
@@ -375,126 +462,10 @@ class Action{
    * last level is already existing under the collection, if the value should be
    * either merged (default) or overridden.
    */
-  setMetadata(path, value, merge=true){
+  setMeta(path, value, merge=true){
     assert(TypeCheck.isString(path), 'path needs to be defined as string');
 
     this[_metadata].setValue(path, value, merge);
-  }
-
-  /**
-   * Returns an unique signature based on the action's current state. It's based
-   * on the input types, input values and meta data information about the action.
-   *
-   * For a more reliable signature make sure that the action has been created through
-   * the factory method ({@link Action.create}).
-   *
-   * @return {Promise<string>}
-   */
-  async id(){
-    let actionSignature = '';
-    const separator = ';\n';
-
-    // header
-    const actionRegisteredName = this.metadata('action.name');
-    if (actionRegisteredName){
-      actionSignature = actionRegisteredName;
-    }
-    // using the class name can be very flawed, make sure to always creating actions
-    // via their registration name
-    else{
-      actionSignature = `!${this.constructor.name}`;
-    }
-    actionSignature += separator;
-    actionSignature += this[_inputs].size;
-    actionSignature += separator;
-
-    // contents
-    const actionInputs = await this._serializeInputs(false);
-    for (const inputName in actionInputs){
-      actionSignature += `${inputName}: ${actionInputs[inputName]}${separator}`;
-    }
-
-    return Util.hash(Buffer.from(actionSignature));
-  }
-
-  /**
-   * Allows the creation of an action based on the current action. By doing this it passes
-   * the current {@link Action.session} to the static create method ({@link Action.create}).
-   * Therefore creating an action that shares the same session.
-   *
-   * @param {string} actionName - registered action name (case-insensitive)
-   * @return {Action|null}
-   */
-  createAction(actionName){
-    const action = Action.create(actionName, this.session());
-
-    if (action){
-      // overriding the metadata information about the origin of the action, by telling
-      // it has been created from inside of another action
-      action.setMetadata('action.origin', 'nested');
-    }
-
-    return action;
-  }
-
-  /**
-   * Creates an action based on the registered action name, in case the action does
-   * not exist `null` is returned instead
-   *
-   * @param {string} actionName - registered action name (case-insensitive)
-   * @param {Session} [session] - optional session object, in case none session is
-   * provided a new session object is created
-   * @return {Action|null}
-   */
-  static create(actionName, session=null){
-    assert(TypeCheck.isString(actionName), 'Action name needs to be defined as string');
-    assert(session === null || session instanceof Session, 'Invalid session type!');
-
-    const RegisteredAction = this.registeredAction(actionName);
-
-    if (RegisteredAction){
-      const action = new RegisteredAction();
-
-      // adding the session to the action
-      action.setSession(session || new Session());
-
-      // adding the action name used to create the action under the metadata
-      action.setMetadata('action.name', actionName.toLowerCase());
-
-      // adding a metadata information telling the action is a top level one
-      // it has not being created inside of another action through the
-      // Action.createAction
-      action.setMetadata('action.origin', 'topLevel');
-
-      return action;
-    }
-
-    return RegisteredAction;
-  }
-
-  /**
-   * Creates an action based on the serialized input which is generated by
-   * {@link Action.bakeToJSON}
-   *
-   * @param {string} serializedAction - json encoded action
-   * @param {boolean} [autofill=true] - tells if the autofill information should be
-   * loaded
-   * @return {Action|null}
-   */
-  static createFromJSON(serializedAction, autofill=true){
-    assert(TypeCheck.isString(serializedAction), 'serializedAction needs to be defined as string!');
-
-    const actionContents = JSON.parse(serializedAction);
-    const name = actionContents.metadata.action.name;
-
-    assert(TypeCheck.isString(name), 'Could not find the action information');
-    const action = this.create(name);
-
-    assert(action, `Action not found: ${name}`);
-
-    action._loadContents(actionContents, autofill);
-
-    return action;
   }
 
   /**
@@ -504,16 +475,18 @@ class Action{
    * of actions, you can use '.' as separator.
    *
    * @param {Action} actionClass - action implementation that will be registered
-   * @param {string} [name] - string containing the registration name for the
+   * @param {string} name - string containing the registration name for the
    * action, this name is used later to create the action ({@link Action.create}).
    * In case of an empty string, the registration is done by using the name
    * of the type.
    */
-  static registerAction(actionClass, name=''){
+  static register(actionClass, name){
 
     assert(TypeCheck.isSubClassOf(actionClass, Action), 'Invalid action type');
+    assert(TypeCheck.isString(name), 'name needs to defined as string');
+    assert(name.length, 'name cannot be empty');
 
-    const nameFinal = ((name === '') ? actionClass.name : name).toLowerCase();
+    const nameFinal = name.toLowerCase();
 
     // validating name
     assert(nameFinal.length, 'action name cannot be empty');
@@ -526,7 +499,7 @@ class Action{
    * Returns the action based on the registration name
    *
    * @param {string} name - name of the registered action
-   * @return {Action|null}
+   * @return {Action}
    */
   static registeredAction(name){
     assert(TypeCheck.isString(name), 'Invalid name!');
@@ -537,7 +510,26 @@ class Action{
       return this._registeredActions.get(normalizedName);
     }
 
-    return null;
+    throw new Error(`Action ${name} is not registered!`);
+  }
+
+  /**
+   * Returns the registered action name based on the action class
+   *
+   * @param {Action} actionClass - action that should be used to query the
+   * registered name
+   * @return {string}
+   */
+  static registeredActionName(actionClass){
+    assert(TypeCheck.isSubClassOf(actionClass, Action), 'Invalid action!');
+
+    for (const [registeredName, registeredActionClass] of this._registeredActions.entries()){
+      if (registeredActionClass === actionClass){
+        return registeredName;
+      }
+    }
+
+    throw new InvalidActionError(`There is no action registered for the class ${actionClass.name}!`);
   }
 
   /**
@@ -551,7 +543,7 @@ class Action{
 
   /**
    * This method should be used to implement the evaluation of the action. It's called
-   * by {@link Action.execute} after all inputs have been validated. It's expected to return
+   * by {@link Action.run} after all inputs have been validated. It's expected to return
    * a Promise containing the result of the evaluation.
    *
    * During the execution of the action all inputs are assigned as read-only ({@link Input.readOnly}),
@@ -576,7 +568,7 @@ class Action{
    * @protected
    */
   _perform(data){
-    return Promise.reject(Error('Not implemented error!'));
+    return Promise.reject(new Error('Not implemented error!'));
   }
 
   /**
@@ -586,21 +578,73 @@ class Action{
    * - Add custom metadata information that can be used by a {@link Writer}
    * - Add arbitrary information to a log
    * - In case of errors to purge temporary files
-   * - Customize exceptions to a more contextual one
    *
    * @param {Error|null} err - Error exception or null in case the action has
    * been successfully executed
    * @param {*} value - value returned by the action
-   * @return {Promise<*>} either the value returned by the action or the exception
+   * @return {Promise} resolved promise (any result passed to the promise is ignored)
    *
    * @protected
    */
   _finalize(err, value){
-    if (err){
-      return Promise.reject(err);
+    return Promise.resolve(null);
+  }
+
+  /**
+   * Executes the action and returns the result through a promise
+   *
+   * @return {Promise<*>}
+   * @private
+   */
+  async _execute(){
+    let result = null;
+
+    const data = Object.create(null);
+    const readOnlyOriginalValues = new Map();
+
+    // making inputs read-only during the execution, otherwise it would be very dangerous
+    // since a modified input would not get validated until the next execution.
+    // The original read-only value is restored in the end of the execution. Also,
+    // this process collects the input values that are stored under 'data' which
+    // is later passed as argument of _perform method, it's used as a more convenient
+    // way to query the value of the inputs
+    for (const name of this.inputNames()){
+
+      const input = this.input(name);
+      readOnlyOriginalValues.set(input, input.readOnly());
+
+      // making input as readOnly
+      input.setReadOnly(true);
+
+      // input value
+      data[name] = input.value();
     }
 
-    return Promise.resolve(value);
+    // checking if the inputs are valid (it throws an exception in case an input fails)
+    try{
+      await this.validate();
+    }
+    finally{
+      // restoring the read-only
+      for (const [input, originalReadOnly] of readOnlyOriginalValues){
+        input.setReadOnly(originalReadOnly);
+      }
+    }
+
+    // the action is performed inside of a try/catch block to call the _finalize
+    // no matter what, since that can be used to perform clean-up operations...
+    try{
+      // performing the action
+      result = await this._perform(data);
+    }
+    finally{
+      // restoring the read-only
+      for (const [input, originalReadOnly] of readOnlyOriginalValues){
+        input.setReadOnly(originalReadOnly);
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -669,7 +713,7 @@ class Action{
     // adding a member that tells the origin of the error
     let topLevel = false;
     if (!err.origin){
-      err.origin = this.metadata('action.origin');
+      err.origin = this.meta('action.origin');
       topLevel = true;
 
       // disabling output
@@ -682,7 +726,7 @@ class Action{
     // to the stack (for debugging purposes)
     if (Object.getOwnPropertyDescriptor(err, 'stack').writable){
       let actionName = this.constructor.name;
-      const registeredName = this.metadata('action.name');
+      const registeredName = this.meta('action.name');
       if (registeredName){
         actionName += ` (${registeredName})`;
       }
@@ -700,17 +744,20 @@ class Action{
     return err;
   }
 
-  /**
-   * Auxiliary method that runs the validations of all inputs
-   *
-   * @return {Promise}
-   * @private
-   */
-  _inputsValidation(){
-    return Promise.all([...this[_inputs].values()].map(input => input.validate()));
-  }
-
   static _registeredActions = new Map();
 }
+
+// Setting the default settings:
+
+// lruCacheSize
+// Sets in bytes the size of the LRU cache available for the execution of actions.
+// (default: `20 mb`)
+Settings.set('action/lruCacheSize', 20 * 1012 * 1024);
+
+// lruCacheLifespan
+// Sets in seconds the amount of time that an item under LRU cache should
+// be kept alive. This cache is defined by {@link Session.resultCache}
+// (default: `10 seconds`)
+Settings.set('action/lruCacheLifespan', 10);
 
 module.exports = Action;

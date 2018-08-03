@@ -2,11 +2,12 @@ const assert = require('assert');
 const Mebo = require('../../src');
 const testutils = require('../../testutils');
 
-const ValidationFail = Mebo.Error.ValidationFail;
+const ValidationFail = Mebo.Errors.ValidationFail;
 
 
 describe('Action Input:', () => {
 
+  @Mebo.register('multiplyAction')
   class MultiplyAction extends testutils.Actions.Shared.Multiply{
     constructor(){
       super();
@@ -24,26 +25,20 @@ describe('Action Input:', () => {
     }
   }
 
-  before(() => {
-    // registrations
-    Mebo.registerAction(MultiplyAction);
-  });
-
-
   // input
   it('When querying an input that does not exist it should return defaultValue instead', () => {
-    const multiplyAction = Mebo.createAction('multiplyAction');
+    const multiplyAction = Mebo.Action.create('multiplyAction');
     assert.equal(multiplyAction.input('FooNotInAction', 'defaultValueA'), 'defaultValueA');
   });
 
   it('When querying an input that exists it should return the input object (not defaultValue)', () => {
-    const multiplyAction = Mebo.createAction('multiplyAction');
+    const multiplyAction = Mebo.Action.create('multiplyAction');
     assert.equal(multiplyAction.input('a', 'defaultValueA').value(), 2);
   });
 
   // input names
   it('When querying the input names it should return all inputs added to the action', () => {
-    const multiplyAction = Mebo.createAction('multiplyAction');
+    const multiplyAction = Mebo.Action.create('multiplyAction');
     assert.equal(multiplyAction.inputNames().filter(x => (['a', 'b'].includes(x))).length, 2);
   });
 
@@ -70,7 +65,7 @@ describe('Action Input:', () => {
       });
     });
 
-    multiplyActionResult.execute().then((value) => {
+    multiplyActionResult.run().then((value) => {
       done(new Error('unexpected value'));
     }).catch((err) => {
       done(err instanceof Error ? null : new Error('Invalid Instance Type'));

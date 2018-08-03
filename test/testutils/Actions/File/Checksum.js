@@ -23,11 +23,11 @@ describe('Checksum Action:', () => {
 
     return (async () => {
 
-      const checksumAction = Mebo.createAction('file.checksum');
+      const checksumAction = Mebo.Action.create('file.checksum');
 
       checksumAction.input('file').setValue(path.join(temporaryFolder, filePath));
 
-      const result = await checksumAction.execute();
+      const result = await checksumAction.run();
       assert.equal('4aef39e4090b33644513ab820b07ddfa7db4f8c9a3b201e2d789433d6d20becc', result);
 
       return result;
@@ -38,11 +38,11 @@ describe('Checksum Action:', () => {
 
     return (async () => {
 
-      const checksumAction = Mebo.createAction('file.checksum');
+      const checksumAction = Mebo.Action.create('file.checksum');
       checksumAction.input('algo').setValue('sha256');
       checksumAction.input('file').setValue(path.join(temporaryFolder, filePath));
 
-      const result = await checksumAction.execute();
+      const result = await checksumAction.run();
       assert.equal('4aef39e4090b33644513ab820b07ddfa7db4f8c9a3b201e2d789433d6d20becc', result);
 
       return result;
@@ -54,11 +54,11 @@ describe('Checksum Action:', () => {
 
     (async () => {
 
-      const checksumAction = Mebo.createAction('file.checksum');
+      const checksumAction = Mebo.Action.create('file.checksum');
       checksumAction.input('file').assignProperty('exists', false);
       checksumAction.input('file').setValue(path.join(temporaryFolder, 'invalidFile.none'));
 
-      await checksumAction.execute();
+      await checksumAction.run();
 
     })().then((result) => {
       done(new Error('Unexpected result'));

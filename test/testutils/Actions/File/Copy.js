@@ -28,12 +28,12 @@ describe('Copy Action:', () => {
 
     (async () => {
 
-      const copyAction = Mebo.createAction('file.copy');
+      const copyAction = Mebo.Action.create('file.copy');
       copyAction.input('createTargetDirectories').setValue(false);
       copyAction.input('sourceFile').setValue(filePath);
       copyAction.input('targetFile').setValue(`${targetFilePath}__`);
 
-      await copyAction.execute();
+      await copyAction.run();
 
     })().then((result) => {
       done(new Error('Unexpected value'));
@@ -46,11 +46,11 @@ describe('Copy Action:', () => {
 
     return (async () => {
 
-      const copyAction = Mebo.createAction('file.copy');
+      const copyAction = Mebo.Action.create('file.copy');
       copyAction.input('sourceFile').setValue(filePath);
       copyAction.input('targetFile').setValue(targetFilePath);
 
-      await copyAction.execute();
+      await copyAction.run();
 
       // in case the file copy has failed, the stats will throw an exception when
       // querying it from a file that does not exist

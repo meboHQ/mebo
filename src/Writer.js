@@ -2,7 +2,7 @@ const stream = require('stream');
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const debug = require('debug')('Mebo');
-const Util = require('./Util');
+const Utils = require('./Utils');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -23,7 +23,7 @@ const _value = Symbol('value');
  * ({@link Handler.output}).
  *
  * ```
- * const myHandler = Mebo.createHandler('someHandler');
+ * const myHandler = Mebo.Handler.create('someHandler');
  *
  * // setting output options during the output
  * myHandler.output(value, {
@@ -40,21 +40,13 @@ const _value = Symbol('value');
  *    _perform(data){
  *
  *      // defining a custom output option
- *      this.setMetadata('$myOption', {
+ *      this.setMeta('$myOption', {
  *        someOption: 10,
  *      });
  *
  *      // ...
  *    }
  * }
- * Mebo.registerAction(MyAction);
- *
- * // ...
- * myHandler.execute('myAction').then((result) => {
- *    myHandler.output(result);
- * }).catch((err) => {
- *    myHandler.output(err);
- * });
  * ```
  *
  * <h2>Options Summary</h2>
@@ -82,7 +74,7 @@ class Writer{
     // then a base class should be created.
 
     this[_value] = value;
-    this[_options] = new Util.HierarchicalCollection();
+    this[_options] = new Utils.HierarchicalCollection();
 
     // default options
     this.setOption('convertBufferToReadableStream', true);

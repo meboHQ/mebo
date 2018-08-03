@@ -1,11 +1,11 @@
 const fs = require('fs');
-const promisify = require('es6-promisify');
+const util = require('util');
 const Mebo = require('../../../src');
 
 const Action = Mebo.Action;
 
 // promisifying
-const rename = promisify(fs.rename);
+const rename = util.promisify(fs.rename);
 
 
 /**
@@ -47,6 +47,6 @@ class Move extends Action{
 }
 
 // Registering action
-Mebo.registerAction(Move, 'file.move');
+Mebo.Action.register(Move, 'file.move');
 
 module.exports = Move;

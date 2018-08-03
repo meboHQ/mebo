@@ -1,9 +1,9 @@
 const stream = require('stream');
-const promisify = require('es6-promisify');
+const util = require('util');
 const fs = require('fs');
 const Mebo = require('../../../src');
 
-const readFile = promisify(fs.readFile);
+const readFile = util.promisify(fs.readFile);
 
 class StreamOutput extends Mebo.Action{
   constructor(){
@@ -18,10 +18,10 @@ class StreamOutput extends Mebo.Action{
     if (data.type === 'text'){
       const bufferStream = new stream.PassThrough();
 
-      bufferStream.end(new Buffer('test'));
+      bufferStream.end(Buffer.from('test'));
 
       // setting a custom content type
-      this.setMetadata('handler.web.writeOptions', {
+      this.setMeta('handler.web.writeOptions', {
         headers: {
           contentType: 'text/plain',
         },

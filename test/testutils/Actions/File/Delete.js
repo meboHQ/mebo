@@ -21,10 +21,10 @@ describe('Delete Action:', () => {
 
     return (async () => {
 
-      const deleteAction = Mebo.createAction('file.delete');
+      const deleteAction = Mebo.Action.create('file.delete');
       deleteAction.input('file').setValue(filePath);
 
-      await deleteAction.execute();
+      await deleteAction.run();
 
       // in case the file delete has worked, the stats will throw an exception when
       // querying it from a file that does not exist

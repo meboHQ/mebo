@@ -29,6 +29,8 @@
         "identifiers": false,
         "lang": "en_US",
         "skipWords": [
+          "hiddeninput",
+          "'invalidapp'",
           "param",
           "pre",
           "mebo",
@@ -120,6 +122,10 @@
           "revalidate",
           "metadata",
           "cryptographic",
+          "init",
+          "app",
+          "apps",
+          "utils",
 
           // modules
           "promisify",
@@ -163,6 +169,12 @@
         "requireReturn": false
       }
     ],
+    "prefer-destructuring": ["error", {
+      "AssignmentExpression": {
+        "array": false,
+        "object": false
+      }
+    }],
     "no-warning-comments": [
       1,
       {

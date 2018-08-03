@@ -1,10 +1,10 @@
 const assert = require('assert');
 const Mebo = require('../../src');
 
-const ValidationFail = Mebo.Error.ValidationFail;
-const Conflict = Mebo.Error.Conflict;
-const NoContent = Mebo.Error.NoContent;
-const NotFound = Mebo.Error.NotFound;
+const ValidationFail = Mebo.Errors.ValidationFail;
+const Conflict = Mebo.Errors.Conflict;
+const NoContent = Mebo.Errors.NoContent;
+const NotFound = Mebo.Errors.NotFound;
 
 
 describe('Error options:', () => {

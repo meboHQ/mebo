@@ -9,20 +9,20 @@ describe('Action Serialization:', () => {
 
   before(() => {
     // registrations
-    Mebo.registerAction(testutils.Actions.Shared.Multiply, 'multiplyAction');
+    Mebo.Action.register(testutils.Actions.Shared.Multiply, 'multiplyAction');
   });
 
   // tests
   it('Should serialize action into json', () => {
 
     return (async () => {
-      const actionA = Mebo.createAction('multiplyAction');
+      const actionA = Mebo.Action.create('multiplyAction');
       actionA.input('a').setValue(3);
       actionA.input('b').setValue(4);
 
       const actionB = Action.createFromJSON(await actionA.bakeToJSON());
 
-      assert.equal(actionA.metadata('action.name'), actionB.metadata('action.name'));
+      assert.equal(actionA.meta('action.name'), actionB.meta('action.name'));
       assert.equal(actionA.input('a').value(), actionB.input('a').value());
       assert.equal(actionA.input('b').value(), actionB.input('b').value());
       assert.equal(await actionA.id(), await actionB.id());
@@ -38,10 +38,10 @@ describe('Action Serialization:', () => {
         this.createInput('nonSerializable: any', {hidden: false});
       }
     }
-    Mebo.registerAction(NonSerializable);
+    Mebo.Action.register(NonSerializable, 'nonSerializable');
 
     return (async () => {
-      const action = Mebo.createAction('NonSerializable');
+      const action = Mebo.Action.create('NonSerializable');
       action.input('a').setValue(3);
       action.input('b').setValue(4);
       action.input('nonSerializable').setValue({a: 1});
@@ -68,7 +68,7 @@ describe('Action Serialization:', () => {
   it('Should serialize action into json with hidden inputs when avoidHidden is false', () => {
 
     return (async () => {
-      const actionA = Mebo.createAction('multiplyAction', new Session());
+      const actionA = Mebo.Action.create('multiplyAction', new Session());
       actionA.input('a').setValue(4);
       actionA.input('b').setValue(5);
       actionA.input('b').assignProperty('hidden', true);
@@ -83,7 +83,7 @@ describe('Action Serialization:', () => {
   it('Should serialize action into json without hidden inputs when avoidHidden is true (default)', () => {
 
     return (async () => {
-      const actionA = Mebo.createAction('multiplyAction', new Session());
+      const actionA = Mebo.Action.create('multiplyAction', new Session());
       actionA.input('a').setValue(4);
       actionA.input('b').setValue(5);
       actionA.input('b').assignProperty('hidden', true);
@@ -98,7 +98,7 @@ describe('Action Serialization:', () => {
   it('Should serialize action into json with autofill values', () => {
 
     return (async () => {
-      const actionA = Mebo.createAction('multiplyAction', new Session());
+      const actionA = Mebo.Action.create('multiplyAction', new Session());
       actionA.session().setAutofill('test', 10);
       actionA.session().setAutofill('test2', 1);
       actionA.input('a').setValue(4);
@@ -115,10 +115,12 @@ describe('Action Serialization:', () => {
 
     return (async () => {
       const actionA = new testutils.Actions.Shared.Multiply();
+      actionA.setSession(new Session());
       actionA.input('a').setValue(3);
       actionA.input('b').setValue(4);
 
       const actionB = new testutils.Actions.Shared.Multiply();
+      actionB.setSession(new Session());
       actionB.fromJSON(await actionA.bakeToJSON(false));
 
       assert.equal(actionA.input('a').value(), actionB.input('a').value());
@@ -149,7 +151,7 @@ describe('Action Serialization:', () => {
   it('Should serialize action into json without autofill values (disabled during serialization)', () => {
 
     return (async () => {
-      const actionA = Mebo.createAction('multiplyAction', new Session());
+      const actionA = Mebo.Action.create('multiplyAction', new Session());
       actionA.session().setAutofill('test', 10);
       actionA.session().setAutofill('test2', 1);
       actionA.input('a').setValue(4);

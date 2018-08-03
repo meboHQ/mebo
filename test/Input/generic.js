@@ -1,10 +1,9 @@
 const assert = require('assert');
-const TypeCheck = require('js-typecheck');
 const minimatch = require('minimatch');
 const Mebo = require('../../src');
 
 const Input = Mebo.Input;
-const ValidationFail = Mebo.Error.ValidationFail;
+const ValidationFail = Mebo.Errors.ValidationFail;
 
 
 describe('Input Generic:', () => {
@@ -43,6 +42,14 @@ describe('Input Generic:', () => {
     const b = new CustomInput('inputB', {immutable: false});
     b.setupFrom(a);
     assert.equal(b.cache().get('value'), undefined);
+  });
+
+  it('When parsing an empty string for the value, it should assign null instead', () => {
+
+    const inputA = new Input('input');
+    inputA.setValue('test');
+    inputA.parseValue('');
+    assert.equal(inputA.value(), null);
   });
 
   it('Value assigned to the input should be set as immutable by default', () => {
@@ -144,30 +151,6 @@ describe('Input Generic:', () => {
     assert.equal(i.value(), 10);
     i.setValue('foo');
     assert.equal(i.value(), 'foo');
-  });
-
-  it('Should not have duplicated error codes', () => {
-    const passedErrorCodes = [];
-
-    // base input
-    for (const code of Input.errorCodes){
-      if (passedErrorCodes.includes(code)){
-        throw new Error(`Error code duplicated: ${code}`);
-      }
-      passedErrorCodes.push(code);
-    }
-
-    // bundle inputs
-    for (const inputName in Mebo.Ext.Inputs){
-      if (TypeCheck.isSubClassOf(Mebo.Ext.Inputs[inputName], Input)){
-        for (const code of Mebo.Ext.Inputs[inputName].errorCodes){
-          if (passedErrorCodes.includes(code)){
-            throw new Error(`Error code duplicated: ${code}`);
-          }
-          passedErrorCodes.push(code);
-        }
-      }
-    }
   });
 
   it('Should not be able to set a value in a read-only input', () => {

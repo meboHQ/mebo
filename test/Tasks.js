@@ -20,38 +20,38 @@ describe('Tasks:', () => {
 
   before(() => {
     // registrations
-    Mebo.registerAction(testutils.Actions.Shared.Sum, 'tasksActionA');
-    Mebo.registerAction(TasksActionB);
+    Mebo.Action.register(testutils.Actions.Shared.Sum, 'tasksActionA');
+    Mebo.Action.register(TasksActionB, 'tasksActionB');
   });
 
   // tests
   it('Should avoid to add the same action id twice to the tasks', () => {
 
     return (async () => {
-      const actionA1 = Mebo.createAction('tasksActionA');
+      const actionA1 = Mebo.Action.create('tasksActionA');
       actionA1.input('a').setValue(10);
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.addAction(actionA1);
-      tasks.addAction(actionA1);
+      tasks.grantAction(actionA1);
+      tasks.grantAction(actionA1);
 
-      const actionA2 = Mebo.createAction('tasksActionA');
+      const actionA2 = Mebo.Action.create('tasksActionA');
       actionA2.input('a').setValue(12);
       actionA2.input('b').setValue(13);
 
-      tasks.addAction(actionA2);
-      tasks.addAction(actionA2);
+      tasks.grantAction(actionA2);
+      tasks.grantAction(actionA2);
 
       assert.equal((await tasks.contents()).length, 2);
 
-      const actionB = Mebo.createAction('tasksActionB');
+      const actionB = Mebo.Action.create('tasksActionB');
       actionB.input('a').setValue(12);
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
 
-      tasks.addAction(actionB);
-      tasks.addAction(actionB);
+      tasks.grantAction(actionB);
+      tasks.grantAction(actionB);
 
       assert.equal((await tasks.contents()).length, 3);
 
@@ -61,13 +61,13 @@ describe('Tasks:', () => {
   it('Should allow to add the same action id twice to the tasks', () => {
 
     return (async () => {
-      const actionA1 = Mebo.createAction('tasksActionA');
+      const actionA1 = Mebo.Action.create('tasksActionA');
       actionA1.input('a').setValue(10);
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.addAction(actionA1);
-      tasks.addAction(actionA1, {runOnlyOnce: false});
+      tasks.grantAction(actionA1);
+      tasks.grantAction(actionA1, {runOnlyOnce: false});
 
       assert.equal((await tasks.contents()).length, 2);
     })();
@@ -76,23 +76,23 @@ describe('Tasks:', () => {
   it('Should test the execution priority', () => {
 
     return (async () => {
-      const actionA1 = Mebo.createAction('tasksActionA');
+      const actionA1 = Mebo.Action.create('tasksActionA');
       actionA1.input('a').setValue(10);
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.addAction(actionA1, {priority: 5});
+      tasks.grantAction(actionA1, {priority: 5});
 
-      const actionA2 = Mebo.createAction('tasksActionA');
+      const actionA2 = Mebo.Action.create('tasksActionA');
       actionA2.input('a').setValue(12);
       actionA2.input('b').setValue(13);
-      tasks.addAction(actionA2, {priority: 10});
+      tasks.grantAction(actionA2, {priority: 10});
 
-      const actionB = Mebo.createAction('tasksActionB');
+      const actionB = Mebo.Action.create('tasksActionB');
       actionB.input('a').setValue(12);
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
-      tasks.addAction(actionB, {priority: 1});
+      tasks.grantAction(actionB, {priority: 1});
 
       const contents = await tasks.contents();
       assert.equal(contents.length, 3);
@@ -103,26 +103,44 @@ describe('Tasks:', () => {
     })();
   });
 
-  it('Should test the default execution priority (100)', () => {
+  it('Should skip actions that have been previously executed', () => {
 
     return (async () => {
-      const actionA1 = Mebo.createAction('tasksActionA');
+      const actionA1 = Mebo.Action.create('tasksActionA');
       actionA1.input('a').setValue(10);
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.addAction(actionA1, {priority: 101});
+      tasks.grantAction(actionA1, {priority: 101});
 
-      const actionDefaultPriority = Mebo.createAction('tasksActionA');
+      const result1 = await tasks.run();
+      const result2 = await tasks.run();
+
+      assert.equal(result1.length, 1);
+      assert.equal(result2.length, 0);
+    })();
+  });
+
+  it('Should test the default execution priority (100)', () => {
+
+    return (async () => {
+      const actionA1 = Mebo.Action.create('tasksActionA');
+      actionA1.input('a').setValue(10);
+      actionA1.input('b').setValue(10);
+
+      const tasks = new Tasks();
+      tasks.grantAction(actionA1, {priority: 101});
+
+      const actionDefaultPriority = Mebo.Action.create('tasksActionA');
       actionDefaultPriority.input('a').setValue(12);
       actionDefaultPriority.input('b').setValue(13);
-      tasks.addAction(actionDefaultPriority);
+      tasks.grantAction(actionDefaultPriority);
 
-      const actionB = Mebo.createAction('tasksActionB');
+      const actionB = Mebo.Action.create('tasksActionB');
       actionB.input('a').setValue(12);
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
-      tasks.addAction(actionB, {priority: 99});
+      tasks.grantAction(actionB, {priority: 99});
 
       const contents = await tasks.contents();
       assert.equal(contents.length, 3);
@@ -158,11 +176,11 @@ describe('Tasks:', () => {
         return Promise.resolve(true);
       });
 
-      const actionA = Mebo.createAction('tasksActionA');
+      const actionA = Mebo.Action.create('tasksActionA');
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
 
-      tasks.addAction(actionA);
+      tasks.grantAction(actionA);
       assert.equal((await tasks.contents()).length, 2);
 
       tasks.clear();
@@ -181,10 +199,10 @@ describe('Tasks:', () => {
       };
       tasks.addWrappedPromise(wrappedPromise);
 
-      const actionA = Mebo.createAction('tasksActionA');
+      const actionA = Mebo.Action.create('tasksActionA');
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
-      tasks.addAction(actionA);
+      tasks.grantAction(actionA);
 
       assert.equal((await tasks.contents()).length, 2);
 
@@ -205,12 +223,12 @@ describe('Tasks:', () => {
         return Promise.resolve(20);
       });
 
-      const actionA = Mebo.createAction('tasksActionA');
+      const actionA = Mebo.Action.create('tasksActionA');
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
-      tasks.addAction(actionA);
+      tasks.grantAction(actionA);
 
-      const result = await tasks.execute();
+      const result = await tasks.run();
 
       assert.equal(result[0], 20);
       assert.equal(result[1], 25);

@@ -12,13 +12,13 @@ class VectorUploadAction extends Mebo.Action{
     const checksum = this.createAction('file.checksum');
 
     checksum.input('file').setValue(data.file[0]);
-    const file1 = await checksum.execute();
+    const file1 = await checksum.run();
 
     checksum.input('file').setValue(data.file[1]);
-    const file2 = await checksum.execute();
+    const file2 = await checksum.run();
 
     checksum.input('file').setValue(data.file[2]);
-    const file3 = await checksum.execute();
+    const file3 = await checksum.run();
 
     const result = {};
     result[this.input('a').name()] = data.a;
@@ -36,7 +36,7 @@ class VectorUploadAction extends Mebo.Action{
     for (const fileName of this.input('file').value()){
       const deleteAction = this.createAction('file.delete');
       deleteAction.input('file').setValue(fileName);
-      deleteActionPromises.push(deleteAction.execute());
+      deleteActionPromises.push(deleteAction.run());
     }
 
     await Promise.all(deleteActionPromises);
