@@ -47,7 +47,7 @@ describe('Input Generic:', () => {
   it('When parsing an empty string for the value, it should assign null instead', () => {
 
     const inputA = new Input('input');
-    inputA.setValue("test")
+    inputA.setValue('test');
     inputA.parseValue('');
     assert.equal(inputA.value(), null);
   });

@@ -84,7 +84,7 @@ describe('App Generic:', () => {
 
   it('Should fail to create an app that contains a non granted action', () => {
     const errStream = new WriteStream();
-    const app = Mebo.Handlers.App.init(
+    Mebo.Handlers.App.init(
       'invalidApp',
       {
         stderr: errStream,

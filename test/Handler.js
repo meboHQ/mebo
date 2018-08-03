@@ -107,12 +107,12 @@ describe('Handler:', () => {
   });
 
   it('Should return an empty list of action names granted for the handler', () => {
-    const grantedActionNames = Handler.grantedActionNames("emptyHandler");
+    const grantedActionNames = Handler.grantedActionNames('emptyHandler');
     assert.equal(grantedActionNames.length, 0);
   });
 
   it('Should return the list of action names granted for the handler', () => {
-    const grantedActionNames = Handler.grantedActionNames("customHandler");
+    const grantedActionNames = Handler.grantedActionNames('customHandler');
     assert.equal(grantedActionNames.length, 1);
     assert.equal(grantedActionNames[0], 'hiddeninput');
   });

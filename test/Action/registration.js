@@ -50,8 +50,8 @@ describe('Action Registration:', () => {
     }
   });
 
-  it("Should raise an exception when trying to get the action name based on a non-registered action", () => {
-    class NonRegisteredMyActionTest extends Action{};
+  it('Should raise an exception when trying to get the action name based on a non-registered action', () => {
+    class NonRegisteredMyActionTest extends Action{}
 
     try{
       Mebo.Action.registeredActionName(NonRegisteredMyActionTest);
