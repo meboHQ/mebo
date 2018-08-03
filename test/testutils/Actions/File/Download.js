@@ -35,7 +35,15 @@ describe('Download Action:', () => {
   after(() => {
     fs.unlinkSync(path.join(temporaryFolder, fileName));
     fs.unlinkSync(path.join(temporaryFolder, fileNameWithoutExt));
-    fs.rmdirSync(temporaryFolder);
+
+    try{
+      fs.rmdirSync(temporaryFolder);
+    }
+    catch(err){
+      if (!(['ENOTEMPTY', 'ENOENT'].includes(err.code))){
+        throw err;
+      }
+    }
 
     if (server){
       server.close();
@@ -81,7 +89,15 @@ describe('Download Action:', () => {
 
       // no more need for this file
       fs.unlinkSync(downloadedFile);
-      fs.rmdirSync(downloadAction.input('targetFolder').value());
+
+      try{
+        fs.rmdirSync(downloadAction.input('targetFolder').value());
+      }
+      catch(err){
+        if (!(['ENOTEMPTY', 'ENOENT'].includes(err.code))){
+          throw err;
+        }
+      }
 
       assert.equal('8f017d33568c8bad2c714c86c4418a1d21c7ce5a88f7f37622d423da5ada524e', result);
 
@@ -109,7 +125,15 @@ describe('Download Action:', () => {
 
       // no more need for this file
       fs.unlinkSync(downloadedFile);
-      fs.rmdirSync(downloadAction.input('targetFolder').value());
+
+      try{
+        fs.rmdirSync(downloadAction.input('targetFolder').value());
+      }
+      catch(err){
+        if (!(['ENOTEMPTY', 'ENOENT'].includes(err.code))){
+          throw err;
+        }
+      }
 
       assert.equal('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', result);
 
