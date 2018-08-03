@@ -1,2 +1,2 @@
-module.exports.AppArgs = require('./AppArgs');
+module.exports.CliArgs = require('./CliArgs');
 module.exports.WebRequest = require('./WebRequest');

@@ -3,12 +3,12 @@ const assert = require('assert');
 const Mebo = require('../../../src');
 
 
-describe('App Write Options:', () => {
+describe('Cli Write Options:', () => {
 
   class CustomOutput extends Mebo.Action{
     _perform(data){
 
-      this.setMeta('$appResult', {
+      this.setMeta('$cliResult', {
         test: 3,
         test2: 4,
       });
@@ -31,12 +31,12 @@ describe('App Write Options:', () => {
 
   before(() => {
     Mebo.Action.register(CustomOutput, 'customOutput');
-    Mebo.Handler.grantAction('app', 'customOutput');
+    Mebo.Handler.grantAction('cli', 'customOutput');
   });
 
   it('Should test output option by defining a custom result', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
 
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());

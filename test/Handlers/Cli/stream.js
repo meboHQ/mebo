@@ -6,7 +6,7 @@ const Mebo = require('../../../src');
 const testutils = require('../../../testutils');
 
 
-describe('App Stream:', () => {
+describe('Cli Stream:', () => {
 
   class WriteStream extends stream.Writable{
     constructor(){
@@ -24,12 +24,12 @@ describe('App Stream:', () => {
 
   before(() => {
     Mebo.Action.register(testutils.Actions.Shared.StreamOutput, 'streamOutput');
-    Mebo.Handler.grantAction('app', 'streamOutput');
+    Mebo.Handler.grantAction('cli', 'streamOutput');
   });
 
   it('Should output a stream', () => {
 
-    const app = Mebo.Handler.create('app');
+    const app = Mebo.Handler.create('cli');
     app.setStdout(new WriteStream());
     app.setStderr(new WriteStream());
     app.setArgs([

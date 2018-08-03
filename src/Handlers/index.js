@@ -1,2 +1,2 @@
-module.exports.App = require('./App');
+module.exports.Cli = require('./Cli');
 module.exports.Web = require('./Web');
