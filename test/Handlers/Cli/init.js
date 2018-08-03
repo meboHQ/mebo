@@ -47,7 +47,7 @@ describe('Cli Init:', () => {
   it('Should initialize the app', (done) => {
 
     const options = {};
-    options.argv = ['executable', 'file', '--app', '--help'];
+    options.argv = ['executable', 'file', '--cli', '--help'];
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
     options.initializedCallback = ((result) => {
@@ -60,7 +60,7 @@ describe('Cli Init:', () => {
   it('Should initialize the app2', (done) => {
 
     const options = {};
-    options.argv = ['executable', 'file', '--app', 'multi', '--a', '1', '--b', '2'];
+    options.argv = ['executable', 'file', '--cli', 'multi', '--a', '1', '--b', '2'];
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
     options.initializedCallback = ((result) => {
