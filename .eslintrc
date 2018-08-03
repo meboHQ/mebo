@@ -29,8 +29,9 @@
         "identifiers": false,
         "lang": "en_US",
         "skipWords": [
+          "Clis",
           "hiddeninput",
-          "'invalidapp'",
+          "'invalidcli'",
           "param",
           "pre",
           "mebo",
