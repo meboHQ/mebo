@@ -12,7 +12,7 @@ const _result = Symbol('result');
 
 /**
  * A reader is used by the handler during the execution ({@link Handler.runAction})
- * to query {@link Input} and {@link Session} information that is going be used
+ * to query the {@link Input} and {@link Session} information that is going be used
  * during the execution of the action.
  *
  * In case of new implements it's expected to implement the {@link Reader._perform}.
