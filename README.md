@@ -44,15 +44,15 @@ You write once and Mebo takes care of getting the evaluations up running across 
 [<img src="https://mebohq.github.io/docs/data/intro.png?v=1"/>](data/manual/INTRODUCTION.md)
 
 ## Documentation
-- [API Documentation](https://mebohq.github.io)
-- Full Examples
+#### [API Documentation](https://mebohq.github.io)
+#### Full Examples
  - [Hello World](https://github.com/meboHQ/example-hello-world)
  - [RESTful using Express and Mongodb](https://github.com/meboHQ/example-restful-using-express-mongodb)
  - [Middleware integration](https://github.com/meboHQ/example-middleware)
  - [Authentication](https://github.com/meboHQ/example-auth)
  - [Uploads](https://github.com/meboHQ/example-uploads)
  - [JSON serialized actions](https://github.com/meboHQ/example-json-actions)
-- Tutorials (coming soon)
+##### Tutorials (coming soon)
 
 ## Requirement
 [<img src="https://mebohq.github.io/docs/data/nodejs.png?v=1"/>](https://www.nodejs.org)
