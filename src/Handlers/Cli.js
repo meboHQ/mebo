@@ -28,6 +28,7 @@ const _handlerName = 'cli';
 *
 * **Creating an action that is going be executed through the cli handler**
 * ```
+* @Mebo.register('myAction')
 * class MyAction extends Mebo.Action{
 *   constructor(){
 *     super();
@@ -44,8 +45,6 @@ const _handlerName = 'cli';
 *   }
 * }
 *
-* // registering the action
-* Mebo.Action.register(MyAction, 'myAction');
 * ```
 *
 * **Executing the action through the handler**
@@ -84,6 +83,9 @@ const _handlerName = 'cli';
 * Options:
 *   --my-option    my option (bool type).
 * ```
+*
+* In case you want to provide multiple actions through cli, take
+* a look at the example: https://github.com/meboHQ/example-cli
 *
 * @see http://docopt.org
 */
