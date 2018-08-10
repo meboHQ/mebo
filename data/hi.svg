@@ -2247,15 +2247,15 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.2942037"
      inkscape:cx="161.09018"
-     inkscape:cy="670.43059"
+     inkscape:cy="577.70948"
      inkscape:document-units="px"
      inkscape:current-layer="g5145"
      showgrid="false"
      showguides="true"
      inkscape:window-width="1910"
-     inkscape:window-height="1051"
+     inkscape:window-height="1029"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="20"
      inkscape:window-maximized="0"
      inkscape:guide-bbox="true" />
   <metadata
@@ -2369,7 +2369,7 @@
            sodipodi:role="line"
            id="tspan4655"
            x="102.11875"
-           y="461.08841">console</tspan></text>
+           y="461.08841">cli</tspan></text>
       <g
          transform="matrix(1,0,0,-1,-120.25002,764.24262)"
          id="g4230"
