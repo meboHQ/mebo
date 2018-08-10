@@ -23,7 +23,7 @@ across multiple domains. This interface is designed to be fairly extendable and 
 You write once and Mebo takes care of getting the evaluations up running across the domains.
 
 <p align="center">
-  <img src="https://mebohq.github.io/docs/data/hi.png?v=1"/>
+  <img src="https://mebohq.github.io/docs/data/hi.png?v=2"/>
 </p>
 
 ## Key features
