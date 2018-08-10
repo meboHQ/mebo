@@ -38,7 +38,7 @@ class Tasks{
    * @param {number} [options.priority=100] - tells the priority of the action, this affects
    * the execution order where a lower numeric value means a higher priority.
    */
-  grantAction(action, {runOnlyOnce=true, priority=100}={}){
+  addAction(action, {runOnlyOnce=true, priority=100}={}){
     assert(TypeCheck.isCallable(action.run), 'Invalid Action');
 
     this[_contents].push({

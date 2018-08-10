@@ -33,15 +33,15 @@ describe('Tasks:', () => {
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.grantAction(actionA1);
-      tasks.grantAction(actionA1);
+      tasks.addAction(actionA1);
+      tasks.addAction(actionA1);
 
       const actionA2 = Mebo.Action.create('tasksActionA');
       actionA2.input('a').setValue(12);
       actionA2.input('b').setValue(13);
 
-      tasks.grantAction(actionA2);
-      tasks.grantAction(actionA2);
+      tasks.addAction(actionA2);
+      tasks.addAction(actionA2);
 
       assert.equal((await tasks.contents()).length, 2);
 
@@ -50,8 +50,8 @@ describe('Tasks:', () => {
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
 
-      tasks.grantAction(actionB);
-      tasks.grantAction(actionB);
+      tasks.addAction(actionB);
+      tasks.addAction(actionB);
 
       assert.equal((await tasks.contents()).length, 3);
 
@@ -66,8 +66,8 @@ describe('Tasks:', () => {
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.grantAction(actionA1);
-      tasks.grantAction(actionA1, {runOnlyOnce: false});
+      tasks.addAction(actionA1);
+      tasks.addAction(actionA1, {runOnlyOnce: false});
 
       assert.equal((await tasks.contents()).length, 2);
     })();
@@ -81,18 +81,18 @@ describe('Tasks:', () => {
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.grantAction(actionA1, {priority: 5});
+      tasks.addAction(actionA1, {priority: 5});
 
       const actionA2 = Mebo.Action.create('tasksActionA');
       actionA2.input('a').setValue(12);
       actionA2.input('b').setValue(13);
-      tasks.grantAction(actionA2, {priority: 10});
+      tasks.addAction(actionA2, {priority: 10});
 
       const actionB = Mebo.Action.create('tasksActionB');
       actionB.input('a').setValue(12);
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
-      tasks.grantAction(actionB, {priority: 1});
+      tasks.addAction(actionB, {priority: 1});
 
       const contents = await tasks.contents();
       assert.equal(contents.length, 3);
@@ -111,7 +111,7 @@ describe('Tasks:', () => {
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.grantAction(actionA1, {priority: 101});
+      tasks.addAction(actionA1, {priority: 101});
 
       const result1 = await tasks.run();
       const result2 = await tasks.run();
@@ -129,18 +129,18 @@ describe('Tasks:', () => {
       actionA1.input('b').setValue(10);
 
       const tasks = new Tasks();
-      tasks.grantAction(actionA1, {priority: 101});
+      tasks.addAction(actionA1, {priority: 101});
 
       const actionDefaultPriority = Mebo.Action.create('tasksActionA');
       actionDefaultPriority.input('a').setValue(12);
       actionDefaultPriority.input('b').setValue(13);
-      tasks.grantAction(actionDefaultPriority);
+      tasks.addAction(actionDefaultPriority);
 
       const actionB = Mebo.Action.create('tasksActionB');
       actionB.input('a').setValue(12);
       actionB.input('b').setValue(10);
       actionB.input('c').setValue(10);
-      tasks.grantAction(actionB, {priority: 99});
+      tasks.addAction(actionB, {priority: 99});
 
       const contents = await tasks.contents();
       assert.equal(contents.length, 3);
@@ -180,7 +180,7 @@ describe('Tasks:', () => {
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
 
-      tasks.grantAction(actionA);
+      tasks.addAction(actionA);
       assert.equal((await tasks.contents()).length, 2);
 
       tasks.clear();
@@ -202,7 +202,7 @@ describe('Tasks:', () => {
       const actionA = Mebo.Action.create('tasksActionA');
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
-      tasks.grantAction(actionA);
+      tasks.addAction(actionA);
 
       assert.equal((await tasks.contents()).length, 2);
 
@@ -226,7 +226,7 @@ describe('Tasks:', () => {
       const actionA = Mebo.Action.create('tasksActionA');
       actionA.input('a').setValue(12);
       actionA.input('b').setValue(13);
-      tasks.grantAction(actionA);
+      tasks.addAction(actionA);
 
       const result = await tasks.run();
 
