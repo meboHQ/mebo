@@ -147,7 +147,7 @@ describe('Action Generic:', () => {
 
       wrapUpAction.input('a').setValue(2);
       wrapUpAction.input('b').setValue(2);
-      session.wrapup().grantAction(wrapUpAction);
+      session.wrapup().addAction(wrapUpAction);
 
       let wrapupPromiseWasCalled = false;
 
