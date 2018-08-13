@@ -167,7 +167,7 @@ class MyAction extends Mebo.Action{
 }
 ```
 
-*Registration support:*
+*Registration api:*
 ```javascript
 class MyAction extends Mebo.Action{
   // ...
