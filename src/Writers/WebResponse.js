@@ -28,6 +28,10 @@ const _response = Symbol('response');
  *
  *    // ...
  *
+ *    _perform(data){
+ *      // ...
+ *    }
+ *
  *    _finalize(err, value){
  *      // defining a custom result that only affects the web handler
  *      // this call could be done inside of the _perform method. However, we

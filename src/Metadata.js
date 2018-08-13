@@ -34,8 +34,17 @@ const _collection = Symbol('collection');
  *      this.setMeta('$webUploadDirectory', '/tmp/customUploadDir');
  *    }
  *
- *    _finalize(err, value){
+ *    _perform(data){
+ *      // ...
+ *    }
  *
+ *    _finalize(err, value){
+ *      // defining a custom header that only affects the web handler
+ *      // this call could be done inside of the _perform method. However, we
+ *      // are defining it inside of the _finalize to keep _perform as
+ *      // abstract as possible. Since, _finalize is always called (even during
+ *      // an error) after the execution of the action, it provides a way to
+ *      // hook and define custom metadata related with the result.
  *      if (!err){
  *        // defining a custom header by using the `$webHeaders` variable, rather
  *        // than the full option location (`handler.web.writeOptions.headers`)
@@ -62,6 +71,10 @@ const _collection = Symbol('collection');
  *    constructor(){
  *      super();
  *      this.setMeta('handler.web.readOptions.uploadDirectory', '/tmp/customUploadDir');
+ *    }
+ *
+ *    _perform(data){
+ *      // ...
  *    }
  *
  *    _finalize(err, value){
