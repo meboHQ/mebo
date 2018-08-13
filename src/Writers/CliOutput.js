@@ -19,6 +19,36 @@ const _stderr = Symbol('stderr');
  * {@link CliOutput._errorOutput} otherwise the value is treated as
  * {@link CliOutput._successOutput}.
  *
+ * When an action is executed through a handler it can define options for
+ * readers and writers via {@link Metadata} support. For instance,
+ * you can use it to provide a custom result for a specific handler:
+ *
+ * ```
+ * class MyAction extends Mebo.Action{
+ *
+ *    // ...
+ *
+ *    _finalize(err, value){
+ *      // defining a custom result that only affects the web handler
+ *      // this call could be done inside of the _perform method. However, we
+ *      // are defining it inside of the _finalize to keep _perform as
+ *      // abstract as possible. Since, _finalize is always called (even during
+ *      // an error) after the execution of the action, it provides a way to
+ *      // hook and define custom metadata related with the result.
+ *      if (!err){
+ *          // defining a custom output option
+ *          this.setMeta('$cliResult', {
+ *              message: 'My custom cli result!',
+ *          });
+ *      }
+ *
+ *      return super._finalize(err, value);
+ *    }
+ *
+ *    // ...
+ * }
+ * ```
+ *
  * <h2>Options Summary</h2>
  *
  * Option Name | Description | Default Value

@@ -17,8 +17,37 @@ const _collection = Symbol('collection');
  * the metadata. By doing that the options are passed from the action to the
  * handler during the handler's execution ({@link Handler.runAction}).
  *
- * You can define options by either using the full option location or using
- * option variables:
+ * You can define options by either using option variables or the full option location:
+ *
+ * **Option var (recommended):**
+ * Eliminates the need of using convoluted long names to define the options by
+ * simply using a variable that represents a full option location:
+ *
+ * Example:
+ * ```
+ * class MyAction extends Mebo.Action{
+ *
+ *    constructor(){
+ *      super();
+ *      // defining a custom uploadDirectory by using the `$webUploadDirectory` variable,
+ *      // rather than the full option location (`handler.web.readOptions.uploadDirectory`)
+ *      this.setMeta('$webUploadDirectory', '/tmp/customUploadDir');
+ *    }
+ *
+ *    _finalize(err, value){
+ *
+ *      if (!err){
+ *        // defining a custom header by using the `$webHeaders` variable, rather
+ *        // than the full option location (`handler.web.writeOptions.headers`)
+ *        this.setMeta('$webHeaders', {
+ *          someOption: 'foo',
+ *        });
+ *      }
+ *
+ *      return super._finalize(err, value);
+ *    }
+ * }
+ * ```
  *
  * **Full option location:**
  * Uses a convention interpreted by the {@link Handler.metadata} to describe
@@ -30,33 +59,21 @@ const _collection = Symbol('collection');
  * Example:
  * ```
  * class MyAction extends Mebo.Action{
- *    _perform(data){
- *
- *      // location (not recommended, see option var)
- *      this.setMeta('handler.web.writeOptions.headers', {
- *        someOption: 'foo',
- *      });
- *
- *      // ...
+ *    constructor(){
+ *      super();
+ *      this.setMeta('handler.web.readOptions.uploadDirectory', '/tmp/customUploadDir');
  *    }
- * }
- * ```
  *
- * **Option var (recommended):**
- * Eliminates the need of using convoluted long names to define the options by
- * simply using a variable that represents a full option location:
+ *    _finalize(err, value){
  *
- * ```
- * class MyAction extends Mebo.Action{
- *    _perform(data){
+ *      if (!err){
+ *        // location (not recommended, see option var)
+ *        this.setMeta('handler.web.writeOptions.headers', {
+ *          someOption: 'foo',
+ *        });
+ *      }
  *
- *      // defining a custom header by using the `$webHeaders` variable, rather
- *      // than the full option location (`handler.web.writeOptions.headers`)
- *      this.setMeta('$webHeaders', {
- *        someOption: 'foo',
- *      });
- *
- *      // ...
+ *      return super._finalize(err, value);
  *    }
  * }
  * ```

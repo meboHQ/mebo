@@ -14,7 +14,7 @@ const _value = Symbol('value');
  * A writer is used to output a value through the {@link Handler}.
  *
  * The output is determined by the kind of value that's passed to the writer where
- * exceptions are interpreted as error output, otherwise the value is interpreted
+ * exceptions are interpreted as error output otherwise, the value is interpreted
  * as success value. Therefore, new implements are expected to implement both a success
  * ({@link Writer._successOutput}) and error ({@link Writer._errorOutput}) outputs.
  *
@@ -31,23 +31,8 @@ const _value = Symbol('value');
  * });
  * ```
  *
- * When an action is executed through a handler it can define options via
- * the {@link Metadata} support. Detailed information about that can be found
- * at {@link Metadata}:
- *
- * ```
- * class MyAction extends Mebo.Action{
- *    _perform(data){
- *
- *      // defining a custom output option
- *      this.setMeta('$myOption', {
- *        someOption: 10,
- *      });
- *
- *      // ...
- *    }
- * }
- * ```
+ * When an action is executed through a handler it can define options for
+ * readers and writers via {@link Metadata} support.
  *
  * <h2>Options Summary</h2>
  *
