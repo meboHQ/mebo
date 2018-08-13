@@ -28,6 +28,7 @@ const _handlerName = 'cli';
 *
 * **Creating an action that is going be executed through the cli handler**
 * ```
+* @Mebo.grant('cli')
 * @Mebo.register('myAction')
 * class MyAction extends Mebo.Action{
 *   constructor(){
