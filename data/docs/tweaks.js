@@ -24,6 +24,7 @@ exports.onHandleHTML = (ev) => {
   .replace('./manual/index.html', './manual/overview/INTRODUCTION.html')
   .replace('"data/manual/INTRODUCTION.md"', '"manual/overview/INTRODUCTION.html"')
   .replace(new RegExp(requiredToken, 'g'), '')
+  .replace(new RegExp('<li data-ice="manualNav" class="indent-h4"', 'g'), '<li data-ice="manualNav" class="indent-h3"')
   .replace(new RegExp('::none::', 'g'), '<img src="data/docs/value/none.png" title="none">')
   .replace(new RegExp('::null::', 'g'), '<img src="data/docs/value/null.png" title="null">')
   .replace(new RegExp('::true::', 'g'), '<img src="data/docs/value/true.png" title="true">')

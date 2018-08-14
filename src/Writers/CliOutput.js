@@ -28,7 +28,7 @@ const _stderr = Symbol('stderr');
  *
  *    // ...
  *
- *    _perform(data){
+ *    async _perform(data){
  *      // ...
  *    }
  *
