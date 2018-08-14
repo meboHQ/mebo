@@ -24,8 +24,8 @@ class InvalidActionError extends Error{
  *
  * ```
   * class HelloWorld extends Mebo.Action{
- *   _perform(data){
- *     return Promise.resolve('Hello World');
+ *   async _perform(data){
+ *     return 'Hello World';
  *   }
  * }
  *
@@ -43,9 +43,10 @@ class InvalidActionError extends Error{
  *     super();
  *     this.createInput('repeat: numeric', {max: 100});
  *   }
- *   _perform(data){
+ *
+ *   async _perform(data){
  *     const result = 'HelloWorld '.repeat(data.repeat);
- *     return Promise.resolve(result);
+ *     return result;
  *   }
  * }
  *
@@ -55,18 +56,86 @@ class InvalidActionError extends Error{
  * ```
  *
  * An evaluation is triggered through {@link Action.run} which internally calls
- * {@link Action._perform}. Use `perform` to implement the evaluation of your action.
+ * {@link Action._perform}. Use `_perform` to implement the evaluation of your action.
  * Also, you can implement {@link Action._finalize} to execute secondary routines.
  *
- * Actions are registered via {@link Action.register}, in case you want
- * to use a compound name with a prefix common across some group of
- * actions you can use '.' as separator. Also, there are two ways to create actions:
+ * Make sure actions are always created through the factory function create
+ * ({@link Action.create}). For that you need to register the action
+ * that can be done in two ways:
+ *
+ * Decorator support:
+ * ```
+ * @Mebo.register('helloWorld') // <- registering action
+ * class HelloWorld extends Mebo.Action{
+ *   constructor(){
+ *     super();
+ *     this.createInput('repeat: numeric', {max: 100});
+ *   }
+ *
+ *   async _perform(data){
+ *     return 'HelloWorld '.repeat(data.repeat);
+ *   }
+ * }
+ *
+ * const action = Mebo.Action.create('helloWorld');
+ * action.input('repeat').setValue(3);
+ * action.run().then(...) //  HelloWorld HelloWorld HelloWorld
+ * ```
+ *
+ * Registration api ({@link Action.register}):
+ * ```
+ * class HelloWorld extends Mebo.Action{
+ *   constructor(){
+ *     super();
+ *     this.createInput('repeat: numeric', {max: 100});
+ *   }
+ *
+ *   async _perform(data){
+ *     return 'HelloWorld '.repeat(data.repeat);
+ *   }
+ * }
+ *
+ * Mebo.Action.register(HelloWorld, 'helloWorld'); // <- registering action
+ *
+ * const action = Mebo.Action.create('helloWorld');
+ * action.input('repeat').setValue(3);
+ * action.run().then(...) //  HelloWorld HelloWorld HelloWorld
+ * ```
+ *
+ * In case you have an action that may need to call another actions during
+ * `_perform`, it can be done through:
  *
  * - {@link Action.createAction} - allows actions to be created from inside of another action.
- * By doing that it creates actions that share the same {@link Session}.
+ * By doing that it creates an action that shares the same {@link Session}.
  *
- * - {@link Action.create} - factory an action with custom session when supplied
- * otherwise it creates a new session.
+ * ```
+ * class HelloWorld extends Mebo.Action{
+ *   // ...
+ *   async _perform(data){
+ *     const fooAction = this.createAction('foo');
+ *     const fooResult = await fooAction.run();
+ *     // ...
+ *   }
+ * }
+ * // ...
+ * ```
+ *
+ * - {@link Action.create} - factory an action with using a specific session when supplied
+ * otherwise, creates an action with a new session.
+ *
+ * ```
+ * class HelloWorld extends Mebo.Action{
+ *   // ...
+ *   async _perform(data){
+ *     // in case you are planning to share the same session please
+ *     // use the "sugary" `this.createAction` instead.
+ *     const fooAction = Mebo.Action.create('foo');
+ *     const fooResult = await fooAction.run();
+ *     // ...
+ *   }
+ * }
+ * // ...
+ * ```
  *
  * Also, actions can take advantage of the caching mechanism designed to improve the performance
  * by avoiding re-evaluations in actions that might be executed multiple times. This can enabled
