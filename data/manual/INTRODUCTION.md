@@ -15,8 +15,8 @@ An action is used to implement evalutations
 const Mebo = require('mebo');
 
 class MyAction extends Mebo.Action{
-  _perform(data){
-    return Promise.resolve('hello world');
+  async _perform(data){
+    return 'hello world';
   }
 }
 ```
@@ -68,8 +68,8 @@ class MyAction extends Mebo.Action {
     this.createInput('myInput: text'); // <--- Creating an input
   }
 
-  _perform(data){
-    return Promise.resolve(`hello ${data.myInput}`);
+  async _perform(data){
+    return `hello ${data.myInput}`;
   }
 }
 ```

@@ -28,7 +28,7 @@ const _response = Symbol('response');
  *
  *    // ...
  *
- *    _perform(data){
+ *    async _perform(data){
  *      // ...
  *    }
  *

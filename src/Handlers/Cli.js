@@ -37,12 +37,12 @@ const _handlerName = 'cli';
 *     this.createInput('myOption: bool', {description: 'my option'});
 *   }
 *
-*   _perform(data){
+*   async _perform(data){
 *     const result = {
 *       myArgument: data.myArgument,
 *       myOption: data.myOption,
 *     };
-*     return Promise.resolve(result);
+*     return result;
 *   }
 * }
 *
