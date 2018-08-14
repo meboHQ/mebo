@@ -13,6 +13,23 @@ const _terminated = Symbol('terminated');
 /**
  * A session is used to store the data shared between actions.
  *
+ * ```
+ * @Mebo.register('myAction')
+ * class MyAction extends Mebo.Action{
+ *
+ *   // ...
+ *
+ *   async _perform(data){
+ *
+ *     // sharing a value across the session
+ *     this.session().set('mySharedValue', 100);
+ *
+ *     // ...
+ *   }
+ * }
+ *
+ * ```
+ *
  * This object is created automatically by {@link Handler.create} and
  * {@link Action.create}.
  */
