@@ -44,15 +44,31 @@ const _metadata = Symbol('metadata');
  *      super();
  *
  *      // change 'name' for the registration name of the handler you
- *      // want to define the read & write options
- *      this.setMeta('handler.name', {
- *        readOptions: {
- *          someReadOption: true,
- *        },
- *        writeOptions: {
- *          someWriteOption: 10,
- *        },
+ *      // want to define the read options
+ *      this.setMeta('handler.name.readOptions', {
+ *        someReadOption: true
  *      });
+ *    }
+ *
+ *    async _perform(data){
+ *      // ...
+ *    }
+ *
+ *    _finalize(err, value){
+ *
+ *      // change 'name' for the registration name of the handler you
+ *      // want to define the write options
+ *      if (!err){
+ *        // defining the write option inside of the _finalize to keep _perform as
+ *        // abstract as possible. Since, _finalize is always called (even during
+ *        // an error) after the execution of the action, it provides a way to
+ *        // hook and define custom metadata related with the result.
+ *        this.setMeta('handler.name.writeOptions', {
+ *            someWriteOption: 10,
+ *        });
+ *      }
+ *
+ *      super._finalize(err, value);
  *    }
  * }
  * ```
