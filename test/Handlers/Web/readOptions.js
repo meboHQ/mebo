@@ -86,7 +86,15 @@ describe('Web Read Options:', () => {
   });
 
   after(() => {
-    fs.rmdirSync(customUploadDirectory);
+
+    try{
+      fs.rmdirSync(customUploadDirectory);
+    }
+    catch(err){
+      if (!(['ENOTEMPTY', 'ENOENT'].includes(err.code))){
+        throw err;
+      }
+    }
 
     if (server){
       server.close();

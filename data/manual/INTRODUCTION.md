@@ -167,7 +167,7 @@ class MyAction extends Mebo.Action{
 }
 ```
 
-*Registration support:*
+*Registration api:*
 ```javascript
 class MyAction extends Mebo.Action{
   // ...
@@ -293,3 +293,14 @@ details please checkout the [Session Documentation](https://mebohq.github.io/doc
 
 The basic configuration can be found under Settings, for futher
 details please checkout the [Settings Documentation](https://mebohq.github.io/docs/class/src/Settings.js~Settings.html)
+
+## Documentation
+#### [API Documentation](https://mebohq.github.io)
+#### Full Examples
+ - [Hello World](https://github.com/meboHQ/example-hello-world)
+ - [RESTful using Express and Mongodb](https://github.com/meboHQ/example-restful-using-express-mongodb)
+ - [Middleware integration](https://github.com/meboHQ/example-middleware)
+ - [Authentication](https://github.com/meboHQ/example-auth)
+ - [Uploads](https://github.com/meboHQ/example-uploads)
+ - [Command-line integration](https://github.com/meboHQ/example-cli)
+ - [JSON serialized actions](https://github.com/meboHQ/example-json-actions)

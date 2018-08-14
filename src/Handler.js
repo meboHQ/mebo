@@ -38,6 +38,7 @@ const _metadata = Symbol('metadata');
  * Defining options through actions (detailed information can be found at
  * {@link Metadata}):
  * ```
+ * @Mebo.register('myAction')
  * class MyAction extends Mebo.Action{
  *    constructor(){
  *      super();
@@ -54,7 +55,6 @@ const _metadata = Symbol('metadata');
  *      });
  *    }
  * }
- * Mebo.Action.register(MyAction, 'myAction');
  * ```
  *
  * Defining options directly through the handler:
