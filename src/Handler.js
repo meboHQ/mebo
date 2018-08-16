@@ -54,7 +54,7 @@ const _metadata = Symbol('metadata');
  *      // ...
  *    }
  *
- *    _finalize(err, value){
+ *    async _finalize(err, value){
  *
  *      // change 'name' for the registration name of the handler you
  *      // want to define the write options
@@ -67,8 +67,6 @@ const _metadata = Symbol('metadata');
  *            someWriteOption: 10,
  *        });
  *      }
- *
- *      super._finalize(err, value);
  *    }
  * }
  * ```

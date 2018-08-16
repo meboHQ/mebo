@@ -34,11 +34,11 @@ const _collection = Symbol('collection');
  *      this.setMeta('$webUploadDirectory', '/tmp/customUploadDir');
  *    }
  *
- *    _perform(data){
+ *    async _perform(data){
  *      // ...
  *    }
  *
- *    _finalize(err, value){
+ *    async _finalize(err, value){
  *      // defining a custom header that only affects the web handler
  *      // this call could be done inside of the _perform method. However, we
  *      // are defining it inside of the _finalize to keep _perform as
@@ -52,8 +52,6 @@ const _collection = Symbol('collection');
  *          someOption: 'foo',
  *        });
  *      }
- *
- *      return super._finalize(err, value);
  *    }
  * }
  * ```
@@ -73,11 +71,11 @@ const _collection = Symbol('collection');
  *      this.setMeta('handler.web.readOptions.uploadDirectory', '/tmp/customUploadDir');
  *    }
  *
- *    _perform(data){
+ *    async _perform(data){
  *      // ...
  *    }
  *
- *    _finalize(err, value){
+ *    async _finalize(err, value){
  *
  *      if (!err){
  *        // location (not recommended, see option var)
@@ -85,8 +83,6 @@ const _collection = Symbol('collection');
  *          someOption: 'foo',
  *        });
  *      }
- *
- *      return super._finalize(err, value);
  *    }
  * }
  * ```

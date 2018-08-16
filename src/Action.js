@@ -20,7 +20,7 @@ class InvalidActionError extends Error{
  * An action is used to perform an evaluation.
  *
  * By implementing an evaluation through an action, the evaluation is wrapped by an
- * interface that can be triggered from many different forms ({@link Handler}).
+ * interface that can be triggered from different domains ({@link Handler}).
  *
  * ```
   * class HelloWorld extends Mebo.Action{
