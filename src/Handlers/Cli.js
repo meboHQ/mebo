@@ -184,7 +184,7 @@ class Cli extends Handler{
    *     this.createInput('name: text');
    *     this.createInput('myOtherInput?: numeric');
    *  }
-   *  _perform(data){
+   *  async _perform(data){
    *    // ...
    *  }
    * }

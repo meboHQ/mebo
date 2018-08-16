@@ -32,7 +32,7 @@ const _stderr = Symbol('stderr');
  *      // ...
  *    }
  *
- *    _finalize(err, value){
+ *    async _finalize(err, value){
  *      // defining a custom result that only affects the web handler
  *      // this call could be done inside of the _perform method. However, we
  *      // are defining it inside of the _finalize to keep _perform as
@@ -45,8 +45,6 @@ const _stderr = Symbol('stderr');
  *              message: 'My custom cli result!',
  *          });
  *      }
- *
- *      return super._finalize(err, value);
  *    }
  *
  *    // ...

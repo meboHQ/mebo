@@ -32,7 +32,7 @@ const _response = Symbol('response');
  *      // ...
  *    }
  *
- *    _finalize(err, value){
+ *    async _finalize(err, value){
  *      // defining a custom result that only affects the web handler
  *      // this call could be done inside of the _perform method. However, we
  *      // are defining it inside of the _finalize to keep _perform as
@@ -45,8 +45,6 @@ const _response = Symbol('response');
  *              message: 'My custom web result!',
  *          });
  *      }
- *
- *      return super._finalize(err, value);
  *    }
  *
  *    // ...
@@ -88,7 +86,7 @@ const _response = Symbol('response');
  * ```
  * // defining 'Content-Type' header
  * class MyAction extends Mebo.Action{
- *    _perform(data){
+ *    async _perform(data){
  *
  *      // 'Content-Type' header
  *      this.setMeta('$webHeaders', {
