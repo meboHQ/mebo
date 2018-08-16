@@ -20,18 +20,7 @@ class InvalidActionError extends Error{
  * An action is used to perform an evaluation.
  *
  * By implementing an evaluation through an action, the evaluation is wrapped by an
- * interface that can be triggered from different domains ({@link Handler}).
- *
- * ```
-  * class HelloWorld extends Mebo.Action{
- *   async _perform(data){
- *     return 'Hello World';
- *   }
- * }
- *
- * const action = new HelloWorld();
- * action.run().then(...) //  HelloWorld
- * ```
+ * agnostic interface which can be triggered through different domains ({@link Handler}).
  *
  * The data used to perform an evaluation is held by inputs ({@link Action.createInput}).
  * These inputs can be widely configured to enforce quality control via properties.
@@ -41,12 +30,11 @@ class InvalidActionError extends Error{
  * class HelloWorld extends Mebo.Action{
  *   constructor(){
  *     super();
- *     this.createInput('repeat: numeric', {max: 100});
+ *     this.createInput('repeat: numeric', {max: 100}); <- input
  *   }
  *
  *   async _perform(data){
- *     const result = 'HelloWorld '.repeat(data.repeat);
- *     return result;
+ *     return 'HelloWorld '.repeat(data.repeat);
  *   }
  * }
  *
@@ -55,7 +43,7 @@ class InvalidActionError extends Error{
  * action.run().then(...) //  HelloWorld HelloWorld HelloWorld
  * ```
  *
- * An evaluation is triggered through {@link Action.run} which internally calls
+ * An action is triggered through {@link Action.run} which internally calls
  * {@link Action._perform}. Use `_perform` to implement the evaluation of your action.
  * Also, you can implement {@link Action._finalize} to execute secondary routines.
  *
@@ -636,8 +624,8 @@ class Action{
    * @abstract
    * @protected
    */
-  _perform(data){
-    return Promise.reject(new Error('Not implemented error!'));
+  async _perform(data){
+    throw new Error('Not implemented error!');
   }
 
   /**
@@ -655,8 +643,8 @@ class Action{
    *
    * @protected
    */
-  _finalize(err, value){
-    return Promise.resolve(null);
+  async _finalize(err, value){
+    return null;
   }
 
   /**
