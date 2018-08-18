@@ -26,6 +26,38 @@ describe('Action Generic:', () => {
     }
   }
 
+  class TestBeforeAction extends testutils.Actions.Shared.Multiply{
+    constructor(){
+      super();
+
+      this.input('a').setValue(2);
+      this.input('b').setValue(5);
+      this.createInput('inputC: text', {required: false});
+    }
+
+    async _before(data){
+      if (data.a === 2 && data.b === 5){
+        throw new Error('testing _before');
+      }
+    }
+  }
+
+  class TestAfterAction extends testutils.Actions.Shared.Multiply{
+    constructor(){
+      super();
+
+      this.input('a').setValue(2);
+      this.input('b').setValue(5);
+      this.createInput('inputC: text', {required: false});
+    }
+
+    async _after(err, value){
+      if (value === 10){
+        throw new Error('testing _after');
+      }
+    }
+  }
+
   class CacheableAction extends MultiplyAction{
 
     constructor(){
@@ -47,6 +79,8 @@ describe('Action Generic:', () => {
     // registrations
     Mebo.Action.register(MultiplyAction, 'multiplyAction');
     Mebo.Action.register(CacheableAction, 'cacheableAction');
+    Mebo.Action.register(TestBeforeAction, 'testBeforeAction');
+    Mebo.Action.register(TestAfterAction, 'testAfterAction');
   });
 
   // execute
@@ -69,6 +103,41 @@ describe('Action Generic:', () => {
     }).catch((err) => {
       done(err);
     });
+  });
+
+  it('Checking exception raised during _before by performing the action', () => {
+
+    return (async () => {
+      const testBeforeAction = Mebo.Action.create('testBeforeAction');
+
+      let message = '';
+      try{
+        await testBeforeAction.run();
+      }
+      catch(err){
+        message = err.message;
+      }
+
+      assert.equal(message, 'testing _before');
+    })();
+  });
+
+
+  it('Checking exception raised during _after by performing the action', () => {
+
+    return (async () => {
+      const testAfterAction = Mebo.Action.create('testAfterAction');
+
+      let message = '';
+      try{
+        await testAfterAction.run();
+      }
+      catch(err){
+        message = err.message;
+      }
+
+      assert.equal(message, 'testing _after');
+    })();
   });
 
   it("LRU cache: should return the value from the cache when it's called multiple times with the same input configuration", () => {
