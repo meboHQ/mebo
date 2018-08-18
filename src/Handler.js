@@ -54,13 +54,13 @@ const _metadata = Symbol('metadata');
  *      // ...
  *    }
  *
- *    async _finalize(err, value){
+ *    async _after(err, value){
  *
  *      // change 'name' for the registration name of the handler you
  *      // want to define the write options
  *      if (!err){
- *        // defining the write option inside of the _finalize to keep _perform as
- *        // abstract as possible. Since, _finalize is always called (even during
+ *        // defining the write option inside of the _after to keep _perform as
+ *        // abstract as possible. Since, _after is always called (even during
  *        // an error) after the execution of the action, it provides a way to
  *        // hook and define custom metadata related with the result.
  *        this.setMeta('handler.name.writeOptions', {

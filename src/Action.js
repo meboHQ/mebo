@@ -45,7 +45,7 @@ class InvalidActionError extends Error{
  *
  * An action is triggered through {@link Action.run} which internally calls
  * {@link Action._perform}. Use `_perform` to implement the evaluation of your action.
- * Also, you can implement {@link Action._finalize} to execute secondary routines.
+ * Also, you can implement {@link Action._after} to execute secondary routines.
  *
  * Make sure actions are always created through the factory function create
  * ({@link Action.create}). For that you need to register the action
@@ -256,7 +256,7 @@ class Action{
       }
     }
 
-    // the action is performed inside of a try/catch block to call the _finalize
+    // the action is performed inside of a try/catch block to call the _after
     // no matter what, since that can be used to perform clean-up operations...
     let result = null;
     let err = null;
@@ -270,7 +270,7 @@ class Action{
     }
     // running the finalize
     finally{
-      await this._finalize(err, result);
+      await this._after(err, result);
     }
 
     // adding the result to the cache
@@ -599,9 +599,43 @@ class Action{
   }
 
   /**
-   * This method should be used to implement the evaluation of the action. It's called
-   * by {@link Action.run} after all inputs have been validated. It's expected to return
-   * a Promise containing the result of the evaluation.
+   * This method is called before the execution of the action.
+   *
+   * In case you need to check data against multiple inputs a recommended strategy
+   * to tackle this scenario is to implement a special input type where compound data
+   * can be represented (like json input type). However, for cases where the data cannot
+   * be coupled you can use this method to provide a way to check them before the
+   * execution of the action by raising an error in case the check fails. Therefore,
+   * avoiding to have any special verification inside of `_perform`.
+   *
+   * ```
+   * class MyAction extends Mebo.Action{
+   *    // ...
+   *    async _before(data){
+   *        // if (...){
+   *            throw new Mebo.Error.NotFound('my error message');
+   *        // }
+   *    }
+   *    // ...
+   * }
+   * ```
+   *
+   * @param {Object} data - plain object containing the value of the inputs, this is just to
+   * provide a more convenient way to query the value of the inputs
+   * ```data.myInput``` instead of ```this.input('myInput').value()```.
+   * @return {Promise} resolved promise (any result passed to the promise is ignored)
+   *
+   * @protected
+   */
+  async _before(data){
+    return null;
+  }
+
+  /**
+   * This method should be used to implement the evaluation for the action. It's called
+   * by {@link Action.run} after all inputs have been validated ({@link Action.validate}
+   * and {@link Action._before}). It's expected to return a Promise containing
+   * the result for the evaluation.
    *
    * During the execution of the action all inputs are assigned as read-only ({@link Input.readOnly}),
    * this is done to prevent any modification in the input while the execution is happening,
@@ -643,7 +677,7 @@ class Action{
    *
    * @protected
    */
-  async _finalize(err, value){
+  async _after(err, value){
     return null;
   }
 
@@ -680,6 +714,7 @@ class Action{
     // checking if the inputs are valid (it throws an exception in case an input fails)
     try{
       await this.validate();
+      await this._before(data);
     }
     finally{
       // restoring the read-only
@@ -688,7 +723,7 @@ class Action{
       }
     }
 
-    // the action is performed inside of a try/catch block to call the _finalize
+    // the action is performed inside of a try/catch block to call the _after
     // no matter what, since that can be used to perform clean-up operations...
     try{
       // performing the action
