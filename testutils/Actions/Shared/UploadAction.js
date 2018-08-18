@@ -19,15 +19,13 @@ class UploadAction extends Mebo.Action{
     };
   }
 
-  async _finalize(err, value){
+  async _after(err, value){
     // deleting the file
     if (!this.input('file').isEmpty()){
       const deleteAction = this.createAction('file.delete');
       deleteAction.input('file').setupFrom(this.input('file'));
       await deleteAction.run();
     }
-
-    return Mebo.Action.prototype._finalize.call(this, err, value);
   }
 }
 

@@ -29,7 +29,7 @@ class VectorUploadAction extends Mebo.Action{
     return result;
   }
 
-  async _finalize(err, value){
+  async _after(err, value){
     // deleting files
     const deleteActionPromises = [];
 
@@ -40,8 +40,6 @@ class VectorUploadAction extends Mebo.Action{
     }
 
     await Promise.all(deleteActionPromises);
-
-    return Mebo.Action.prototype._finalize.call(this, err, value);
   }
 }
 
