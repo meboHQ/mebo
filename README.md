@@ -10,17 +10,15 @@
 [![Esdocs](https://mebohq.github.io/badge.svg?v=1)](https://mebohq.github.io/)
 </p>
 
-### What is it ?
+## What is Mebo ?
 
-Mebo is a framework focused to provide an unified interface across multiple domains.
-It can be employed in the development of the most common applications.
+[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](https://github.com/meboHQ/mebo/issues)
 
-### How does it work ?
+Mebo is an experimental framework focused to provide an unified interface across multiple domains. Although, most applications are designed with a specific domain in mind, mebo can still be employed to provide an easy way to interact with bits of your application through command-line, coming handy during the development & debugging process.
 
-It works by providing an abstracted interface focused to describe evaluations that can be triggered
-across multiple domains. This interface is designed to be fairly extendable and comprehensible through a process that minimizes repetitive routines ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)) and produces a more versatile code base.
+The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain instead, the specifics are delegated to mebo. The idea of going through this process is to simplify the development process by minimizing repetitive routines ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)).
 
-You write once and Mebo takes care of getting the evaluations up running across the domains.
+It comes bundled with support for web(rest/middlewares) and command-line (docopt) domains which was one of the reasons why I wanted to try to find a common ground to provide an unified interface for such distinctive domains that turned out to be extremely challenge.
 
 <p align="center">
   <img src="https://mebohq.github.io/docs/data/hi.png?v=2"/>
@@ -29,7 +27,7 @@ You write once and Mebo takes care of getting the evaluations up running across 
 ## Key features
 - **Flexible architeture**. Mebo can be integrated to existing applications. Also, it's designed from ground up to be customizable and extendable
 
-- **Reliable executions**. Mebo enforces quality control over the data used in the evaluations by performing a wide range of verifications
+- **Reliable executions**. Mebo enforces validating the data used in the evaluations by performing a wide range of verifications
 
 - **Agnostic execution platform**. Evaluations in Mebo can be executed across multiple domains
 
