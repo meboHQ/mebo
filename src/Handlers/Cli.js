@@ -177,6 +177,8 @@ class Cli extends Handler{
    * ```
    * const Mebo = require('mebo');
    *
+   * @Mebo.grant('cli', 'cli.default', {initName: 'default'})
+   * @Mebo.register('cli.default')
    * class Default extends Mebo.Action{
    *
    *  constructor(){
@@ -189,8 +191,6 @@ class Cli extends Handler{
    *  }
    * }
    *
-   * Mebo.Action.register(Default, 'cli.default');
-   * Mebo.Handler.grantAction('cli', 'cli.default', {initName: 'default'});
    * ```
    *
    * *`index.js`:*
@@ -219,26 +219,25 @@ class Cli extends Handler{
    * ```
    * node myFile.js --cli myCli --arg-a=1 --arg-b=2
    * ```
-   *
-   * @param {string} defaultCliName - default name used when none
-   * cli is specified through `--cli <name>`
    * @param {Object} options - plain object containing custom options
+   * @param {string} [options.defaultCliName] - default name used when none
+   * cli is specified through `--cli <name>`
    * @param {Array<string>} [options.argv] - custom list of arguments, if not specified
    * it uses the `process.argv` (this information is passed to the creation of cli handler)
    * @param {stream} [options.stdout] - custom writable stream, if not specified it uses
    * `process.stdout` (this information is passed to the creation of cli handler)
    * @param {stream} [options.stderr] - custom writable stream, if not specified it uses
    * `process.stderr` (this information is passed to the creation of cli handler)
-   * @param {function} [options.initializedCallback] - callback executed when the
-   * initialization is done, it passes the value used by the output
+   * @param {function} [options.finalizeCallback] - callback executed after the
+   * initialization, it passes the value used by the output
    */
   static init(
-    defaultCliName,
     {
+      defaultCliName='',
       argv=process.argv,
       stdout=process.stdout,
       stderr=process.stderr,
-      initializedCallback=null,
+      finalizeCallback=null,
     }={},
   ){
 
@@ -253,8 +252,8 @@ class Cli extends Handler{
         handler.output(value);
       }
       finally{
-        if (initializedCallback){
-          initializedCallback(value);
+        if (finalizeCallback){
+          finalizeCallback(value);
         }
       }
     };
