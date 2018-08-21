@@ -12,7 +12,7 @@
 
 ## What is Mebo ?
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](https://github.com/meboHQ/mebo/issues)
+[![experimental](https://badges.github.io/stability-badges/dist/experimental.svg)](https://github.com/meboHQ/mebo/issues)
 
 Mebo is an experimental framework focused to provide an unified interface across multiple domains. Although most applications are designed with a specific domain in mind, mebo can still be employed to provide an easy way to interact with bits of your application through command-line, coming handy during the development & debugging process.
 
