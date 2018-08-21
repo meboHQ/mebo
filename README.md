@@ -83,7 +83,6 @@ Mebo was inspired by:
 - [Passport](https://github.com/jaredhanson/passport)
 - [Express](https://expressjs.com)
 - [Docopt](http://docopt.org)
-- [Nujabes](https://www.youtube.com/watch?v=WrO9PTpuSSs)
 
 ## Licensing
 Mebo is free software; you can redistribute it and/or modify it under the terms of the MIT License
