@@ -49,7 +49,6 @@ It comes bundled with support for web (rest/middlewares) and command-line (docop
  - [Middleware integration](https://github.com/meboHQ/example-middleware)
  - [Authentication](https://github.com/meboHQ/example-auth)
  - [Uploads](https://github.com/meboHQ/example-uploads)
- - [Command-line integration](https://github.com/meboHQ/example-cli)
  - [JSON serialized actions](https://github.com/meboHQ/example-json-actions)
 
 ## Requirement
