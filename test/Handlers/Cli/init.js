@@ -47,26 +47,28 @@ describe('Cli Init:', () => {
   it('Should initialize the app', (done) => {
 
     const options = {};
+    options.defaultCliName = 'multiply';
     options.argv = ['executable', 'file', '--cli', '--help'];
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
-    options.initializedCallback = ((result) => {
+    options.finalizeCallback = ((result) => {
       done();
     });
 
-    Cli.init('multiply', options);
+    Cli.init(options);
   });
 
   it('Should initialize the app2', (done) => {
 
     const options = {};
+    options.defaultCliName = 'myCli';
     options.argv = ['executable', 'file', '--cli', 'multi', '--a', '1', '--b', '2'];
     options.stdout = new WriteStream();
     options.stderr = new WriteStream();
-    options.initializedCallback = ((result) => {
+    options.finalizeCallback = ((result) => {
       done();
     });
 
-    Mebo.Handler.get('cli').init('myCli', options);
+    Mebo.Handler.get('cli').init(options);
   });
 });

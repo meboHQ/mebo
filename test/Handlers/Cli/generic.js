@@ -85,8 +85,8 @@ describe('Cli Generic:', () => {
   it('Should fail to create an app that contains a non granted action', () => {
     const errStream = new WriteStream();
     Mebo.Handlers.Cli.init(
-      'invalidCli',
       {
+        defaultCliName: 'invalidCli',
         stderr: errStream,
       },
     );
