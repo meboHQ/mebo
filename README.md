@@ -81,7 +81,7 @@ adding testutils, clarifying wording and fixing errors)
 Mebo was inspired by:
 - [Cortex](https://github.com/ImageEngine/cortex)
 - [Passport](https://github.com/jaredhanson/passport)
-- [Express](http://expressjs.com)
+- [Express](https://expressjs.com)
 - [Docopt](http://docopt.org)
 - [Nujabes](https://www.youtube.com/watch?v=WrO9PTpuSSs)
 
