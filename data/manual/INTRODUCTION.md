@@ -49,26 +49,6 @@ else{
   });
 }
 ```
-
-## What is an Action ?
-
-An action is used to implement evalutations
-
-```javascript
-class Sum extends Mebo.Action{
-  constructor(){
-    super();
-
-    this.createInput('valueX: numeric');
-    this.createInput('valueY: numeric');
-  }
-
-  async _perform(data){
-    return data.valueX + data.valueY;
-  }
-}
-```
-
 [Action Documentation](https://mebohq.github.io/docs/class/src/Action.js~Action.html)
 
 ## What is an Input ?
