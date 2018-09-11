@@ -2,6 +2,7 @@ const assert = require('assert');
 const stream = require('stream');
 const Handler = require('../Handler');
 const Writer = require('../Writer');
+const Errors = require('../Errors');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -57,8 +58,6 @@ const _stderr = Symbol('stderr');
  * --- | --- | :---:
  * result | Overrides the value returned by {@link Writer.value} to an arbitrary \
  * value (only affects the success output) | ::none::
- * parsingErrorStatusCode | Custom error status code used to identify when the \
- * cli args could not be parsed | `700`
  */
 class CliOutput extends Writer{
 
@@ -74,9 +73,6 @@ class CliOutput extends Writer{
 
     this._setStdout(stdout);
     this._setStderr(stderr);
-
-    // default options
-    this.setOption('parsingErrorStatusCode', 700);
   }
 
   /**
@@ -109,7 +105,7 @@ class CliOutput extends Writer{
     process.exitCode = 1;
     const message = super._errorOutput();
 
-    if (this.value().status === this.option('parsingErrorStatusCode')){
+    if (this.value() instanceof Errors.Help){
       this.stderr().write(`${message}\n`);
     }
     else{

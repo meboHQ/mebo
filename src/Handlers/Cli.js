@@ -4,6 +4,7 @@ const TypeCheck = require('js-typecheck');
 const Input = require('../Input');
 const Metadata = require('../Metadata');
 const Handler = require('../Handler');
+const Errors = require('../Errors');
 
 // symbols used for private instance variables to avoid any potential clashing
 // caused by re-implementations
@@ -33,6 +34,7 @@ const _handlerName = 'cli';
 * class MyAction extends Mebo.Action{
 *   constructor(){
 *     super();
+*     this.setMeta('description', 'Welcome!');
 *     this.createInput('myArgument: text', {elementType: 'argument', description: 'my argument'});
 *     this.createInput('myOption: bool', {description: 'my option'});
 *   }
@@ -58,7 +60,7 @@ const _handlerName = 'cli';
 *   const cli = Mebo.Handler.create('cli');
 *
 *   // loading the parsed information to the action
-*   cli.runAction('myAction', {description: 'Welcome'}).then((result) => {
+*   cli.runAction('myAction').then((result) => {
 *
 *   // success output
 *   cli.output(result);
@@ -177,7 +179,7 @@ class Cli extends Handler{
    * ```
    * const Mebo = require('mebo');
    *
-   * @Mebo.grant('cli', 'cli.default', {initName: 'default'})
+   * @Mebo.grant('cli', 'cli.default', {name: 'default'})
    * @Mebo.register('cli.default')
    * class Default extends Mebo.Action{
    *
@@ -258,44 +260,63 @@ class Cli extends Handler{
       }
     };
 
-    let useCliName = (cliIndex !== -1) ? argv[cliIndex + 1] : defaultCliName;
-    if (useCliName){
-      useCliName = useCliName.toLowerCase();
-    }
+    const useCliName = (cliIndex !== -1) ? argv[cliIndex + 1] : defaultCliName;
 
     // list the available action names grated for cli
-    const availableClis = this._initNames[_handlerName] || {};
+    const availableClis = this._cliNames[_handlerName] || {};
     if (['-h', '--help', undefined].includes(useCliName)){
       const result = [];
       result.push('Available actions granted for command-line:');
-      const initNames = Object.keys(availableClis);
+      const cliNames = Object.keys(availableClis);
 
-      for (const initName of initNames.sort()){
-        const defaultCli = (initName === defaultCliName) ? '(Default)' : '';
+      for (const name of cliNames.sort()){
+        const defaultCli = (name === defaultCliName) ? '(Default)' : '';
 
         const item = (defaultCli.length) ? '◉' : '◯';
-        result.push(`  ${item} ${initName} ${defaultCli}`);
+        result.push(`  ${item} ${name} ${defaultCli}`);
       }
 
-      const error = new Error(result.join('\n'));
-      error.status = 700;
+      const error = new Errors.Help(result.join('\n'));
       _handlerOutput(error);
     }
     // cli not found
     else if (!(useCliName in availableClis)){
 
-      const error = new Error(`Could not initialize '${useCliName}', cli not found!`);
-      error.status = 700;
+      const error = new Errors.Help(`Could not initialize '${useCliName}', cli not found!`);
       _handlerOutput(error);
     }
     // found cli, initializing from it
     else{
-      handler.runAction(availableClis[useCliName]).then((result) => {
+      handler.runAction(availableClis[useCliName].actionName).then((result) => {
         _handlerOutput(result);
       }).catch(/* istanbul ignore next */ (err) => {
         _handlerOutput(err);
       });
     }
+  }
+
+  /**
+   * Return list of cli names used to execute the action. Those are the
+   * names passed through "--cli <name>".
+   *
+   * @param {string} actionName - registered action name
+   * @return {Array<string>}
+   * @protected
+   */
+  static actionCliNames(actionName){
+    assert(TypeCheck.isString(actionName), 'actionName needs to be defined as string');
+
+    const result = [];
+
+    if (_handlerName in this._cliNames){
+      for (const name in this._cliNames[_handlerName]){
+        if (this._cliNames[_handlerName][name].actionName === actionName){
+          result.push(name);
+        }
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -305,20 +326,23 @@ class Cli extends Handler{
    * @param {string} handlerName - registered handler name
    * @param {string} actionName - registered action name
    * @param {object} options - custom options passed during {@link Handler.grantAction}
-   * @param {string} [options.initName] - custom name used to initialize the cli, otherwise
+   * @param {string} [options.name] - custom name used to initialize the cli, otherwise
    * if not defined the actionName is used instead
    * @protected
    */
-  static _grantingAction(handlerName, actionName, {initName=null}={}){
+  static _grantingAction(handlerName, actionName, {name=null}={}){
 
-    const useInitName = (initName || actionName);
-    assert(TypeCheck.isString(useInitName), 'initName needs to be defined as string');
+    const useCliName = (name || actionName);
+    assert(TypeCheck.isString(useCliName), 'name needs to be defined as string');
 
-    if (!(handlerName in this._initNames)){
-      this._initNames[handlerName] = {};
+    if (!(handlerName in this._cliNames)){
+      this._cliNames[handlerName] = {};
     }
 
-    this._initNames[handlerName][useInitName] = actionName;
+    const options = {};
+    options.actionName = actionName;
+
+    this._cliNames[handlerName][useCliName] = options;
   }
 
   /**
@@ -360,7 +384,7 @@ class Cli extends Handler{
     );
   }
 
-  static _initNames = {};
+  static _cliNames = {};
 }
 
 // registering properties
@@ -369,7 +393,6 @@ Input.registerProperty(Input, 'shortOption');
 
 // registering option vars
 Metadata.registerOptionVar('$cli', `handler.${_handlerName}`);
-Metadata.registerOptionVar('$cliDescription', '$cli.readOptions.description');
 Metadata.registerOptionVar('$cliResult', '$cli.writeOptions.result');
 
 // registering handler
