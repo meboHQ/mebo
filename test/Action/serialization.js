@@ -41,7 +41,7 @@ describe('Action Serialization:', () => {
     Mebo.Action.register(NonSerializable, 'nonSerializable');
 
     return (async () => {
-      const action = Mebo.Action.create('NonSerializable');
+      const action = Mebo.Action.create('nonSerializable');
       action.input('a').setValue(3);
       action.input('b').setValue(4);
       action.input('nonSerializable').setValue({a: 1});

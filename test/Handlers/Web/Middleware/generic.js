@@ -151,7 +151,7 @@ describe('Web Middleware Generic:', () => {
 
     Mebo.Handler.grantAction('web', 'testBeforeMiddleware');
 
-    app.get('/beforeMiddlewareTest', Mebo.Handler.get('web').middleware('TestBeforeMiddleware', (err, result, req, res, next) => {
+    app.get('/beforeMiddlewareTest', Mebo.Handler.get('web').middleware('testBeforeMiddleware', (err, result, req, res, next) => {
       if (err) return next(err);
       res.send(`result: ${result}`);
     }));

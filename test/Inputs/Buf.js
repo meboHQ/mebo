@@ -81,4 +81,22 @@ describe('Buffer Input:', () => {
 
     return input.serializeValue();
   });
+
+  it('Should test the vector serialization and parsing', () => {
+    return (async () => {
+
+      const testValue = [Buffer.from('1', 'ascii'), Buffer.from('2', 'ascii'), Buffer.from('3', 'ascii')];
+      const input = Input.create('input: buffer[]');
+      input.setValue(testValue);
+
+      const serializedValue = await input.serializeValue();
+      input.setValue(null);
+      input.parseValue(serializedValue);
+
+      assert.equal(input.value().length, 3);
+      assert.equal(input.value()[0].toString('ascii'), '1');
+      assert.equal(input.value()[1].toString('ascii'), '2');
+      assert.equal(input.value()[2].toString('ascii'), '3');
+    })();
+  });
 });

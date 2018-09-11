@@ -147,7 +147,7 @@ describe('Web Restful Generic:', () => {
       }
 
       _perform(data){
-        const action = this.createAction('AvailableActionE');
+        const action = this.createAction('availableActionE');
         return action.run();
       }
     }

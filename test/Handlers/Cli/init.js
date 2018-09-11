@@ -20,9 +20,9 @@ describe('Cli Init:', () => {
   }
 
   Mebo.Action.register(testutils.Actions.Shared.Multiply, 'multiply');
-  Mebo.Handler.grantAction('cli', 'multiply', {initName: 'multi'});
+  Mebo.Handler.grantAction('cli', 'multiply', {name: 'multi'});
 
-  @Mebo.grant('cli', {initName: 'customCli'})
+  @Mebo.grant('cli', {name: 'customCli'})
   @Mebo.register('myCli')
   class MyCli extends Mebo.Action{
 

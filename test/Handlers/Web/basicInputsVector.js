@@ -86,8 +86,8 @@ describe('Web Basic Inputs (Vector):', () => {
         assert.equal(result.data.b[2], 3);
 
         assert.equal(result.data.c.length, 2);
-        assert.equal(result.data.c[0], 1);
-        assert.equal(result.data.c[1], 0);
+        assert.equal(result.data.c[0], true);
+        assert.equal(result.data.c[1], false);
       }
       catch(errr){
         error = errr;
@@ -120,8 +120,8 @@ describe('Web Basic Inputs (Vector):', () => {
         assert.equal(result.data.b[2], 3);
 
         assert.equal(result.data.c.length, 2);
-        assert.equal(result.data.c[0], 1);
-        assert.equal(result.data.c[1], 0);
+        assert.equal(result.data.c[0], true);
+        assert.equal(result.data.c[1], false);
       }
       catch(errr){
         error = errr;
@@ -154,8 +154,8 @@ describe('Web Basic Inputs (Vector):', () => {
         assert.equal(result.data.b[2], 3);
 
         assert.equal(result.data.c.length, 2);
-        assert.equal(result.data.c[0], 1);
-        assert.equal(result.data.c[1], 0);
+        assert.equal(result.data.c[0], true);
+        assert.equal(result.data.c[1], false);
       }
       catch(errr){
         error = errr;
