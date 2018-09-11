@@ -105,6 +105,10 @@ const _metadata = Symbol('metadata');
  *
  * **Tip:** You can set the env variable `NODE_ENV=development` to get the
  * traceback information included in the error output.
+ *
+ * **Tip:** In case you want to know the name of the handler from inside of
+ * the action you can retrieved this information from the session
+ * `session().get('handler')` ({@link Action.session}).
  */
 class Handler{
 
@@ -317,12 +321,11 @@ class Handler{
     const handler = new HandlerClass(...args);
 
     // adding the handler name used to factory the handler under the metadata
-    const normalizedHandlerName = handlerName.toLowerCase();
-    handler.setMeta('handler.name', normalizedHandlerName);
-    handler.setMeta('handler.mask', mask.toLowerCase());
+    handler.setMeta('handler.name', handlerName);
+    handler.setMeta('handler.mask', mask);
 
     // also, adding the handler name under the session arbitrary data
-    handler.session().set('handler', normalizedHandlerName);
+    handler.session().set('handler', handlerName);
 
     return handler;
   }
@@ -468,10 +471,8 @@ class Handler{
   static registeredHandlerMasks(handlerName){
     const result = [];
 
-    const normalizedName = handlerName.toLowerCase();
-
     for (const [registeredHandleName, registeredMask] of this._registeredHandlers.keys()){
-      if (registeredHandleName === normalizedName){
+      if (registeredHandleName === handlerName){
         result.push(registeredMask);
       }
     }
@@ -492,19 +493,18 @@ class Handler{
     // making sure the action is registered, otherwise throws an exception
     Action.registeredAction(actionName);
 
-    const normalizedHandlerName = handlerName.toLowerCase();
-    const handlerMasks = this.registeredHandlerMasks(normalizedHandlerName);
+    const handlerMasks = this.registeredHandlerMasks(handlerName);
     for (const handleMask of handlerMasks){
-      const HandlerClass = this.registeredHandler(normalizedHandlerName, handleMask);
-      HandlerClass._grantingAction.call(HandlerClass, normalizedHandlerName, actionName, ...args);
+      const HandlerClass = this.registeredHandler(handlerName, handleMask);
+      HandlerClass._grantingAction.call(HandlerClass, handlerName, actionName, ...args);
     }
 
     assert(handlerMasks.length, `Handler ${handlerName} is not registered`);
-    if (!this._addedActions.has(normalizedHandlerName)){
-      this._addedActions.set(normalizedHandlerName, new Set());
+    if (!this._addedActions.has(handlerName)){
+      this._addedActions.set(handlerName, new Set());
     }
 
-    this._addedActions.get(normalizedHandlerName).add(actionName.toLowerCase());
+    this._addedActions.get(handlerName).add(actionName);
   }
 
   /**
@@ -516,10 +516,8 @@ class Handler{
   static grantedActionNames(handlerName){
     assert(TypeCheck.isString(handlerName), 'handlerName needs to be defined as string');
 
-    const normalizedHandlerName = handlerName.toLowerCase();
-
-    if (this._addedActions.has(normalizedHandlerName)){
-      return [...this._addedActions.get(normalizedHandlerName).values()];
+    if (this._addedActions.has(handlerName)){
+      return [...this._addedActions.get(handlerName).values()];
     }
 
     return [];
@@ -667,11 +665,9 @@ class Handler{
     assert(TypeCheck.isString(handlerMask), 'mask needs to be defined as string');
 
     let result = null;
-    const normalizedHandlerName = handlerName.toLowerCase();
-    const normalizedHandlerMask = handlerMask.toLowerCase();
 
     for (const key of where.keys()){
-      if (key[0] === normalizedHandlerName && (key[1] === '*' || minimatch(normalizedHandlerMask, key[1]))){
+      if (key[0] === handlerName && (key[1] === '*' || minimatch(handlerMask, key[1]))){
         result = where.get(key);
         break;
       }
@@ -695,7 +691,7 @@ class Handler{
     for (const handlerName in action.meta('handler', {})){
 
       // the searching for the handler name (case insensitive)
-      if (handlerName.toLowerCase() === registeredHandlerName){
+      if (handlerName === registeredHandlerName){
         result = handlerName;
         break;
       }
@@ -721,12 +717,9 @@ class Handler{
     assert(handlerName.length, 'handlerName cannot be empty');
     assert(handlerMask.length, 'handlerMask cannot be empty');
 
-    const normalilzeHandlerName = handlerName.toLowerCase();
-    const normalizedHandlerMask = handlerMask.toLowerCase();
-
     // validating handler name
-    assert(normalilzeHandlerName.length, 'handler name cannot be empty');
-    assert((/^([\w_\.\-])+$/gi).test(normalilzeHandlerName), `Invalid handler name: ${normalilzeHandlerName}`); // eslint-disable-line no-useless-escape
+    assert(handlerName.length, 'handler name cannot be empty');
+    assert((/^([\w_\.\-])+$/gi).test(handlerName), `Invalid handler name: ${handlerName}`); // eslint-disable-line no-useless-escape
 
     // since when querying registrations the new ones precede to the old ones,
     // therefore the new ones are stored on the top of the pile, for this reason creating
@@ -735,7 +728,7 @@ class Handler{
     for (const key of Array.from(where.keys()).reverse()){
 
       // if there is already an existing registration for it, skipping it
-      if (key[0] === normalilzeHandlerName && key[1] === normalizedHandlerMask){
+      if (key[0] === handlerName && key[1] === handlerMask){
         continue;
       }
 
@@ -743,7 +736,7 @@ class Handler{
     }
 
     // including the new registration
-    currentData.set([normalilzeHandlerName, normalizedHandlerMask], what);
+    currentData.set([handlerName, handlerMask], what);
 
     // reversing back the final order
     where.clear();
