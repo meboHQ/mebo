@@ -91,8 +91,8 @@ const _cache = Symbol('cache');
  * autofill | key name about a value that may be under the {@link Session.autofill}. This \
  * value is used to initialize the input. It occurs when a session is assigned \
  * to an action ({@link Action.setSession}) | ::off:: | ::none::
- * description | description about the input, currently this information is displayed \
- * when an action is running through {@link Cli} | ::off:: | ::none::
+ * description | description about the input. This information is displayed \
+ * when showing the help about the action | ::off:: | ::none::
  * shortOption | short version of the input name used to speficy when running \
  * through the {@link Cli} | ::off:: | ::none::
  *
@@ -365,6 +365,15 @@ class Input{
         for (let i=0; i < length; ++i){
           // setting the context index
           const at = this.isVector() ? i : null;
+
+          // cannot have null/undefined as part of the array
+          if (this.isVector() && TypeCheck.isNone(this.valueAt(at))){
+            throw new ValidationFail(
+              'Vector cannot contain null/undefined data!',
+              '3ced667c-3a3c-4034-91ca-3bde10695f87',
+            );
+          }
+
           validationPromises.push(this._validation(at));
 
           // running extended validations
@@ -398,8 +407,8 @@ class Input{
    * Returns the property value for the input property name
    *
    * @param {string} name - name of the property
-   * @return {Promise<*>} The value of the property (or the defaultValue in case of the
-   * property does not exist)
+   * @return {Promise<*>} The value of the property otherwise raises an exception
+   * in case the property is not assigned
    */
   property(name){
     assert(TypeCheck.isString(name), 'property name needs to be defined as string');
@@ -556,7 +565,7 @@ class Input{
    * This method should be re-implemented by derived classes to tell if the input can be
    * serialized (default true).
    *
-   * In case of a serializable input, the methods {@link Input._encode} and {@link Input._decode}
+   * In case of a serializable input, the methods {@link Input._encodeScalar} and {@link Input._decode}
    * are expected to be implemented.
    *
    * @return {boolean}
@@ -596,8 +605,9 @@ class Input{
    * The parsed value gets returned and assigned to the input as well (you can control this
    * by the `assignValue` argument).
    *
-   * The implementation of the decoding is done by the method {@link Input._decode}.
-   * To know if an input supports decoding checkout the {@link Input.isSerializable}.
+   * The implementation of the decoding is done by the methods {@link Input._decode}
+   * & {@link Input._decodeVector}. To know if an input supports decoding
+   * checkout the {@link Input.isSerializable}.
    *
    * To know how the serialization is done for the inputs bundled with
    * Mebo take a look at {@link Reader} documentation.
@@ -618,35 +628,12 @@ class Input{
       result = null;
     }
     else if (this.isVector()){
-      const decodedValue = [];
+      result = this.constructor._decodeVector(value);
 
-      // it may worth to allow passing an Array directly as valid value as well, so it would
-      // avoid the overhead of encoding/decoding JSON when using it internally. Let's keep
-      // an eye on it for now.
-      const parsedValue = JSON.parse(value);
-
-      assert(TypeCheck.isList(parsedValue), 'Could not parse, unexpected data type');
-      for (const parsedItem of parsedValue){
-        let finalParsedItem = parsedItem;
-
-        // casting the parsed value to a string if necessary
-        if (!TypeCheck.isString(parsedItem) && parsedItem !== null){
-          finalParsedItem = String(parsedItem);
-        }
-
-        // empty string is treated as null
-        if (finalParsedItem === ''){
-          finalParsedItem = null;
-        }
-
-        // decoding the value
-        decodedValue.push(finalParsedItem ? this.constructor._decode(finalParsedItem) : null);
-      }
-
-      result = decodedValue;
+      assert(TypeCheck.isList(result));
     }
     else{
-      result = this.constructor._decode(value);
+      result = this.constructor._decodeScalar(value);
     }
 
     if (assignValue){
@@ -660,8 +647,9 @@ class Input{
    * This method should return a string representation about the current value in a way that
    * can be recovered later through {@link parseValue}.
    *
-   * The encode implementation is done by the  method {@link Input._encode}.
-   * To know if an input supports serialization checkout the {@link Input.isSerializable}.
+   * The encode implementation is done by the methods {@link Input._encodeScalar} &
+   * {@link Input._encodeVector}. To know if an input supports serialization
+   * checkout the {@link Input.isSerializable}.
    *
    * Also, in case you want to know the serialization form for the inputs bundled with
    * Mebo checkout {@link Reader}.
@@ -681,33 +669,60 @@ class Input{
       result = '';
     }
     else if (this.isVector()){
-      const encodedValue = [];
-
-      for (const item of this.value()){
-        encodedValue.push(this.constructor._encode(item));
-      }
-
-      return JSON.stringify(encodedValue);
+      result = this.constructor._encodeVector(this.value());
     }
     else{
-      result = this.constructor._encode(this.value());
+      result = this.constructor._encodeScalar(this.value());
     }
 
-    return String(result);
+    assert(TypeCheck.isString(result));
+
+    return result;
   }
 
   /**
-   * Decodes the input value from the string representation ({@link Input._encode}) to the
+   * Decodes the input value from the string representation ({@link Input._encodeScalar}) to the
    * data type of the input. This method is called internally during {@link Input.parseValue}
    *
    * @param {string} value - encoded value
    * @return {*}
    * @protected
    */
-  static _decode(value){
+  static _decodeScalar(value){
     assert(TypeCheck.isString(value), 'value needs to be defined as string');
 
     return value;
+  }
+
+  /**
+   * Decodes a vector value from the string representation ({{@link Input._encodeScalar} &
+   * {@link Input._encodeVector}) to the
+   * data type of the input. This method is called internally during {@link Input.parseValue}
+   *
+   * @param {string} value - encoded value
+   * @return {*}
+   * @protected
+   */
+  static _decodeVector(value){
+    assert(TypeCheck.isString(value), 'value needs to be defined as string');
+
+    const decodedValue = [];
+    const parsedValue = JSON.parse(value);
+
+    assert(TypeCheck.isList(parsedValue), 'Could not parse, unexpected data type');
+    for (const parsedItem of parsedValue){
+      let finalParsedItem = parsedItem;
+
+      // empty string is treated as null
+      if (finalParsedItem === ''){
+        finalParsedItem = null;
+      }
+
+      // decoding the value
+      decodedValue.push(finalParsedItem ? this._decodeScalar(finalParsedItem) : null);
+    }
+
+    return decodedValue;
   }
 
   /**
@@ -719,8 +734,30 @@ class Input{
    * @return {string}
    * @protected
    */
-  static _encode(value){
+  static _encodeScalar(value){
     return String(value);
+  }
+
+
+  /**
+   * Encodes a vector value to a string representation that can be later decoded
+   * through {@link Input._decodeVector}. This method is called internally during the
+   * {@link serializeValue}
+   *
+   * @param {Array<string>} values - value that should be encoded to a string
+   * @return {string}
+   * @protected
+   */
+  static _encodeVector(values){
+    assert(TypeCheck.isList(values), 'values needs to be defined as array');
+
+    const encodedValues = [];
+
+    for (const item of values){
+      encodedValues.push(this._encodeScalar(item));
+    }
+
+    return JSON.stringify(encodedValues);
   }
 
   /**

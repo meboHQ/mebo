@@ -67,27 +67,27 @@ class Buf extends Input{
   }
 
   /**
-   * Decodes the input value from the string representation ({@link _encode}) to the
+   * Decodes the input value from the string representation ({@link _encodeScalar}) to the
    * data type of the input. This method is called internally during {@link parseValue}
    *
    * @param {string} value - string containing the encoded value
    * @return {bool}
    * @protected
    */
-  static _decode(value){
+  static _decodeScalar(value){
     return Buffer.from(value, 'base64');
   }
 
   /**
    * Encodes the input value to a string representation that can be later decoded
-   * through {@link _decode}. This method is called internally during the
+   * through {@link _decodeScalar}. This method is called internally during the
    * {@link serializeValue}
    *
    * @param {*} value - value that should be encoded to a string
    * @return {string}
    * @protected
    */
-  static _encode(value){
+  static _encodeScalar(value){
     return value.toString('base64');
   }
 }

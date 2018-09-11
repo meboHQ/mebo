@@ -1,3 +1,4 @@
+const assert = require('assert');
 const util = require('util');
 const TypeCheck = require('js-typecheck');
 const ValidationFail = require('../Errors/ValidationFail');
@@ -80,8 +81,40 @@ class Numeric extends Input{
    * @return {number}
    * @protected
    */
-  static _decode(value){
+  static _decodeScalar(value){
     return Number(value);
+  }
+
+  /**
+   * Decodes a vector value from the string representation ({@link Input._encodeVector}) to the
+   * data type of the input. This method is called internally during {@link Input.parseValue}
+   *
+   * @param {string} value - encoded value
+   * @return {*}
+   * @protected
+   */
+  static _decodeVector(value){
+    assert(TypeCheck.isString(value), 'value needs to be defined as string');
+
+    const parsedValue = JSON.parse(value);
+    assert(TypeCheck.isList(parsedValue), 'Could not parse, unexpected data type');
+
+    return parsedValue.map(Number);
+  }
+
+  /**
+   * Encodes a vector value to a string representation that can be later decoded
+   * through {@link Input._decodeVector}. This method is called internally during the
+   * {@link serializeValue}
+   *
+   * @param {Array<string>} values - value that should be encoded to a string
+   * @return {string}
+   * @protected
+   */
+  static _encodeVector(values){
+    assert(TypeCheck.isList(values), 'values needs to be defined as array');
+
+    return JSON.stringify(values);
   }
 }
 

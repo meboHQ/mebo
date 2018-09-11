@@ -1,3 +1,4 @@
+const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const ValidationFail = require('../Errors/ValidationFail');
 const Input = require('../Input');
@@ -63,28 +64,71 @@ class Bool extends Input{
   }
 
   /**
-   * Decodes the input value from the string representation ({@link _encode}) to the
+   * Decodes the input value from the string representation ({@link _encodeScalar}) to the
    * data type of the input. This method is called internally during {@link parseValue}
    *
    * @param {string} value - string containing the encoded value
    * @return {bool}
    * @protected
    */
-  static _decode(value){
-    return value.toLowerCase() === 'true' || value === '1';
+  static _decodeScalar(value){
+    return this._isTrue(value);
   }
 
   /**
    * Encodes the input value to a string representation that can be later decoded
-   * through {@link _decode}. This method is called internally during the
+   * through {@link _decodeScalar}. This method is called internally during the
    * {@link serializeValue}
    *
    * @param {*} value - value that should be encoded to a string
    * @return {string}
    * @protected
    */
-  static _encode(value){
+  static _encodeScalar(value){
     return (value) ? '1' : '0';
+  }
+
+  /**
+   * Decodes a vector value from the string representation ({@link Input._encodeVector}) to the
+   * data type of the input. This method is called internally during {@link Input.parseValue}
+   *
+   * @param {string} value - encoded value
+   * @return {*}
+   * @protected
+   */
+  static _decodeVector(value){
+    assert(TypeCheck.isString(value), 'value needs to be defined as string');
+
+    const parsedValue = JSON.parse(value);
+    assert(TypeCheck.isList(parsedValue), 'Could not parse, unexpected data type');
+
+    return parsedValue.map(this._isTrue);
+  }
+
+  /**
+   * Encodes a vector value to a string representation that can be later decoded
+   * through {@link Input._decodeVector}. This method is called internally during the
+   * {@link serializeValue}
+   *
+   * @param {Array<string>} values - value that should be encoded to a string
+   * @return {string}
+   * @protected
+   */
+  static _encodeVector(values){
+    assert(TypeCheck.isList(values), 'values needs to be defined as array');
+
+    return JSON.stringify(values.map(Number));
+  }
+
+  /**
+   * Returns if the input value is true
+   *
+   * @param {string|boolean} value - value to be tested
+   * @return {boolean}
+   * @private
+   */
+  static _isTrue(value){
+    return ['true', '1'].includes(String(value));
   }
 }
 
