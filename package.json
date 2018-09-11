@@ -41,7 +41,7 @@
   ],
   "dependencies": {
     "compare-versions": "^3.4.0",
-    "debug": "^3.1.0",
+    "debug": "^4.0.0",
     "ejs": "^2.6.1",
     "formidable": "^1.2.1",
     "ip": "^1.1.5",
