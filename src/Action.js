@@ -30,7 +30,7 @@ class InvalidActionError extends Error{
  * class HelloWorld extends Mebo.Action{
  *   constructor(){
  *     super();
- *     this.createInput('repeat: numeric', {max: 100}); <- input
+ *     this.createInput('repeat: numeric', {max: 100}); // <- input
  *   }
  *
  *   async _perform(data){
