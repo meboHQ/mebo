@@ -176,7 +176,7 @@ class WebRequest extends Reader{
 
     // when help is requested
     if (Settings.get('handler/web/allowHelp') && 'help' in request.query){
-      throw new Errors.Help(await this._renderHelp(inputList, request));
+      throw new Errors.Help(await this._renderHelp(inputList));
     }
 
     // handling body fields
