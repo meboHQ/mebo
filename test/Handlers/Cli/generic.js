@@ -25,7 +25,10 @@ describe('Cli Generic:', () => {
   class FullSpec extends Action{
     constructor(){
       super();
+      this.setMeta('description', 'My app');
       this.createInput('argumentA: text', {elementType: 'argument', description: 'argumentA help'});
+      this.input('argumentA').assignProperty('cliTypeHint', 'custom cli type hint', true);
+
       this.createInput('argumentB: text', {elementType: 'argument', description: 'argumentB help'});
       this.createInput('argumentOptionalA: text[]', {elementType: 'argument', description: 'argumentOptionalA help', defaultValue: ['a', 'b']});
       this.createInput('optionA: filePath[]', {elementType: 'option'});
@@ -70,10 +73,10 @@ describe('Cli Generic:', () => {
       const app = Mebo.Handler.create('cli');
       app.setStdout(new WriteStream());
       app.setStderr(new WriteStream());
-      app.setArgs(['node', 'file', '-h']);
+      app.setArgs(['node', process.cwd(), '-h']);
 
       try{
-        await app.runAction('fullSpec', {description: 'My app'});
+        await app.runAction('fullSpec');
         throw new Error('Should have failed');
       }
       catch(err){
@@ -93,7 +96,7 @@ describe('Cli Generic:', () => {
 
     const stdout = Buffer.concat(errStream.data).toString('ascii');
 
-    assert.equal(stdout, "Could not initialize 'invalidcli', cli not found!\n");
+    assert.equal(stdout, "Could not initialize 'invalidCli', cli not found!\n");
 
   });
 

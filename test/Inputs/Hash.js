@@ -105,4 +105,44 @@ describe('Hash Input:', () => {
 
     assert(failed);
   });
+
+  it('Vector value should be able to be parsed directly from a json version', () => {
+    const testValue = JSON.stringify(['FF', 'FA', '00']);
+    const input = Input.create('input: hash[]', {size: 8});
+    input.parseValue(testValue);
+
+    assert.equal(input.value().length, 3);
+    assert.equal(input.value()[0], 'FF');
+    assert.equal(input.value()[1], 'FA');
+    assert.equal(input.value()[2], '00');
+  });
+
+  it('Should test the vector serialization and parsing', () => {
+    return (async () => {
+
+      const testValue = ['FF', 'FA', '00'];
+      const input = Input.create('input: hash[]', {size: 8});
+      input.setValue(testValue);
+
+      const serializedValue = await input.serializeValue();
+      input.setValue(null);
+      input.parseValue(serializedValue);
+
+      assert.equal(input.value().length, 3);
+      assert.equal(input.value()[0], 'FF');
+      assert.equal(input.value()[1], 'FA');
+      assert.equal(input.value()[2], '00');
+    })();
+  });
+
+  it('Vector value should be able to be serialized as string', (done) => {
+    const input = Input.create('input: hash[]', {size: 8});
+    input.setValue(['FF', 'FA', '00']);
+
+    input.serializeValue().then((value) => {
+      done((value === '["FF","FA","00"]') ? null : new Error('unexpected value'));
+    }).catch((err) => {
+      done(err);
+    });
+  });
 });

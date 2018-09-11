@@ -10,6 +10,9 @@ const Handler = require('../Handler');
 const _request = Symbol('request');
 const _response = Symbol('response');
 
+// handler name (used for registration)
+const _handlerName = 'web';
+
 
 /**
  * Handles the web integration through expressjs and passportjs.
@@ -88,6 +91,11 @@ const _response = Symbol('response');
  *    })
  * );
  * ```
+ *
+ * You can access a basic help page by passing help as part of the querystring. This feature
+ * generates a help page automatically for the action, for instance:
+ * `http://.../?help`
+ *
  *
  * **Express req and res**
  *
@@ -362,7 +370,7 @@ class Web extends Handler{
    * @param {string} handlerName - registered handler name
    * @param {string} actionName - registered action name
    * @param {Object} options - custom options
-   * @param {string|Array<string>} [method='get'] - tells the request method about how the action should
+   * @param {string|Array<string>} [options.method='get'] - tells the request method about how the action should
    * be available, for instance: `get`, `post`, `put`, `delete` (...). Multiples methods
    * can be defined through an array of method names
    * @param {boolean} [options.auth=null] - boolean telling if the action requires authentication
@@ -378,7 +386,6 @@ class Web extends Handler{
     // registering action
     let methods = (TypeCheck.isString(method)) ? [method] : method;
     methods = methods.map(x => x.toLowerCase());
-    const actionNameFinal = actionName.toLowerCase();
 
     // finding duplicated items
     const removeIndexes = [];
@@ -408,21 +415,21 @@ class Web extends Handler{
     }
 
     // storing the action under the auxiliary data struct 'action method to webfied index'
-    if (!(actionNameFinal in this._actionMethodToWebfiedIndex)){
-      this._actionMethodToWebfiedIndex[actionNameFinal] = Object.create(null);
+    if (!(actionName in this._actionMethodToWebfiedIndex)){
+      this._actionMethodToWebfiedIndex[actionName] = Object.create(null);
     }
 
     // adding the routes
     for (const addMethod of methods){
       const webfiedAction = Object.create(null);
-      webfiedAction.actionName = actionNameFinal;
+      webfiedAction.actionName = actionName;
       webfiedAction.method = addMethod;
       webfiedAction.auth = auth;
       webfiedAction.restRoute = restRoute;
 
       // adding the index about where the webfied action is localized
       // under the 'action method to webfied index'
-      this._actionMethodToWebfiedIndex[actionNameFinal][addMethod] = this._webActions.length;
+      this._actionMethodToWebfiedIndex[actionName][addMethod] = this._webActions.length;
 
       // adding the webfied action information
       this._webActions.push(webfiedAction);
@@ -506,8 +513,7 @@ class Web extends Handler{
       const method = req.method.toLowerCase();
 
       // checking if the action is webfied for the current request method
-      const normalizedName = actionName.toLowerCase();
-      if (!(method in this._actionMethodToWebfiedIndex[normalizedName])){
+      if (!(method in this._actionMethodToWebfiedIndex[actionName])){
         return res.sendStatus(404);
       }
 
@@ -515,13 +521,13 @@ class Web extends Handler{
       // can be accessed later by the action
       res.locals.web = Handler.create(
         'web',
-        normalizedName,
+        actionName,
         // passed to the handler
         req,
         res,
       );
 
-      const actionDataIndex = this._actionMethodToWebfiedIndex[normalizedName][method];
+      const actionDataIndex = this._actionMethodToWebfiedIndex[actionName][method];
       res.locals.web.requireAuth = this._webActions[actionDataIndex].auth;
 
       next();
@@ -583,9 +589,11 @@ class Web extends Handler{
 
 // default settings
 Settings.set('handler/web/requireAuthByDefault', false); // ⚠ BE CAREFUL
+Settings.set('handler/web/allowHelp', true);
 
 // registering input properties
 Input.registerProperty('filePath', 'restrictWebAccess', true);
+Input.registerProperty('filePath', 'webTypeHint', 'Expects a file input when manipulated through the web');
 
 // registering option vars
 Metadata.registerOptionVar('$web', 'handler.web');
@@ -602,7 +610,7 @@ Metadata.registerOptionVar('$webStatus', '$web.writeOptions.status');
 Metadata.registerOptionVar('$webResultLabel', '$web.writeOptions.resultLabel');
 
 // registering handler
-Handler.register(Web);
+Handler.register(Web, _handlerName);
 
 // exporting module
 module.exports = Web;

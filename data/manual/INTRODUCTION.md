@@ -9,14 +9,62 @@
 
 ## What is an Action ?
 
-An action is used to implement evalutations
+An action is used to implement evalutations that can be performed accross multiple domains
 
 ```javascript
 const Mebo = require('mebo');
+const express = require('express');
 
-class MyAction extends Mebo.Action{
+@Mebo.grant('cli')
+@Mebo.grant('web', {restRoute: '/sum'})
+@Mebo.register('sum')
+class Sum extends Mebo.Action{
+  constructor(){
+    super();
+
+    this.createInput('valueX: numeric');
+    this.createInput('valueY: numeric');
+  }
+
   async _perform(data){
-    return 'hello world';
+    return data.valueX + data.valueY;
+  }
+}
+
+// Command-line support: node . --cli sum --value-x=5 --value-y=2
+if (process.argv.includes('--cli')){
+  Mebo.Handler.get('cli').init();
+}
+// Web support: node . (http://localhost:8080/sum?valueX=5&valueY=2)
+else{
+  const app = express();
+
+  // providing Mebo's restful support
+  Mebo.Handler.get('web').restful(app);
+
+  // starting the server
+  const port = process.env.PORT || 8080; // set our port
+  app.listen(port, () => {
+    console.log(`listening on port ${port}!\n`);
+  });
+}
+```
+
+## What is an Action ?
+
+An action is used to implement evalutations
+
+```javascript
+class Sum extends Mebo.Action{
+  constructor(){
+    super();
+
+    this.createInput('valueX: numeric');
+    this.createInput('valueY: numeric');
+  }
+
+  async _perform(data){
+    return data.valueX + data.valueY;
   }
 }
 ```
@@ -59,17 +107,16 @@ Inputs are created using a [syntactic sugar](https://en.wikipedia.org/wiki/Synta
 name and type (aka [TypeScript](https://www.typescriptlang.org/)), for instance:
 
 ```javascript
-const Mebo = require('mebo');
-
-class MyAction extends Mebo.Action {
+class Sum extends Mebo.Action{
   constructor(){
     super();
 
-    this.createInput('myInput: text'); // <--- Creating an input
+    this.createInput('valueX: numeric'); // <- Input
+    this.createInput('valueY: numeric'); // <- Input
   }
 
   async _perform(data){
-    return `hello ${data.myInput}`;
+    return data.valueX + data.valueY;
   }
 }
 ```
@@ -145,11 +192,7 @@ const myAction = Mebo.Action.create('myAction');
 myAction.input('myInput').setValue('Some Text');
 
 // executing the action
-myAction.run().then((result) => {
-  console.log(result);
-}).catch((err) => {
-  throw err;
-})
+console.log(await myAction.run());
 ```
 
 **Executing from Web**

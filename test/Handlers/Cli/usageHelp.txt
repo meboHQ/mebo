@@ -1,12 +1,12 @@
 My app.
 
-Usage: file --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
-       file <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
-       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
-       file <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
+Usage: node . --cli fullSpec --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
+       node . --cli fullSpec <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
+       node . --cli fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
+       node . --cli fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
 
 Arguments:
-  argument-a           argumentA help (text type).
+  argument-a           argumentA help (* custom cli type hint) (text type).
   argument-b           argumentB help (text type).
   argument-optional-a  argumentOptionalA help [default: "a" "b"] (text[] type).
 

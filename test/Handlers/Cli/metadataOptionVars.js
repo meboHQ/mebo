@@ -13,13 +13,6 @@ describe('Cli metadata option vars:', () => {
     );
   });
 
-  it('Should test $cliDescription var', () => {
-    assert.equal(
-      Metadata.optionVar('$cliDescription'),
-      'handler.cli.readOptions.description',
-    );
-  });
-
   it('Should test $cliResult var', () => {
     assert.equal(
       Metadata.optionVar('$cliResult'),

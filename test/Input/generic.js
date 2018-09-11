@@ -91,6 +91,47 @@ describe('Input Generic:', () => {
     });
   });
 
+  it('Should fail when the value of vector input contains an array with null', (done) => {
+
+    const input1 = new Input('input', {vector: true});
+    input1.setValue([null]);
+    input1.validate().then((value) => {
+      done(new Error('unexpected value'));
+    }).catch((err) => {
+      done((err.code === '3ced667c-3a3c-4034-91ca-3bde10695f87') ? null : err);
+    });
+  });
+
+  it('Should fail when the value of vector input contains an array with undefined', (done) => {
+
+    const input1 = new Input('input', {vector: true});
+    input1.setValue([undefined]);
+    input1.validate().then((value) => {
+      done(new Error('unexpected value'));
+    }).catch((err) => {
+      done((err.code === '3ced667c-3a3c-4034-91ca-3bde10695f87') ? null : err);
+    });
+  });
+
+  it('Should test the vector serialization and parsing', () => {
+    return (async () => {
+
+      const testValue = ['1', '2', '3', ''];
+      const input = new Input('input', {vector: true});
+      input.setValue(testValue);
+
+      const serializedValue = await input.serializeValue();
+      input.setValue(null);
+      input.parseValue(serializedValue);
+
+      assert.equal(input.value().length, 4);
+      assert.equal(input.value()[0], '1');
+      assert.equal(input.value()[1], '2');
+      assert.equal(input.value()[2], '3');
+      assert.equal(input.value()[3], null);
+    })();
+  });
+
   it('Extended validation callback should fail when asking if the value is valid', (done) => {
     const input1 = new Input('test', {defaultValue: 'foo'}, function customValidation(){
       return new Promise((resolve, reject) => {

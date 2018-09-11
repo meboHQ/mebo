@@ -80,7 +80,7 @@ describe('Web Error Output:', () => {
     NestedActionHandler.onErrorDuringOutput((err, name, mask) => {
       if (err.message === 'a: Input is required, it cannot be empty!'
         && name === 'web'
-        && mask === 'nestedActionFail'.toLowerCase()){
+        && mask === 'nestedActionFail'){
         done();
       }
       else{

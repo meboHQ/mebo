@@ -410,7 +410,7 @@ class Action{
     }
 
     // adding the action name used to create the action under the metadata
-    action.setMeta('action.name', actionName.toLowerCase());
+    action.setMeta('action.name', actionName);
 
     // adding a metadata information telling the action is a top level one
     // it has not being created inside of another action through the
@@ -543,13 +543,11 @@ class Action{
     assert(TypeCheck.isString(name), 'name needs to defined as string');
     assert(name.length, 'name cannot be empty');
 
-    const nameFinal = name.toLowerCase();
-
     // validating name
-    assert(nameFinal.length, 'action name cannot be empty');
-    assert((/^([\w_\.\-])+$/gi).test(nameFinal), `Illegal action name: ${nameFinal}`); // eslint-disable-line no-useless-escape
+    assert(name.length, 'action name cannot be empty');
+    assert((/^([\w_\.\-])+$/gi).test(name), `Illegal action name: ${name}`); // eslint-disable-line no-useless-escape
 
-    this._registeredActions.set(nameFinal, actionClass);
+    this._registeredActions.set(name, actionClass);
   }
 
   /**
@@ -561,10 +559,8 @@ class Action{
   static registeredAction(name){
     assert(TypeCheck.isString(name), 'Invalid name!');
 
-    const normalizedName = name.toLowerCase();
-
-    if (this._registeredActions.has(normalizedName)){
-      return this._registeredActions.get(normalizedName);
+    if (this._registeredActions.has(name)){
+      return this._registeredActions.get(name);
     }
 
     throw new Error(`Action ${name} is not registered!`);

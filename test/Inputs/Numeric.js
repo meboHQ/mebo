@@ -78,4 +78,44 @@ describe('Numeric Input:', () => {
       done(err);
     });
   });
+
+  it('Vector value should be able to be parsed directly from a json version', () => {
+    const testValue = JSON.stringify([1, 2, 3]);
+    const input = Input.create('input: number[]');
+    input.parseValue(testValue);
+
+    assert.equal(input.value().length, 3);
+    assert.equal(input.value()[0], 1);
+    assert.equal(input.value()[1], 2);
+    assert.equal(input.value()[2], 3);
+  });
+
+  it('Should test the vector serialization and parsing', () => {
+    return (async () => {
+
+      const testValue = [1, 2, 3];
+      const input = Input.create('input: number[]');
+      input.setValue(testValue);
+
+      const serializedValue = await input.serializeValue();
+      input.setValue(null);
+      input.parseValue(serializedValue);
+
+      assert.equal(input.value().length, 3);
+      assert.equal(input.value()[0], 1);
+      assert.equal(input.value()[1], 2);
+      assert.equal(input.value()[2], 3);
+    })();
+  });
+
+  it('Vector value should be able to be serialized as string', (done) => {
+    const input = Input.create('input: number[]');
+    input.setValue([1, 2, 3]);
+
+    input.serializeValue().then((value) => {
+      done((value === '[1,2,3]') ? null : new Error('unexpected value'));
+    }).catch((err) => {
+      done(err);
+    });
+  });
 });

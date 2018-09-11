@@ -5,10 +5,12 @@ const path = require('path');
 const assert = require('assert');
 const formidable = require('formidable');
 const TypeCheck = require('js-typecheck');
+const ejs = require('ejs');
 const Settings = require('../Settings');
 const Handler = require('../Handler');
 const Reader = require('../Reader');
 const Utils = require('../Utils');
+const Errors = require('../Errors');
 
 // promisifying
 const mkdtemp = util.promisify(fs.mkdtemp);
@@ -55,6 +57,17 @@ const _request = Symbol('request');
  * set an arbitrary value to the input you are interested then query it back through
  * {@link Input.serializeValue}. Also, Mebo provides a reference datasheet
  * about the serialization forms for the inputs bundled with it, found at {@link Reader}.
+ *
+ * As supported for the cli handler (--help/-h) you can also query a basic help page
+ * for any action through the web handler by including: `help` to the query string:
+ * `http://.../?help`
+ * By doing that it renders a page with the description of the action and helpful
+ * information about the inputs. This setting is available through `handler/web/allowHelp`
+ * (default true).
+ *
+ * You can define the description displayed in the help of each input by
+ * setting the input's property `description`. Also, the description for the action
+ * itself can be defined by setting the action's metadata `description`.
  *
  * **Route parameters:**
  * If an webfied action contains route parameters defined (`/users/:userId/books/:bookId`)
@@ -161,6 +174,11 @@ class WebRequest extends Reader{
     const result = Object.create(null);
     const request = this.request();
 
+    // when help is requested
+    if (Settings.get('handler/web/allowHelp') && 'help' in request.query){
+      throw new Errors.Help(await this._renderHelp(inputList, request));
+    }
+
     // handling body fields
     let bodyFields = null;
     if (['POST', 'PUT', 'PATCH'].includes(request.method)){
@@ -206,6 +224,55 @@ class WebRequest extends Reader{
     }
 
     return result;
+  }
+
+  /**
+   * Computes the contents displayed as help
+   *
+   * @param {Array<Input>} inputList - Valid list of inputs
+   * @return {Promise<string>}
+   * @protected
+   */
+  async _renderHelp(inputList){
+
+    const inputData = [];
+
+    /* eslint-disable no-await-in-loop */
+    for (const input of inputList){
+      // computing description
+      let inputDescription = await input.property('description');
+      if (TypeCheck.isNone(inputDescription)){
+        inputDescription = '';
+      }
+
+      // querying any type hint defined for the input
+      let webTypeHint = '';
+      if (input.hasProperty('webTypeHint')){
+        webTypeHint = input.property('webTypeHint');
+      }
+
+      // input data passed to the help
+      inputData.push({
+        name: input.name(),
+        type: input.property('type'),
+        required: input.isRequired() && input.isEmpty(),
+        vector: input.isVector(),
+        description: inputDescription,
+        typeHint: webTypeHint,
+      });
+    }
+
+    const data = {
+      method: this.request().method,
+      routePath: this.request().route.path,
+      description: this.action().meta('description', ''),
+      inputs: inputData,
+    };
+
+    return ejs.renderFile(
+      Settings.get('reader/webRequest/helpTemplate'),
+      data,
+    );
   }
 
   /**
@@ -472,6 +539,10 @@ Settings.set('reader/webRequest/uploadMaxFileSize', 4 * 1024 * 1024);
 Settings.set('reader/webRequest/uploadPreserveName', true);
 Settings.set('reader/webRequest/maxFields', 1000);
 Settings.set('reader/webRequest/maxFieldsSize', 2 * 1024 * 1024);
+Settings.set(
+  'reader/webRequest/helpTemplate',
+  path.join(path.dirname(path.dirname(path.dirname(__filename))), 'data', 'handlers', 'web', 'help.ejs'),
+);
 
 // registering reader
 Handler.registerReader(WebRequest, 'web');

@@ -4,6 +4,7 @@ const Mebo = require('../../src');
 const ValidationFail = Mebo.Errors.ValidationFail;
 const Conflict = Mebo.Errors.Conflict;
 const NoContent = Mebo.Errors.NoContent;
+const Help = Mebo.Errors.Help;
 const NotFound = Mebo.Errors.NotFound;
 
 
@@ -27,6 +28,12 @@ describe('Error options:', () => {
     assert.equal(error.status, Mebo.Settings.get('error/noContent/status'));
   });
 
+  it('Help should have the status code defined by the settings', () => {
+    const error = new Help('Some Message');
+    assert.equal(error.status, 700);
+    assert.equal(error.status, Mebo.Settings.get('error/help/status'));
+  });
+
   it('NotFound should have the status code defined by the settings', () => {
     const error = new NotFound('Some Message');
     assert.equal(error.status, 404);
@@ -43,6 +50,12 @@ describe('Error options:', () => {
     const error = new Conflict('Some Message');
     assert.equal(error.disableOutputInNested, false);
     assert.equal(error.disableOutputInNested, Mebo.Settings.get('error/conflict/disableOutputInNested'));
+  });
+
+  it('Help should not be allowed as output inside of nested actions', () => {
+    const error = new Help('Some Message');
+    assert.equal(error.disableOutputInNested, true);
+    assert.equal(error.disableOutputInNested, Mebo.Settings.get('error/help/disableOutputInNested'));
   });
 
   it('NotFound should be allowed as output inside of nested actions', () => {

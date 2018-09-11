@@ -113,7 +113,6 @@ const _collection = Symbol('collection');
  * Variable name | Value | Value used by
  * --- | --- | ---
  * $cli | `handler.cli` |
- * $cliDescription | `$cli.readOptions.description` | {@link CliArgs}
  * $cliResult | `$cli.writeOptions.result` | {@link CliOutput}
  */
 class Metadata{

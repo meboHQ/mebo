@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const assert = require('assert');
 const Mebo = require('../../../../src');
 const testutils = require('../../../../testutils');
@@ -145,7 +147,7 @@ describe('Web Restful Generic:', () => {
       }
 
       _perform(data){
-        const action = this.createAction('AvailableActionE');
+        const action = this.createAction('availableActionE');
         return action.run();
       }
     }
@@ -198,6 +200,27 @@ describe('Web Restful Generic:', () => {
 
         const result = JSON.parse(body);
         assert.equal(result.data.value, 20);
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
+  it('Should return the help', (done) => {
+
+    request(`http://localhost:${port}/A?a=10&b=10&help`, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+      try{
+        assert.equal(response.statusCode, 700);
+        assert.equal(body, fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8'));
       }
       catch(errr){
         error = errr;

@@ -51,7 +51,7 @@ class Timestamp extends Input{
    * @return {Date}
    * @protected
    */
-  static _decode(value){
+  static _decodeScalar(value){
     return new Date(value);
   }
 }

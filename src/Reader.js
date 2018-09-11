@@ -62,6 +62,7 @@ const _result = Symbol('result');
  * at {@link Metadata}:
  *
  * ```
+ * @Mebo.register('myAction')
  * class MyAction extends Mebo.Action{
  *    constructor(){
  *      super();
@@ -74,7 +75,6 @@ const _result = Symbol('result');
  *      // ...
  *    }
  * }
- * Mebo.Action.register(MyAction, 'myAction');
  * ```
  *
  * **Hiding inputs from readers:**

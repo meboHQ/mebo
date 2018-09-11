@@ -74,7 +74,7 @@ describe('Bool Input:', () => {
     assert.equal(input.value()[2], true);
   });
 
-  it('Vector value should be able to be parsed directly from a json version where each item is encoded as string', () => {
+  it('Should test the vector serialization and parsing', () => {
     return (async () => {
 
       const testValue = [true, false, true];
@@ -89,7 +89,7 @@ describe('Bool Input:', () => {
       assert.equal(input.value()[0], true);
       assert.equal(input.value()[1], false);
       assert.equal(input.value()[2], true);
-    });
+    })();
   });
 
   it('Vector value should be able to be serialized as string', (done) => {
@@ -97,7 +97,7 @@ describe('Bool Input:', () => {
     input.setValue([true, false, true]);
 
     input.serializeValue().then((value) => {
-      done((value === '["1","0","1"]') ? null : new Error('unexpected value'));
+      done((value === '[1,0,1]') ? null : new Error('unexpected value'));
     }).catch((err) => {
       done(err);
     });

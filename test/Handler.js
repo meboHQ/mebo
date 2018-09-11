@@ -82,14 +82,14 @@ describe('Handler:', () => {
   before(() => {
     // registering handler
     Handler.register(CustomHandler);
-    Handler.registerReader(CustomReader, 'customHandler');
-    Handler.registerWriter(CustomWriter, 'customHandler');
+    Handler.registerReader(CustomReader, 'CustomHandler');
+    Handler.registerWriter(CustomWriter, 'CustomHandler');
     Handler.register(EmptyHandler);
 
     // registering actions
     Mebo.Action.register(HiddenInput, 'hiddenInput');
     Mebo.Action.register(testutils.Actions.Shared.PlainObjectResult, 'plainObjectResult');
-    Handler.grantAction('customHandler', 'hiddenInput');
+    Handler.grantAction('CustomHandler', 'hiddenInput');
   });
 
   it('Should assign a session to the handler (during the assignment the session should be cloned)', () => {
@@ -112,9 +112,9 @@ describe('Handler:', () => {
   });
 
   it('Should return the list of action names granted for the handler', () => {
-    const grantedActionNames = Handler.grantedActionNames('customHandler');
+    const grantedActionNames = Handler.grantedActionNames('CustomHandler');
     assert.equal(grantedActionNames.length, 1);
-    assert.equal(grantedActionNames[0], 'hiddeninput');
+    assert.equal(grantedActionNames[0], 'hiddenInput');
   });
 
   it('Should fail when trying to query for a registered reader', () => {
@@ -184,14 +184,14 @@ describe('Handler:', () => {
     class CustomHandlerMasksA extends CustomHandler{}
     Handler.register(CustomHandlerMasksA, 'customHandlerMasks');
 
-    let registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
+    let registeredHandleNames = Handler.registeredHandlerMasks('customHandlerMasks');
     assert.equal(registeredHandleNames.length, 1);
     assert.equal(registeredHandleNames[0], '*');
 
     // registering a handler for using a custom mask
     class CustomHandlerMasksB extends CustomHandler{}
     Handler.register(CustomHandlerMasksB, 'customHandlerMasks', 'a.b.*');
-    registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
+    registeredHandleNames = Handler.registeredHandlerMasks('customHandlerMasks');
     assert.equal(registeredHandleNames.length, 2);
     assert.equal(registeredHandleNames[0], 'a.b.*');
     assert.equal(registeredHandleNames[1], '*');
@@ -199,7 +199,7 @@ describe('Handler:', () => {
     // registering a handler for using a custom mask (2)
     class CustomHandlerMasksC extends CustomHandler{}
     Handler.register(CustomHandlerMasksC, 'customHandlerMasks', 'a.b.c.*');
-    registeredHandleNames = Handler.registeredHandlerMasks('CustomHandlerMasks');
+    registeredHandleNames = Handler.registeredHandlerMasks('customHandlerMasks');
     assert.equal(registeredHandleNames.length, 3);
     assert.equal(registeredHandleNames[0], 'a.b.c.*');
     assert.equal(registeredHandleNames[1], 'a.b.*');
@@ -259,13 +259,13 @@ describe('Handler:', () => {
       static _outputEventEmitter = new EventEmitter();
     }
 
-    Handler.register(SessionErrorHandler);
+    Handler.register(SessionErrorHandler, 'sessionErrorHandler');
     Handler.registerReader(CustomReader, 'sessionErrorHandler');
     Handler.registerWriter(CustomWriter, 'sessionErrorHandler');
 
     SessionErrorHandler.onErrorDuringOutput((err, name, mask) => {
       if (err.message === 'Failed to execute 1 tasks (out of 1)'
-        && name === 'sessionErrorHandler'.toLowerCase()
+        && name === 'sessionErrorHandler'
         && mask === '*'
         && err.taskErrors[0].message === 'Should fail'){
         done();
@@ -295,13 +295,13 @@ describe('Handler:', () => {
       static _outputEventEmitter = new EventEmitter();
     }
 
-    Handler.register(OutputErrorHandler);
+    Handler.register(OutputErrorHandler, 'outputErrorHandler');
     Handler.registerReader(CustomReader, 'outputErrorHandler');
     Handler.registerWriter(CustomWriter, 'outputErrorHandler');
 
     OutputErrorHandler.onErrorDuringOutput((err, name, mask) => {
       if (err.message === 'someHiddenInput: Input is required, it cannot be empty!'
-        && name === 'outputErrorHandler'.toLowerCase()
+        && name === 'outputErrorHandler'
         && mask === '*'){
         done();
       }
@@ -373,9 +373,9 @@ describe('Handler:', () => {
   it('Handler name should be included inside of the session arbitrary data', () => {
     return (async () => {
       Handler.register(CustomHandler);
-      const handler = Mebo.Handler.create('customHandler');
+      const handler = Mebo.Handler.create('CustomHandler');
 
-      assert.equal(handler.session().get('handler'), 'customHandler'.toLowerCase());
+      assert.equal(handler.session().get('handler'), 'CustomHandler');
     })();
   });
 });
