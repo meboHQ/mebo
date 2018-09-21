@@ -4,7 +4,7 @@ const Settings = require('../Settings');
 
 
 /**
- * Exception raised when when help is requested for a handler.
+ * Exception raised when help is requested for a handler.
  *
  * Handlers can provide a help output to describe the specification
  * and requirements for {@link Action}. The way the help is queried
