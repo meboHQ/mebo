@@ -31,8 +31,8 @@ class Sum extends Mebo.Action{
   }
 }
 
-// Command-line support: node . --cli sum --value-x=5 --value-y=2
-if (process.argv.includes('--cli')){
+// Command-line support: node . sum --value-x=5 --value-y=2
+if (Mebo.Handler.get('cli').isSupported()){
   Mebo.Handler.get('cli').init();
 }
 // Web support: node . (http://localhost:8080/sum?valueX=5&valueY=2)
