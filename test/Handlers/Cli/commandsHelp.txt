@@ -1,0 +1,11 @@
+ __  __      _
+|  \/  | ___| |__   ___
+| |\/| |/ _ \ '_ \ / _ \
+| |  | |  __/ |_) | (_) |
+|_|  |_|\___|_.__/ \___/
+
+Available commands:
+    fullSpec
+    multi
+    multipleArgs
+

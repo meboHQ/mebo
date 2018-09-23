@@ -94,13 +94,13 @@ class CliArgs extends Reader{
     }
 
     const executableName = path.basename(this.args()[0]);
-    const cliNames = Handler.get('cli').actionCliNames(this.action().meta('action.name'));
+    const cliNames = Handler.get('cli').actionCommands(this.action().meta('action.name'));
     let cliSuffix = '';
     if (cliNames.length){
-      cliSuffix = ` --cli ${cliNames[0]}`;
+      cliSuffix = cliNames[0];
     }
 
-    return `${executableName} ${executableScript}${cliSuffix}`;
+    return `${executableName} ${executableScript} ${cliSuffix}`;
   }
 
   /**

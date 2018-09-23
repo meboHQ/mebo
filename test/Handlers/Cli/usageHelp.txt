@@ -1,9 +1,9 @@
 My app.
 
-Usage: node . --cli fullSpec --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
-       node . --cli fullSpec <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
-       node . --cli fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
-       node . --cli fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
+Usage: node . fullSpec --option-a=<value> --option-c=<value> [options] <argument-a> <argument-b> [<argument-optional-a>]...
+       node . fullSpec <argument-a> <argument-b> [options] --option-c=<value> --option-a=<value>...
+       node . fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-e=<value>...]
+       node . fullSpec <argument-a> <argument-b> [options] --option-a=<value> --option-c=<value> [--option-g=<value>...]
 
 Arguments:
   argument-a           argumentA help (* custom cli type hint) (text type).

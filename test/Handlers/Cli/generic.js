@@ -22,6 +22,8 @@ describe('Cli Generic:', () => {
   }
 
   // action shared by the tests
+  @Mebo.grant('cli')
+  @Mebo.register('fullSpec')
   class FullSpec extends Action{
     constructor(){
       super();
@@ -59,12 +61,18 @@ describe('Cli Generic:', () => {
   class NonGrantedCliAction extends Action{}
 
   before(() => {
-    Mebo.Action.register(FullSpec, 'fullSpec');
     Mebo.Action.register(MultipleArgs, 'multipleArgs');
     Mebo.Action.register(NonGrantedCliAction, 'nonGrantedCliAction');
-
-    Mebo.Handler.grantAction('cli', 'fullSpec');
     Mebo.Handler.grantAction('cli', 'multipleArgs');
+  });
+
+  it('Should test action registration through the decorator', () => {
+    assert.equal(Mebo.Action.registeredActionName(FullSpec), 'fullSpec');
+  });
+
+  it('Should check if the action is available as command (the command should be the same as the action name)', () => {
+    assert.equal(Mebo.Handler.get('cli').actionCommands('fullSpec').length, 1);
+    assert.equal(Mebo.Handler.get('cli').actionCommands('fullSpec')[0], 'fullSpec');
   });
 
   it('Should list the help about the cli', () => {
@@ -86,18 +94,18 @@ describe('Cli Generic:', () => {
   });
 
   it('Should fail to create an app that contains a non granted action', () => {
-    const errStream = new WriteStream();
-    Mebo.Handlers.Cli.init(
-      {
-        defaultCliName: 'invalidCli',
-        stderr: errStream,
-      },
-    );
 
-    const stdout = Buffer.concat(errStream.data).toString('ascii');
+    return (async () => {
 
-    assert.equal(stdout, "Could not initialize 'invalidCli', cli not found!\n");
-
+      const app = Mebo.Handler.create('cli');
+      try{
+        await app.runAction('invalidCli');
+        throw new Error('Should have failed');
+      }
+      catch(err){
+        assert.equal(err.message, 'Action invalidCli is not registered!');
+      }
+    })();
   });
 
   it('Should fail when the arguments do not conform to the requirements', () => {

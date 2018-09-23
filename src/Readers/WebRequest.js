@@ -227,7 +227,7 @@ class WebRequest extends Reader{
   }
 
   /**
-   * Computes the contents displayed as help
+   * Computes the output displayed as help
    *
    * @param {Array<Input>} inputList - Valid list of inputs
    * @return {Promise<string>}

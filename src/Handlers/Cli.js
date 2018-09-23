@@ -1,6 +1,9 @@
 const stream = require('stream');
+const path = require('path');
 const assert = require('assert');
+const ejs = require('ejs');
 const TypeCheck = require('js-typecheck');
+const Settings = require('../Settings');
 const Input = require('../Input');
 const Metadata = require('../Metadata');
 const Handler = require('../Handler');
@@ -17,17 +20,15 @@ const _handlerName = 'cli';
 
 
 /**
-* Handles the command line integration based on docopt specification.
+* Handles the command-line integration based on docopt specification.
 *
-* It enables the execution of actions triggered as command line applications
-* by reading ({@link CliArgs}) the arguments which are passed to the action
-* during the execution ({@link Cli.run}).
-* The result of this handler ({@link Cli.output}) is done through
-* the {@link CliOutput} writer.
+* It enables the execution of actions triggered as command-line
+* applications. The args are parsed using the reader {@link CliArgs} and
+* the output is provided by writer {@link CliOutput}.
 *
 * Using cli handler:
 *
-* **Creating an action that is going be executed through the cli handler**
+* **Creating an action that can be executed through command-line**
 * ```
 * @Mebo.grant('cli')
 * @Mebo.register('myAction')
@@ -50,11 +51,55 @@ const _handlerName = 'cli';
 *
 * ```
 *
-* **Executing the action through the handler**
-* ```
-* // making sure the script is called directly
-* if (require.main === module) {
+* The command-line support can be invoked in two ways:
 *
+* **1) Multiple commands (recommended):** Used to provide multiple granted actions through command-line
+* ```
+* if (require.main === module) {
+*   const cli = Mebo.Handler.get('cli');
+*   if (cli.isSupported()){
+*     cli.init();
+*   }
+* }
+* ```
+* When this method is used the command-line help (`-h` or `--help`)
+* provides a list of commands:
+*
+* ```
+* node mycli.js --help
+*  __  __      _
+* |  \/  | ___| |__   ___
+* | |\/| |/ _ \ '_ \ / _ \_
+* | |  | |  __/ |_) | (_) |
+* |_|  |_|\___|_.__/ \___/
+*
+* Available commands:
+*     myAction
+* ```
+*
+* In order to access the help for each command you need to provide
+* the command name before the help flag (`-h` or `--help`)
+* ```
+* node . myAction --help
+* Welcome.
+*
+* Usage: node mycli.js myAction [options] <my-argument>
+*
+* Arguments:
+*   my-argument     my argument (text type).
+*
+* Options:
+*   --my-option     my option (bool type).
+* ```
+*
+* A complete example about providing multiple commands through command-line
+* can be found at: https://github.com/meboHQ/example-cli
+*
+* **2) Single command:** Used to provide just a single granted action
+* through command-line
+*
+* ```
+* if (require.main === module) {
 *   // creating an cli handler which is used to load the arguments
 *   // arguments to the action and to output the result back to the stream
 *   const cli = Mebo.Handler.create('cli');
@@ -71,24 +116,21 @@ const _handlerName = 'cli';
 *   });
 * }
 * ```
-* You can list the cli help by invoking `-h` or `--help` where a help interface
-* is generated automatically for the action, for instance:
 *
-* `node mycli.js --help`
+* When using the single command the help flag (`-h` or `--help`)
+* provides the help about the command directly:
 * ```
+* node mycli.js --help
 * Welcome.
 *
-* Usage: mycli.js [options] <my-argument>
+* Usage: node mycli.js [options] <my-argument>
 *
 * Arguments:
-*   my-argument  my argument (text type).
+*   my-argument     my argument (text type).
 *
 * Options:
-*   --my-option    my option (bool type).
+*   --my-option     my option (bool type).
 * ```
-*
-* In case you want to provide multiple actions through cli, take
-* a look at the example: https://github.com/meboHQ/example-cli
 *
 * @see http://docopt.org
 */
@@ -173,13 +215,30 @@ class Cli extends Handler{
   }
 
   /**
+   * Returns a boolean telling if cli support can be initialized based on the input argv.
+   *
+   * @param {Array<string>} [argv] - custom list of arguments, if not specified
+   * it uses the `process.argv` (this information is passed to the creation of cli handler)
+   * @return {boolean}
+   */
+  static isSupported(argv=process.argv){
+    // checks if there is a command being passed and if the file being
+    // executed by node is not inside of a dependency (for instance, mocha
+    // contains its own set of command-line args)
+    // Also, when argv is passed using process.argv (default) we don't need to
+    // worry about filtering out specific args related with node itself. Since,
+    // those args are handled through process.execArgv
+    return (argv.length >= 3 && !path.normalize(argv[1]).split(path.sep).includes('node_modules'));
+  }
+
+  /**
    * Initializes a registered action as cli.
    *
    * *`CliActions/Default.js`: defining an action as cli:*
    * ```
    * const Mebo = require('mebo');
    *
-   * @Mebo.grant('cli', 'cli.default', {name: 'default'})
+   * @Mebo.grant('cli', 'cli.default', {command: 'default'})
    * @Mebo.register('cli.default')
    * class Default extends Mebo.Action{
    *
@@ -201,29 +260,27 @@ class Cli extends Handler{
    * require('Clis/Default.js');
    *
    * // ...
-   *
-   * Mebo.Handler.get('cli').init('default');
+   * const cli = Mebo.Handler.get('cli');
+   * if (cli.isSupported()){
+   *    cli.init();
+   * }
    * ```
    *
    * *Listing available actions:*
    * ```
-   * node myFile.js --cli
-   * // or
-   * node myFile.js --cli --help
+   * node myFile.js --help
    * ```
    *
    * *Showing help from the app:*
    * ```
-   * node myFile.js --cli myCli --help
+   * node myFile.js myCli --help
    * ```
    *
    * *Executing an cli by specifying custom args:*
    * ```
-   * node myFile.js --cli myCli --arg-a=1 --arg-b=2
+   * node myFile.js myCli --arg-a=1 --arg-b=2
    * ```
    * @param {Object} options - plain object containing custom options
-   * @param {string} [options.defaultCliName] - default name used when none
-   * cli is specified through `--cli <name>`
    * @param {Array<string>} [options.argv] - custom list of arguments, if not specified
    * it uses the `process.argv` (this information is passed to the creation of cli handler)
    * @param {stream} [options.stdout] - custom writable stream, if not specified it uses
@@ -231,63 +288,63 @@ class Cli extends Handler{
    * @param {stream} [options.stderr] - custom writable stream, if not specified it uses
    * `process.stderr` (this information is passed to the creation of cli handler)
    * @param {function} [options.finalizeCallback] - callback executed after the
-   * initialization, it passes the value used by the output
+   * output. (The value the output value is passed as argument)
    */
   static init(
     {
-      defaultCliName='',
       argv=process.argv,
       stdout=process.stdout,
       stderr=process.stderr,
+      showBanner=true,
+      description='',
       finalizeCallback=null,
     }={},
   ){
+    assert(this.isSupported(argv), 'cli support cannot be initialized with the current with input argv');
+    assert(TypeCheck.isString(description), 'description needs to be defined as string');
 
-    assert(TypeCheck.isString(defaultCliName), 'defaultCliName needs to be defined as string');
+    const useCommand = argv[2];
+    const parsedArgs = argv.slice(0);
+    // removing the command name from parsed args
+    parsedArgs.splice(2, 1);
 
-    const cliIndex = argv.indexOf('--cli');
-    const parsedArgs = [...argv.slice(0, 2), ...((cliIndex !== -1) ? argv.slice(cliIndex + 2) : [])];
     const handler = Handler.create(_handlerName, '*', parsedArgs, stdout, stderr);
 
-    const _handlerOutput = (value) => {
+    const _handlerOutput = (output) => {
       try{
-        handler.output(value);
+        handler.output(output);
       }
       finally{
         if (finalizeCallback){
-          finalizeCallback(value);
+          finalizeCallback(output);
         }
       }
     };
 
-    const useCliName = (cliIndex !== -1) ? argv[cliIndex + 1] : defaultCliName;
-
     // list the available action names grated for cli
-    const availableClis = this._cliNames[_handlerName] || {};
-    if (['-h', '--help', undefined].includes(useCliName)){
-      const result = [];
-      result.push('Available actions granted for command-line:');
-      const cliNames = Object.keys(availableClis);
+    const availableCommands = this._commands[_handlerName];
+    if (['-h', '--help'].includes(useCommand)){
 
-      for (const name of cliNames.sort()){
-        const defaultCli = (name === defaultCliName) ? '(Default)' : '';
-
-        const item = (defaultCli.length) ? '◉' : '◯';
-        result.push(`  ${item} ${name} ${defaultCli}`);
-      }
-
-      const error = new Errors.Help(result.join('\n'));
-      _handlerOutput(error);
+      ejs.renderFile(
+        Settings.get('handler/cli/commandsHelpTemplate'),
+        {
+          commands: Object.keys(availableCommands),
+          showBanner,
+          description,
+        },
+      ).then((result) => {
+        _handlerOutput(new Errors.Help(result));
+      }).catch(/* istanbul ignore next */ (error) => {
+        _handlerOutput(error);
+      });
     }
-    // cli not found
-    else if (!(useCliName in availableClis)){
-
-      const error = new Errors.Help(`Could not initialize '${useCliName}', cli not found!`);
-      _handlerOutput(error);
+    // command not found
+    else if (!(useCommand in availableCommands)){
+      _handlerOutput(new Errors.Help(`Could not initialize '${useCommand}', command not found!`));
     }
     // found cli, initializing from it
     else{
-      handler.runAction(availableClis[useCliName].actionName).then((result) => {
+      handler.runAction(availableCommands[useCommand].actionName).then((result) => {
         _handlerOutput(result);
       }).catch(/* istanbul ignore next */ (err) => {
         _handlerOutput(err);
@@ -296,21 +353,20 @@ class Cli extends Handler{
   }
 
   /**
-   * Return list of cli names used to execute the action. Those are the
-   * names passed through "--cli <name>".
+   * Return a list of commands mapped to the action name.
    *
    * @param {string} actionName - registered action name
    * @return {Array<string>}
    * @protected
    */
-  static actionCliNames(actionName){
+  static actionCommands(actionName){
     assert(TypeCheck.isString(actionName), 'actionName needs to be defined as string');
 
     const result = [];
 
-    if (_handlerName in this._cliNames){
-      for (const name in this._cliNames[_handlerName]){
-        if (this._cliNames[_handlerName][name].actionName === actionName){
+    if (_handlerName in this._commands){
+      for (const name in this._commands[_handlerName]){
+        if (this._commands[_handlerName][name].actionName === actionName){
           result.push(name);
         }
       }
@@ -326,23 +382,23 @@ class Cli extends Handler{
    * @param {string} handlerName - registered handler name
    * @param {string} actionName - registered action name
    * @param {object} options - custom options passed during {@link Handler.grantAction}
-   * @param {string} [options.name] - custom name used to initialize the cli, otherwise
+   * @param {string} [options.command] - command name used to initialize the cli, otherwise
    * if not defined the actionName is used instead
    * @protected
    */
-  static _grantingAction(handlerName, actionName, {name=null}={}){
+  static _grantingAction(handlerName, actionName, {command=null}={}){
 
-    const useCliName = (name || actionName);
-    assert(TypeCheck.isString(useCliName), 'name needs to be defined as string');
+    const useCommand = (command || actionName);
+    assert(TypeCheck.isString(useCommand), 'name needs to be defined as string');
 
-    if (!(handlerName in this._cliNames)){
-      this._cliNames[handlerName] = {};
+    if (!(handlerName in this._commands)){
+      this._commands[handlerName] = {};
     }
 
     const options = {};
     options.actionName = actionName;
 
-    this._cliNames[handlerName][useCliName] = options;
+    this._commands[handlerName][useCommand] = options;
   }
 
   /**
@@ -384,7 +440,7 @@ class Cli extends Handler{
     );
   }
 
-  static _cliNames = {};
+  static _commands = {};
 }
 
 // registering properties
@@ -394,6 +450,12 @@ Input.registerProperty(Input, 'shortOption');
 // registering option vars
 Metadata.registerOptionVar('$cli', `handler.${_handlerName}`);
 Metadata.registerOptionVar('$cliResult', '$cli.writeOptions.result');
+
+// default settings
+Settings.set(
+  'handler/cli/commandsHelpTemplate',
+  path.join(path.dirname(path.dirname(path.dirname(__filename))), 'data', 'handlers', 'cli', 'commandsHelp.ejs'),
+);
 
 // registering handler
 Handler.register(Cli, _handlerName);
