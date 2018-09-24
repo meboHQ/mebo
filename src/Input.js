@@ -3,14 +3,16 @@ const TypeCheck = require('js-typecheck');
 const ValidationFail = require('./Errors/ValidationFail');
 const Utils = require('./Utils');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _name = Symbol('name');
 const _readOnly = Symbol('readOnly');
 const _properties = Symbol('properties');
 const _lockedProperties = Symbol('lockedProperties');
 const _cache = Symbol('cache');
-
+const _propertiesCache = Symbol('propertiesCache');
+const _registeredInputs = Symbol('registeredInputs');
+const _registeredProperties = Symbol('registeredProperties');
 
 /**
  * An input holds a value that is used for the execution of the {@link Action}.
@@ -777,7 +779,7 @@ class Input{
     // validating name
     assert((/^([\w_\.\-])+$/gi).test(nameFinal), `Illegal input name: ${nameFinal}`); // eslint-disable-line no-useless-escape
 
-    this._registeredInputs.set(nameFinal, inputClass);
+    this[_registeredInputs].set(nameFinal, inputClass);
   }
 
   /**
@@ -791,8 +793,8 @@ class Input{
 
     const normalizedName = name.toLowerCase();
 
-    if (this._registeredInputs.has(normalizedName)){
-      return this._registeredInputs.get(normalizedName);
+    if (this[_registeredInputs].has(normalizedName)){
+      return this[_registeredInputs].get(normalizedName);
     }
 
     throw new Error(`Input ${name} is not registered!`);
@@ -804,7 +806,7 @@ class Input{
    * @return {Array<string>}
    */
   static registeredInputNames(){
-    return [...this._registeredInputs.keys()];
+    return [...this[_registeredInputs].keys()];
   }
 
   /**
@@ -849,14 +851,14 @@ class Input{
     const inputType = this._resolveInputType(inputClassOrRegisteredName);
 
     // appending to the existing registered properties
-    if (!this._registeredProperties.has(inputType)){
-      this._registeredProperties.set(inputType, new Map());
+    if (!this[_registeredProperties].has(inputType)){
+      this[_registeredProperties].set(inputType, new Map());
     }
 
-    this._registeredProperties.get(inputType).set(name, initialValue);
+    this[_registeredProperties].get(inputType).set(name, initialValue);
 
     // resetting the properties caches
-    this._propertiesCache.clear();
+    this[_propertiesCache].clear();
   }
 
   /**
@@ -976,13 +978,13 @@ class Input{
    */
   static _allRegisteredProperties(inputType){
 
-    if (!this._propertiesCache.has(inputType)){
+    if (!this[_propertiesCache].has(inputType)){
       let currentClass = inputType;
       const inputProperties = new Map();
 
       while (currentClass.name !== ''){
-        if (this._registeredProperties.has(currentClass)){
-          for (const [propertyName, propertyValue] of this._registeredProperties.get(currentClass)){
+        if (this[_registeredProperties].has(currentClass)){
+          for (const [propertyName, propertyValue] of this[_registeredProperties].get(currentClass)){
             // if a property has been overriding by a sub class then skip it
             if (!inputProperties.has(propertyName)){
               inputProperties.set(propertyName, propertyValue);
@@ -992,18 +994,16 @@ class Input{
         currentClass = Object.getPrototypeOf(currentClass);
       }
 
-      this._propertiesCache.set(inputType, inputProperties);
+      this[_propertiesCache].set(inputType, inputProperties);
     }
 
-    return this._propertiesCache.get(inputType);
+    return this[_propertiesCache].get(inputType);
   }
-
-  static _propertiesCache = new Map();
-
-  static _registeredInputs = new Map();
-
-  static _registeredProperties = new Map();
 }
+
+Input[_propertiesCache] = new Map();
+Input[_registeredInputs] = new Map();
+Input[_registeredProperties] = new Map();
 
 // registering properties
 Input.registerProperty(Input, 'required', true);

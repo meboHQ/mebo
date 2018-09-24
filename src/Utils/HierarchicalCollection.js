@@ -2,7 +2,7 @@ const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const deepMerge = require('./deepMerge');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _collection = Symbol('collection');
 

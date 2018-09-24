@@ -9,6 +9,10 @@ const Handler = require('../Handler');
 // caused by re-implementations
 const _request = Symbol('request');
 const _response = Symbol('response');
+const _beforeAuthActionMiddlewares = Symbol('beforeAuthActionMiddlewares');
+const _beforeActionMiddlewares = Symbol('beforeActionMiddlewares');
+const _webActions = Symbol('webActions');
+const _actionMethodToWebfiedIndex = Symbol('actionMethodToWebfiedIndex');
 
 // handler name (used for registration)
 const _handlerName = 'web';
@@ -242,7 +246,7 @@ class Web extends Handler{
   static addBeforeAction(middleware){
     assert(TypeCheck.isCallable(middleware), 'middleware needs to defined as a callable');
 
-    this._beforeActionMiddlewares.push(middleware);
+    this[_beforeActionMiddlewares].push(middleware);
   }
 
   /**
@@ -285,11 +289,11 @@ class Web extends Handler{
   static addBeforeAuthAction(middleware){
     assert(TypeCheck.isCallable(middleware), 'middleware needs to defined as a callable');
 
-    this._beforeAuthActionMiddlewares.push(middleware);
+    this[_beforeAuthActionMiddlewares].push(middleware);
   }
 
   /**
-   * Returns a list middlewares that are executed before an action.
+   * Returns a list of middlewares which are executed before an action.
    *
    * This method can be re-implemented by subclasses to include custom middlewares
    * that are tied with a specific web handler implementation. By default it returns
@@ -298,11 +302,18 @@ class Web extends Handler{
    * @return {Array<function>}
    */
   static beforeAction(){
-    return this._beforeActionMiddlewares.slice(0);
+    return this[_beforeActionMiddlewares].slice(0);
   }
 
   /**
-   * Returns a list middlewares that are executed before an action that requires auth
+   * Clears all middlewares assigned to run before actions ({@link beforeAction})
+   */
+  static clearBeforeAction(){
+    this[_beforeAuthActionMiddlewares].length = 0;
+  }
+
+  /**
+   * Returns a list of middlewares which are executed before an action that requires auth
    *
    * This method can be re-implemented by subclasses to include custom middlewares
    * that are tied with a specific web handler implementation. By default it returns
@@ -311,7 +322,14 @@ class Web extends Handler{
    * @return {Array<function>}
    */
   static beforeAuthAction(){
-    return this._beforeAuthActionMiddlewares.slice(0);
+    return this[_beforeAuthActionMiddlewares].slice(0);
+  }
+
+  /**
+   * Clears all middlewares assigned to run before auth actions ({@link beforeAuthAction})
+   */
+  static clearBeforeAuthAction(){
+    this[_beforeAuthActionMiddlewares].length = 0;
   }
 
   /**
@@ -341,7 +359,7 @@ class Web extends Handler{
     assert(TypeCheck.isString(prefix), 'prefix must be defined as string');
 
     // registering the routes
-    for (const webfiedAction of this._webActions){
+    for (const webfiedAction of this[_webActions]){
       if (webfiedAction.restRoute !== null){
 
         // building the final route path
@@ -389,8 +407,8 @@ class Web extends Handler{
 
     // finding duplicated items
     const removeIndexes = [];
-    for (let i=0, len=this._webActions.length; i < len; ++i){
-      const webfiedAction = this._webActions[i];
+    for (let i=0, len=this[_webActions].length; i < len; ++i){
+      const webfiedAction = this[_webActions][i];
       const action = webfiedAction.actionName;
       const actionMethod = webfiedAction.method;
 
@@ -399,8 +417,8 @@ class Web extends Handler{
         // when the method and route is already being used by another action then removing
         // that from the registration, since the method and route will be registered
         // for a different action
-        if (action in this._actionMethodToWebfiedIndex && actionMethod in this._actionMethodToWebfiedIndex[action]){
-          delete this._actionMethodToWebfiedIndex[action][actionMethod];
+        if (action in this[_actionMethodToWebfiedIndex] && actionMethod in this[_actionMethodToWebfiedIndex][action]){
+          delete this[_actionMethodToWebfiedIndex][action][actionMethod];
         }
 
         removeIndexes.push(i);
@@ -410,13 +428,13 @@ class Web extends Handler{
     // removing duplicated items
     if (removeIndexes.length){
       for (let i=0, len=removeIndexes.length; i < len; ++i){
-        this._webActions.splice(removeIndexes[i]-i, 1);
+        this[_webActions].splice(removeIndexes[i]-i, 1);
       }
     }
 
     // storing the action under the auxiliary data struct 'action method to webfied index'
-    if (!(actionName in this._actionMethodToWebfiedIndex)){
-      this._actionMethodToWebfiedIndex[actionName] = Object.create(null);
+    if (!(actionName in this[_actionMethodToWebfiedIndex])){
+      this[_actionMethodToWebfiedIndex][actionName] = Object.create(null);
     }
 
     // adding the routes
@@ -429,10 +447,10 @@ class Web extends Handler{
 
       // adding the index about where the webfied action is localized
       // under the 'action method to webfied index'
-      this._actionMethodToWebfiedIndex[actionName][addMethod] = this._webActions.length;
+      this[_actionMethodToWebfiedIndex][actionName][addMethod] = this[_webActions].length;
 
       // adding the webfied action information
-      this._webActions.push(webfiedAction);
+      this[_webActions].push(webfiedAction);
     }
   }
 
@@ -513,7 +531,7 @@ class Web extends Handler{
       const method = req.method.toLowerCase();
 
       // checking if the action is webfied for the current request method
-      if (!(method in this._actionMethodToWebfiedIndex[actionName])){
+      if (!(method in this[_actionMethodToWebfiedIndex][actionName])){
         return res.sendStatus(404);
       }
 
@@ -527,8 +545,8 @@ class Web extends Handler{
         res,
       );
 
-      const actionDataIndex = this._actionMethodToWebfiedIndex[actionName][method];
-      res.locals.web.requireAuth = this._webActions[actionDataIndex].auth;
+      const actionDataIndex = this[_actionMethodToWebfiedIndex][actionName][method];
+      res.locals.web.requireAuth = this[_webActions][actionDataIndex].auth;
 
       next();
     };
@@ -577,15 +595,12 @@ class Web extends Handler{
 
     return result;
   }
-
-  static _beforeAuthActionMiddlewares = [];
-
-  static _beforeActionMiddlewares = [];
-
-  static _webActions = [];
-
-  static _actionMethodToWebfiedIndex = {};
 }
+
+Web[_beforeAuthActionMiddlewares] = [];
+Web[_beforeActionMiddlewares] = [];
+Web[_webActions] = [];
+Web[_actionMethodToWebfiedIndex] = {};
 
 // default settings
 Settings.set('handler/web/requireAuthByDefault', false); // ⚠ BE CAREFUL

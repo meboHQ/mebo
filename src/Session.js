@@ -2,7 +2,7 @@ const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const Tasks = require('./Tasks');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _arbitraryData = Symbol('arbitraryData');
 const _autofill = Symbol('autofill');

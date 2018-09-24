@@ -2,10 +2,12 @@ const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const Utils = require('./Utils');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _collection = Symbol('collection');
-
+const _optionVariables = Symbol('optionVariables');
+const _cachedOptionVariables = Symbol('cachedOptionVariables');
+const _maxDepth = Symbol('maxDepth');
 
 /**
  * Metadata provides a way for actions ({@link Action}) to control about how a
@@ -185,10 +187,10 @@ class Metadata{
     this._validateOptionVarName(name);
 
     // flushing cache
-    this._cachedOptionVariables = {};
+    this[_cachedOptionVariables] = {};
 
     // assigning variable
-    this._optionVariables[name] = value;
+    this[_optionVariables][name] = value;
   }
 
   /**
@@ -211,7 +213,7 @@ class Metadata{
   static optionVar(name, processValue=true){
 
     this._validateOptionVarName(name);
-    if (!(name in this._optionVariables)){
+    if (!(name in this[_optionVariables])){
       throw new Error(`Option variable ${name} is undefined`);
     }
 
@@ -219,7 +221,7 @@ class Metadata{
       return this._resolveOptionVar(name);
     }
 
-    return this._optionVariables[name];
+    return this[_optionVariables][name];
   }
 
   /**
@@ -231,7 +233,7 @@ class Metadata{
   static hasOptionVar(name){
     this._validateOptionVarName(name);
 
-    return (name in this._optionVariables);
+    return (name in this[_optionVariables]);
   }
 
   /**
@@ -240,7 +242,7 @@ class Metadata{
    * @return {Array<string>}
    */
   static registeredOptionVars(){
-    return Object.keys(this._optionVariables);
+    return Object.keys(this[_optionVariables]);
   }
 
   /**
@@ -286,22 +288,22 @@ class Metadata{
   static _resolveOptionVar(name, rootName, depth=0){
 
     // detecting circular references
-    if (depth >= this._maxDepth){
+    if (depth >= this[_maxDepth]){
       const error = new Error(`Circular reference detected while processing the value for $${rootName}`);
 
       // processing the stack of the error to get rid of the duplicated entries
       // caused by the recursion (we don't need to show 1000+ lines of the same
       // thing, the error explanation should be good enough)
       const stackContents = error.stack.split('\n');
-      error.stack = stackContents.slice(0, 2).concat(stackContents.slice(this._maxDepth + 1)).join('\n');
+      error.stack = stackContents.slice(0, 2).concat(stackContents.slice(this[_maxDepth] + 1)).join('\n');
       throw error;
     }
 
     // processing value
-    const rawValue = this._optionVariables[name];
+    const rawValue = this[_optionVariables][name];
 
     // in case the value is not under the cache, lets process it
-    if (!(name in this._cachedOptionVariables)){
+    if (!(name in this[_cachedOptionVariables])){
 
       // checking if the value contains any variable
       let processedValue = rawValue;
@@ -331,11 +333,11 @@ class Metadata{
       }
 
       // adding processed value to the cache
-      this._cachedOptionVariables[name] = processedValue;
+      this[_cachedOptionVariables][name] = processedValue;
     }
 
     // returning value from cache
-    return this._cachedOptionVariables[name];
+    return this[_cachedOptionVariables][name];
   }
 
   /**
@@ -364,12 +366,10 @@ class Metadata{
       throw new Error(`Option variable (${name}) contains invalid characters`);
     }
   }
-
-  static _optionVariables = {};
-
-  static _cachedOptionVariables = {};
-
-  static _maxDepth = 1000;
 }
+
+Metadata[_optionVariables] = {};
+Metadata[_cachedOptionVariables] = {};
+Metadata[_maxDepth] = 1000;
 
 module.exports = Metadata;

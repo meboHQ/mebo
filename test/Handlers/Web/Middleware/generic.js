@@ -42,7 +42,7 @@ describe('Web Middleware Generic:', () => {
 
   after(() => {
     // cleaning any registration made by other tests
-    Mebo.Handlers.Web._beforeActionMiddlewares = [];
+    Mebo.Handlers.Web.clearBeforeAction();
 
     if (server){
       server.close();

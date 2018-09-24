@@ -4,7 +4,7 @@ const Handler = require('../Handler');
 const Writer = require('../Writer');
 const Errors = require('../Errors');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _stdout = Symbol('stdout');
 const _stderr = Symbol('stderr');

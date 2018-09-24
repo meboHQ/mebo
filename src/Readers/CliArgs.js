@@ -9,9 +9,10 @@ const Handler = require('../Handler');
 const Reader = require('../Reader');
 
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _args = Symbol('args');
+const _executableNamePlaceHolder = Symbol('executableNamePlaceHolder');
 
 /**
  * command-line arguments reader.
@@ -85,7 +86,7 @@ class CliArgs extends Reader{
   executableName(placeHolder=false){
 
     if (placeHolder){
-      return this.constructor._executableNamePlaceHolder;
+      return this.constructor[_executableNamePlaceHolder];
     }
 
     let executableScript = this.args()[1];
@@ -672,9 +673,10 @@ class CliArgs extends Reader{
   static _camelCaseToArgument(text){
     return text.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
-
-  static _executableNamePlaceHolder = 'f4d33b27-d6f3-42b6-ba98-5254bdf3b307';
 }
+
+CliArgs[_executableNamePlaceHolder] = 'f4d33b27-d6f3-42b6-ba98-5254bdf3b307';
+
 
 // registering reader
 Handler.registerReader(CliArgs, 'cli');

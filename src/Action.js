@@ -6,11 +6,12 @@ const Session = require('./Session');
 const Input = require('./Input');
 const Metadata = require('./Metadata');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _inputs = Symbol('inputs');
 const _session = Symbol('session');
 const _metadata = Symbol('metadata');
+const _registeredActions = Symbol('registeredActions');
 
 class InvalidActionError extends Error{
 }
@@ -547,7 +548,7 @@ class Action{
     assert(name.length, 'action name cannot be empty');
     assert((/^([\w_\.\-])+$/gi).test(name), `Illegal action name: ${name}`); // eslint-disable-line no-useless-escape
 
-    this._registeredActions.set(name, actionClass);
+    this[_registeredActions].set(name, actionClass);
   }
 
   /**
@@ -559,8 +560,8 @@ class Action{
   static registeredAction(name){
     assert(TypeCheck.isString(name), 'Invalid name!');
 
-    if (this._registeredActions.has(name)){
-      return this._registeredActions.get(name);
+    if (this[_registeredActions].has(name)){
+      return this[_registeredActions].get(name);
     }
 
     throw new Error(`Action ${name} is not registered!`);
@@ -576,7 +577,7 @@ class Action{
   static registeredActionName(actionClass){
     assert(TypeCheck.isSubClassOf(actionClass, Action), 'Invalid action!');
 
-    for (const [registeredName, registeredActionClass] of this._registeredActions.entries()){
+    for (const [registeredName, registeredActionClass] of this[_registeredActions].entries()){
       if (registeredActionClass === actionClass){
         return registeredName;
       }
@@ -591,7 +592,7 @@ class Action{
    * @return {Array<string>}
    */
   static registeredActionNames(){
-    return [...this._registeredActions.keys()];
+    return [...this[_registeredActions].keys()];
   }
 
   /**
@@ -831,9 +832,9 @@ class Action{
 
     return err;
   }
-
-  static _registeredActions = new Map();
 }
+
+Action[_registeredActions] = new Map();
 
 // Setting the default settings:
 
