@@ -2,6 +2,7 @@ const assert = require('assert');
 const debug = require('debug')('Mebo');
 const TypeCheck = require('js-typecheck');
 const path = require('path');
+const fs = require('fs');
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
@@ -72,10 +73,14 @@ Settings[_data] = Object.create(null);
 // Sets the api version about the application that is using this library, this information
 // is used as part of the request response (default: version found inside of `CWD/package.json`)
 // @see http://semver.org
-try{
-  Settings.set('apiVersion', require(path.join(process.cwd(), 'package.json')).version); // eslint-disable-line
+const _packageFilePath = path.join(process.cwd(), 'package.json');
+if (fs.existsSync(_packageFilePath)){
+  // todo: we are reading package.json file using 'fs' instead of 'require' to avoid
+  // a bug related with dynamic importing in madge (used to check for circular references):
+  // https://github.com/pahen/madge/issues/157
+  Settings.set('apiVersion', JSON.parse(fs.readFileSync(_packageFilePath)).version); // eslint-disable-line
 }
-catch(err)/* istanbul ignore next */{
+else{
   debug('Unable to find package.json under the CWD');
   Settings.set('apiVersion', '');
 }
