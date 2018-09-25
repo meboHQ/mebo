@@ -9,11 +9,15 @@ const Reader = require('./Reader');
 const Writer = require('./Writer');
 const Utils = require('./Utils');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _session = Symbol('session');
 const _metadata = Symbol('metadata');
-
+const _outputEventEmitter = Symbol('outputEventEmitter');
+const _registeredHandlers = Symbol('registeredHandlers');
+const _registeredWriters = Symbol('registeredWriters');
+const _registeredReaders = Symbol('registeredReaders');
+const _addedActions = Symbol('addedActions');
 
 /**
  * A handler is used to bridge an execution method to Mebo.
@@ -345,7 +349,7 @@ class Handler{
     assert(TypeCheck.isSubClassOf(handlerClass, Handler), 'Invalid handler type!');
     const handlerNameFinal = ((handlerName === '') ? handlerClass.name : handlerName);
 
-    this._register(this._registeredHandlers, handlerClass, handlerNameFinal, handlerMask);
+    this._register(this[_registeredHandlers], handlerClass, handlerNameFinal, handlerMask);
   }
 
   /**
@@ -360,7 +364,7 @@ class Handler{
   static registerReader(readerClass, handlerName, handlerMask='*'){
     assert(TypeCheck.isSubClassOf(readerClass, Reader), 'Invalid reader type');
 
-    this._register(this._registeredReaders, readerClass, handlerName, handlerMask);
+    this._register(this[_registeredReaders], readerClass, handlerName, handlerMask);
   }
 
   /**
@@ -375,7 +379,7 @@ class Handler{
   static registerWriter(writerClass, handlerName, handlerMask='*'){
     assert(TypeCheck.isSubClassOf(writerClass, Writer), 'Invalid writer type');
 
-    this._register(this._registeredWriters, writerClass, handlerName, handlerMask);
+    this._register(this[_registeredWriters], writerClass, handlerName, handlerMask);
   }
 
   /**
@@ -402,7 +406,7 @@ class Handler{
    * @return {Handler}
    */
   static registeredHandler(handlerName, handlerMask='*'){
-    const result = this._registered(this._registeredHandlers, handlerName, handlerMask);
+    const result = this._registered(this[_registeredHandlers], handlerName, handlerMask);
 
     if (result){
       return result;
@@ -420,7 +424,7 @@ class Handler{
    * @return {Reader}
    */
   static registeredReader(handlerName, handlerMask='*'){
-    const result = this._registered(this._registeredReaders, handlerName, handlerMask);
+    const result = this._registered(this[_registeredReaders], handlerName, handlerMask);
 
     if (result){
       return result;
@@ -438,7 +442,7 @@ class Handler{
    * @return {Writer}
    */
   static registeredWriter(handlerName, handlerMask='*'){
-    const result = this._registered(this._registeredWriters, handlerName, handlerMask);
+    const result = this._registered(this[_registeredWriters], handlerName, handlerMask);
 
     if (result){
       return result;
@@ -455,7 +459,7 @@ class Handler{
   static registeredHandlerNames(){
     const result = new Set();
 
-    for (const [registeredHandleName] of this._registeredHandlers.keys()){
+    for (const [registeredHandleName] of this[_registeredHandlers].keys()){
       result.add(registeredHandleName);
     }
 
@@ -471,7 +475,7 @@ class Handler{
   static registeredHandlerMasks(handlerName){
     const result = [];
 
-    for (const [registeredHandleName, registeredMask] of this._registeredHandlers.keys()){
+    for (const [registeredHandleName, registeredMask] of this[_registeredHandlers].keys()){
       if (registeredHandleName === handlerName){
         result.push(registeredMask);
       }
@@ -500,11 +504,11 @@ class Handler{
     }
 
     assert(handlerMasks.length, `Handler ${handlerName} is not registered`);
-    if (!this._addedActions.has(handlerName)){
-      this._addedActions.set(handlerName, new Set());
+    if (!this[_addedActions].has(handlerName)){
+      this[_addedActions].set(handlerName, new Set());
     }
 
-    this._addedActions.get(handlerName).add(actionName);
+    this[_addedActions].get(handlerName).add(actionName);
   }
 
   /**
@@ -516,8 +520,8 @@ class Handler{
   static grantedActionNames(handlerName){
     assert(TypeCheck.isString(handlerName), 'handlerName needs to be defined as string');
 
-    if (this._addedActions.has(handlerName)){
-      return [...this._addedActions.get(handlerName).values()];
+    if (this[_addedActions].has(handlerName)){
+      return [...this[_addedActions].get(handlerName).values()];
     }
 
     return [];
@@ -543,7 +547,15 @@ class Handler{
    * @param {function} listener - listener function
    */
   static onErrorDuringOutput(listener){
-    this._outputEventEmitter.on('error', listener);
+    this[_outputEventEmitter].on('error', listener);
+  }
+
+  /**
+   * Removes all listeners connected to the signal emitted
+   * through {@link Handler.onErrorDuringOutput}.
+   */
+  static clearErrorDuringOutput(){
+    this[_outputEventEmitter].removeAllListeners('error');
   }
 
   /**
@@ -753,7 +765,7 @@ class Handler{
    */
   _emitOutputError(err){
     process.nextTick(() => {
-      this.constructor._outputEventEmitter.emit(
+      Handler[_outputEventEmitter].emit(
         'error',
         err,
         this.meta('handler.name'),
@@ -761,16 +773,12 @@ class Handler{
       );
     });
   }
-
-  static _outputEventEmitter = new EventEmitter();
-
-  static _registeredHandlers = new Map();
-
-  static _registeredWriters = new Map();
-
-  static _registeredReaders = new Map();
-
-  static _addedActions = new Map();
 }
+
+Handler[_outputEventEmitter] = new EventEmitter();
+Handler[_registeredHandlers] = new Map();
+Handler[_registeredWriters] = new Map();
+Handler[_registeredReaders] = new Map();
+Handler[_addedActions] = new Map();
 
 module.exports = Handler;

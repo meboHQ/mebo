@@ -3,7 +3,7 @@ const TypeCheck = require('js-typecheck');
 const LruCacheBase = require('lru-cache');
 const sizeof = require('object-sizeof');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _size = Symbol('size');
 const _lifespan = Symbol('lifespan');

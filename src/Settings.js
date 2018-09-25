@@ -3,6 +3,9 @@ const debug = require('debug')('Mebo');
 const TypeCheck = require('js-typecheck');
 const path = require('path');
 
+// symbols used for private members to avoid any potential clashing
+// caused by re-implementations
+const _data = Symbol('data');
 
 /**
  * Provides access to the general configuration used across Mebo.
@@ -15,7 +18,6 @@ const path = require('path');
  * ```
  */
 class Settings{
-
   /**
    * Sets a value based on key & value under the settings
    *
@@ -25,7 +27,7 @@ class Settings{
   static set(key, value){
     assert(TypeCheck.isString(key), 'key needs to be defined as string');
 
-    this._data[key] = value;
+    this[_data][key] = value;
   }
 
   /**
@@ -36,8 +38,8 @@ class Settings{
    * @return {*}
    */
   static get(key, defaultValue=undefined){
-    if (key in this._data){
-      return this._data[key];
+    if (key in this[_data]){
+      return this[_data][key];
     }
 
     return defaultValue;
@@ -50,7 +52,7 @@ class Settings{
    * @return {boolean}
    */
   static has(key){
-    return (key in this._data);
+    return (key in this[_data]);
   }
 
   /**
@@ -59,11 +61,11 @@ class Settings{
    * @return {Array<string>}
    */
   static keys(){
-    return Object.keys(this._data).sort();
+    return Object.keys(this[_data]).sort();
   }
-
-  static _data = Object.create(null);
 }
+
+Settings[_data] = Object.create(null);
 
 // default settings:
 // apiVersion

@@ -3,12 +3,11 @@ const TypeCheck = require('js-typecheck');
 const Action = require('./Action');
 const Utils = require('./Utils');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _action = Symbol('action');
 const _options = Symbol('options');
 const _result = Symbol('result');
-
 
 /**
  * A reader is used by the handler during the execution ({@link Handler.runAction})

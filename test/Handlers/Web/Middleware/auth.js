@@ -60,7 +60,7 @@ describe('Web Middleware Auth:', () => {
 
   after(() => {
     // cleaning any registration made by other tests
-    Mebo.Handlers.Web._beforeAuthActionMiddlewares = [];
+    Mebo.Handlers.Web.clearBeforeAuthAction();
 
     if (server){
       server.close();

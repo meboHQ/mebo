@@ -1,6 +1,5 @@
 const assert = require('assert');
 const minimatch = require('minimatch');
-const EventEmitter = require('events');
 const Mebo = require('../src');
 const testutils = require('../testutils');
 
@@ -90,6 +89,10 @@ describe('Handler:', () => {
     Mebo.Action.register(HiddenInput, 'hiddenInput');
     Mebo.Action.register(testutils.Actions.Shared.PlainObjectResult, 'plainObjectResult');
     Handler.grantAction('CustomHandler', 'hiddenInput');
+  });
+
+  afterEach(() => {
+    Handler.clearErrorDuringOutput();
   });
 
   it('Should assign a session to the handler (during the assignment the session should be cloned)', () => {
@@ -255,9 +258,7 @@ describe('Handler:', () => {
 
   it('Should throw an exception when trying to finalize the session with a broken task inside of the handler output', (done) => {
 
-    class SessionErrorHandler extends CustomHandler{
-      static _outputEventEmitter = new EventEmitter();
-    }
+    class SessionErrorHandler extends CustomHandler{}
 
     Handler.register(SessionErrorHandler, 'sessionErrorHandler');
     Handler.registerReader(CustomReader, 'sessionErrorHandler');
@@ -291,9 +292,7 @@ describe('Handler:', () => {
 
   it('Should throw an exception when trying to serialize the error that  has been set as output=false inside of the handler output', (done) => {
 
-    class OutputErrorHandler extends CustomHandler{
-      static _outputEventEmitter = new EventEmitter();
-    }
+    class OutputErrorHandler extends CustomHandler{}
 
     Handler.register(OutputErrorHandler, 'outputErrorHandler');
     Handler.registerReader(CustomReader, 'outputErrorHandler');

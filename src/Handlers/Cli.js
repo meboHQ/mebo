@@ -9,11 +9,12 @@ const Metadata = require('../Metadata');
 const Handler = require('../Handler');
 const Errors = require('../Errors');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _args = Symbol('args');
 const _stdout = Symbol('stdout');
 const _stderr = Symbol('stderr');
+const _commands = Symbol('commands');
 
 // handler name (used for registration)
 const _handlerName = 'cli';
@@ -322,7 +323,7 @@ class Cli extends Handler{
     };
 
     // list the available action names grated for cli
-    const availableCommands = this._commands[_handlerName];
+    const availableCommands = this[_commands][_handlerName];
     if (['-h', '--help'].includes(useCommand)){
 
       ejs.renderFile(
@@ -364,9 +365,9 @@ class Cli extends Handler{
 
     const result = [];
 
-    if (_handlerName in this._commands){
-      for (const name in this._commands[_handlerName]){
-        if (this._commands[_handlerName][name].actionName === actionName){
+    if (_handlerName in this[_commands]){
+      for (const name in this[_commands][_handlerName]){
+        if (this[_commands][_handlerName][name].actionName === actionName){
           result.push(name);
         }
       }
@@ -391,14 +392,14 @@ class Cli extends Handler{
     const useCommand = (command || actionName);
     assert(TypeCheck.isString(useCommand), 'name needs to be defined as string');
 
-    if (!(handlerName in this._commands)){
-      this._commands[handlerName] = {};
+    if (!(handlerName in this[_commands])){
+      this[_commands][handlerName] = {};
     }
 
     const options = {};
     options.actionName = actionName;
 
-    this._commands[handlerName][useCommand] = options;
+    this[_commands][handlerName][useCommand] = options;
   }
 
   /**
@@ -439,9 +440,9 @@ class Cli extends Handler{
       this.stderr(),
     );
   }
-
-  static _commands = {};
 }
+
+Cli[_commands] = {};
 
 // registering properties
 Input.registerProperty(Input, 'elementType', 'option');

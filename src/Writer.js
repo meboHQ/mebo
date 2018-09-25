@@ -5,7 +5,7 @@ const debug = require('debug')('Mebo');
 const Utils = require('./Utils');
 const Errors = require('./Errors');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _options = Symbol('options');
 const _value = Symbol('value');

@@ -1,7 +1,7 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _contents = Symbol('contents');
 const _executedCount = Symbol('executedIndex');

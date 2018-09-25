@@ -18,11 +18,11 @@ const rename = util.promisify(fs.rename);
 const stat = util.promisify(fs.stat);
 const rmdir = util.promisify(fs.rmdir);
 
-// symbols used for private instance variables to avoid any potential clashing
+// symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _temporaryFolders = Symbol('temporaryFolders');
 const _request = Symbol('request');
-
+const _checkedUploadDirectories = Symbol('checkedUploadDirectories');
 
 /**
  * Web request reader.
@@ -299,7 +299,7 @@ class WebRequest extends Reader{
 
     // making sure the upload directory exists
     const uploadDirectory = this.option('uploadDirectory');
-    if (uploadDirectory && !WebRequest._checkedUploadDirectories.includes(uploadDirectory)){
+    if (uploadDirectory && !WebRequest[_checkedUploadDirectories].includes(uploadDirectory)){
 
       // in case the stat fails it will try to recreate the folders
       let needsToCreate = false;
@@ -323,7 +323,7 @@ class WebRequest extends Reader{
         await Utils.mkdirs(uploadDirectory);
       }
 
-      WebRequest._checkedUploadDirectories.push(uploadDirectory);
+      WebRequest[_checkedUploadDirectories].push(uploadDirectory);
     }
 
     // parsing the body fields
@@ -529,9 +529,9 @@ class WebRequest extends Reader{
       }
     });
   }
-
-  static _checkedUploadDirectories = [];
 }
+
+WebRequest[_checkedUploadDirectories] = [];
 
 // default settings
 Settings.set('reader/webRequest/uploadDirectory', path.join(os.tmpdir(), 'upload'));
