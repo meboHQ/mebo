@@ -128,12 +128,7 @@ class FilePath extends BaseText{
    * @protected
    */
   async _validation(at){
-
-    // calling super class validations
-    // todo: babel does not support 'await' calling a method under 'super'
-    // https://github.com/babel/babel/issues/3930
-    // const value = await super._validation(at);
-    const value = await BaseText.prototype._validation.call(this, at);
+    const value = await super._validation(at);
 
     // only specific extensions
     if (this.property('allowedExtensions') && !this.property('allowedExtensions').map(x => x.toLowerCase()).includes(this.extension(at).toLowerCase())){
