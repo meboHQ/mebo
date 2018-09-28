@@ -434,12 +434,12 @@ class Web extends Handler{
 
     // storing the action under the auxiliary data struct 'action method to webfied index'
     if (!(actionName in this[_actionMethodToWebfiedIndex])){
-      this[_actionMethodToWebfiedIndex][actionName] = Object.create(null);
+      this[_actionMethodToWebfiedIndex][actionName] = {};
     }
 
     // adding the routes
     for (const addMethod of methods){
-      const webfiedAction = Object.create(null);
+      const webfiedAction = {};
       webfiedAction.actionName = actionName;
       webfiedAction.method = addMethod;
       webfiedAction.auth = auth;

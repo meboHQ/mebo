@@ -136,7 +136,7 @@ class LruCache{
       });
     }
 
-    const resultHolder = Object.create(null);
+    const resultHolder = {};
     resultHolder.memorySize = sizeof(value);
     resultHolder.data = value;
 

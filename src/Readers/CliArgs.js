@@ -116,7 +116,7 @@ class CliArgs extends Reader{
     const helpElements = await this.constructor._helpElements(inputList);
     const helpString = await this._renderHelp(helpElements);
 
-    let parsedArgs = Object.create(null);
+    let parsedArgs = {};
     // it thrown an exception if something went wrong (like missing a required parameter)
     try{
       parsedArgs = neodoc.run(helpString, {
@@ -148,7 +148,7 @@ class CliArgs extends Reader{
     }
 
     const alreadyParsed = [];
-    const result = Object.create(null);
+    const result = {};
 
     // collecting the input values
     for (const elementName in parsedArgs){
@@ -262,7 +262,7 @@ class CliArgs extends Reader{
 
       const elementType = input.property('elementType');
 
-      const inputData = Object.create(null);
+      const inputData = {};
       inputData.description = descriptions[currentIndex];
       inputData.elementDisplay = this._elementDisplay(argName, input);
       inputData.usageDisplay = this._usageDisplay(argName, input);
@@ -488,8 +488,8 @@ class CliArgs extends Reader{
   _buildUsage(elements){
     let output = `Usage: ${this.executableName(true)} `;
 
-    const requiredArguments = Object.create(null);
-    const optionalArguments = Object.create(null);
+    const requiredArguments = {};
+    const optionalArguments = {};
     const requiredOptions = Object.keys(elements.option).filter(x => elements.option[x].required);
     let requiredArgumentsOrder = [];
     let optionalArgumentsOrder = [];
@@ -606,7 +606,7 @@ class CliArgs extends Reader{
    */
   static _buildColumns(elements){
     let columns = '\n';
-    const elementTypeDisplayName = Object.create(null);
+    const elementTypeDisplayName = {};
     elementTypeDisplayName.option = 'Options:';
     elementTypeDisplayName.argument = 'Arguments:';
 
@@ -651,7 +651,7 @@ class CliArgs extends Reader{
    * @private
    */
   static _computeElementsWidth(elements){
-    const elementTypeWidth = Object.create(null);
+    const elementTypeWidth = {};
     for (const elementType in elements){
       for (const inputName in elements[elementType]){
         elementTypeWidth[elementType] = Math.max(elementTypeWidth[elementType] || 0,

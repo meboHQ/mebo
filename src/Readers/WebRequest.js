@@ -171,7 +171,7 @@ class WebRequest extends Reader{
    * @protected
    */
   async _perform(inputList){
-    const result = Object.create(null);
+    const result = {};
     const request = this.request();
 
     // when help is requested
@@ -349,7 +349,7 @@ class WebRequest extends Reader{
    */
   _normalizeFieldMultipleValues(bodyFields){
 
-    const multipleValueFields = Object.create(null);
+    const multipleValueFields = {};
 
     for (const inputName in bodyFields.fields){
 
@@ -463,7 +463,7 @@ class WebRequest extends Reader{
           return;
         }
 
-        const result = Object.create(null);
+        const result = {};
         result.files = formFiles;
         result.fields = formFields;
 
