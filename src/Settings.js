@@ -78,8 +78,9 @@ if (fs.existsSync(_packageFilePath)){
   // todo: we are reading package.json file using 'fs' instead of 'require' to avoid
   // a bug related with dynamic importing in madge (used to check for circular references):
   // https://github.com/pahen/madge/issues/157
-  Settings.set('apiVersion', JSON.parse(fs.readFileSync(_packageFilePath)).version); // eslint-disable-line
+  Settings.set('apiVersion', JSON.parse(fs.readFileSync(_packageFilePath)).version);
 }
+/* istanbul ignore next */
 else{
   debug('Unable to find package.json under the CWD');
   Settings.set('apiVersion', '');
