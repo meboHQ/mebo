@@ -111,7 +111,7 @@ class Url extends BaseText{
 
       this._parseUrl(at);
 
-      const options = Object.create(null);
+      const options = {};
       options.method = 'HEAD';
       options.protocol = this._getFromCache('urlParsed', at).protocol;
       options.host = this._getFromCache('urlParsed', at).hostname;
@@ -129,7 +129,7 @@ class Url extends BaseText{
         const request = httpModule.request(options, (response) => {
 
           let errorStatus = null;
-          let headers = Object.create(null);
+          let headers = {};
           if (response.statusCode === 200){
             headers = response.headers;
           }

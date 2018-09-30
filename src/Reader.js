@@ -198,7 +198,7 @@ class Reader{
       await this._parse();
     }
 
-    const result = Object.create(null);
+    const result = {};
     const action = this.action();
     const session = action.session();
     for (const inputName in this[_result]){

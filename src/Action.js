@@ -687,7 +687,7 @@ class Action{
   async _execute(){
     let result = null;
 
-    const data = Object.create(null);
+    const data = {};
     const readOnlyOriginalValues = new Map();
 
     // making inputs read-only during the execution, otherwise it would be very dangerous

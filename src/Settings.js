@@ -66,7 +66,7 @@ class Settings{
   }
 }
 
-Settings[_data] = Object.create(null);
+Settings[_data] = {};
 
 // default settings:
 // apiVersion
