@@ -3,6 +3,32 @@ matrix:
     - os: linux
       dist: trusty
       language: node_js
+      node_js: "12"
+      sudo: false
+      env:
+        CXX=g++-4.8
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-4.8
+    - os: linux
+      dist: trusty
+      language: node_js
+      node_js: "11"
+      sudo: false
+      env:
+        CXX=g++-4.8
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-4.8
+    - os: linux
+      dist: trusty
+      language: node_js
       node_js: "10"
       sudo: false
       env:
@@ -40,6 +66,18 @@ matrix:
           packages:
           - g++-4.8
 
+    - os: osx
+      osx_image: xcode9.3
+      language: node_js
+      node_js: "12"
+      env:
+      - TOOL="xcode-osx"
+    - os: osx
+      osx_image: xcode9.3
+      language: node_js
+      node_js: "11"
+      env:
+      - TOOL="xcode-osx"
     - os: osx
       osx_image: xcode9.3
       language: node_js
