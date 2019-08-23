@@ -74,7 +74,7 @@
     "request": "^2.88.0"
   },
   "optionalDependencies": {
-    "xxhash": "^0.2.4"
+    "xxhash": "^0.3.0"
   },
   "nyc": {
     "require": [
