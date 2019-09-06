@@ -1,5 +1,6 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
+const MeboError = require('../MeboError');
 const Settings = require('../Settings');
 
 
@@ -12,7 +13,7 @@ const Settings = require('../Settings');
  *
  * @see {@link Writer._errorOutput}
  */
-class Help extends Error{
+class Help extends MeboError{
 
   constructor(message){
     assert(TypeCheck.isString(message) && message.length, 'message needs to defined as valid string (cannot be empty)');

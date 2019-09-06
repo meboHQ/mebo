@@ -403,7 +403,7 @@ class Web extends Handler{
 
     // registering action
     let methods = (TypeCheck.isString(method)) ? [method] : method;
-    methods = methods.map(x => x.toLowerCase());
+    methods = methods.map((x) => x.toLowerCase());
 
     // finding duplicated items
     const removeIndexes = [];
@@ -614,7 +614,7 @@ Input.registerProperty('filePath', 'webTypeHint', 'Expects a file input when man
 Metadata.registerOptionVar('$web', 'handler.web');
 Metadata.registerOptionVar('$webUploadDirectory', '$web.readOptions.uploadDirectory');
 Metadata.registerOptionVar('$webUploadPreserveName', '$web.readOptions.uploadPreserveName');
-Metadata.registerOptionVar('$webUploadMaxFileSize', '$web.readOptions.uploadMaxFileSize');
+Metadata.registerOptionVar('$webDefaultUploadMaxFileSize', '$web.readOptions.uploadDefaultMaxFileSize');
 Metadata.registerOptionVar('$webMaxFields', '$web.readOptions.maxFields');
 Metadata.registerOptionVar('$webMaxFieldsSize', '$web.readOptions.maxFieldsSize');
 Metadata.registerOptionVar('$webHeaders', '$web.writeOptions.headers');

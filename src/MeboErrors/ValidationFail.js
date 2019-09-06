@@ -1,5 +1,6 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
+const MeboError = require('../MeboError');
 const Settings = require('../Settings');
 
 // symbols used for private instance variables to avoid any potential clashing
@@ -21,7 +22,7 @@ const _message = Symbol('message');
  * ```
  * @see {@link Writer._errorOutput}
  */
-class ValidationFail extends Error{
+class ValidationFail extends MeboError{
 
   /**
    * Initialize the exception

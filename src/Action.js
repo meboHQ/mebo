@@ -207,7 +207,7 @@ class Action{
    * @return {Promise}
    */
   validate(){
-    return Promise.all([...this[_inputs].values()].map(input => input.validate()));
+    return Promise.all([...this[_inputs].values()].map((input) => input.validate()));
   }
 
   /**
@@ -775,10 +775,10 @@ class Action{
 
     // skipping hidden inputs
     if (avoidHidden){
-      inputNames = inputNames.filter(x => !this.input(x).property('hidden', false));
+      inputNames = inputNames.filter((x) => !this.input(x).property('hidden', false));
     }
 
-    const serializeValuePromises = inputNames.map(x => this.input(x).serializeValue());
+    const serializeValuePromises = inputNames.map((x) => this.input(x).serializeValue());
     const serializedResult = await Promise.all(serializeValuePromises);
 
     const actionInputs = {};

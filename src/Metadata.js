@@ -100,7 +100,7 @@ const _maxDepth = Symbol('maxDepth');
  * $web | `handler.web` |
  * $webUploadDirectory | `$web.readOptions.uploadDirectory` | {@link WebRequest}
  * $webUploadPreserveName | `$web.readOptions.uploadPreserveName` | {@link WebRequest}
- * $webUploadMaxFileSize | `$web.readOptions.uploadMaxFileSize` | {@link WebRequest}
+ * $webDefaultUploadMaxFileSize | `$web.readOptions.uploadDefaultMaxFileSize` | {@link WebRequest}
  * $webMaxFields | `$web.readOptions.maxFields` | {@link WebRequest}
  * $webMaxFieldsSize | `$web.readOptions.maxFieldsSize` | {@link WebRequest}
  * $webHeaders | `$web.writeOptions.headers` | {@link WebResponse}

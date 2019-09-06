@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const debug = require('debug')('Mebo');
-const ValidationFail = require('../Errors/ValidationFail');
+const ValidationFail = require('../MeboErrors/ValidationFail');
 const Input = require('../Input');
 const BaseText = require('./BaseText');
 
@@ -131,7 +131,7 @@ class FilePath extends BaseText{
     const value = await super._validation(at);
 
     // only specific extensions
-    if (this.property('allowedExtensions') && !this.property('allowedExtensions').map(x => x.toLowerCase()).includes(this.extension(at).toLowerCase())){
+    if (this.property('allowedExtensions') && !this.property('allowedExtensions').map((x) => x.toLowerCase()).includes(this.extension(at).toLowerCase())){
       throw new ValidationFail(
         util.format("Extension '%s' is not supported! (supported extensions: %s)", this.extension(at), this.property('allowedExtensions')),
         '05139388-f4ec-4496-be20-f794eb14d1ff',

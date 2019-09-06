@@ -2,7 +2,7 @@ const path = require('path');
 const neodoc = require('neodoc');
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
-const Errors = require('../Errors');
+const MeboErrors = require('../MeboErrors');
 const Inputs = require('../Inputs');
 const Settings = require('../Settings');
 const Handler = require('../Handler');
@@ -128,7 +128,7 @@ class CliArgs extends Reader{
       });
     }
     catch(err){
-      const error = new Errors.Help(err.message);
+      const error = new MeboErrors.Help(err.message);
       error.message = error.message.replace(new RegExp(this.executableName(true), 'g'), this.executableName());
       throw error;
     }
@@ -136,7 +136,7 @@ class CliArgs extends Reader{
     // however when the user asks for the help it should raise an exception
     // without the stack
     if ('.help' in parsedArgs){
-      const error = new Errors.Help(parsedArgs['.help']);
+      const error = new MeboErrors.Help(parsedArgs['.help']);
       error.message = error.message.replace(new RegExp(this.executableName(true), 'g'), this.executableName());
       throw error;
     }
@@ -170,7 +170,7 @@ class CliArgs extends Reader{
       }
 
       // querying the input value
-      const inputNames = inputList.map(x => x.name());
+      const inputNames = inputList.map((x) => x.name());
       if (foundInputName && !alreadyParsed.includes(foundInputName)){
         alreadyParsed.push(foundInputName);
 
@@ -242,7 +242,7 @@ class CliArgs extends Reader{
 
     // building inputs
     const addedArgs = [];
-    const descriptions = await Promise.all(inputList.map(x => this._computeInfoDisplay(x)));
+    const descriptions = await Promise.all(inputList.map((x) => this._computeInfoDisplay(x)));
 
     let currentIndex = 0;
     for (const input of inputList){
@@ -490,12 +490,12 @@ class CliArgs extends Reader{
 
     const requiredArguments = {};
     const optionalArguments = {};
-    const requiredOptions = Object.keys(elements.option).filter(x => elements.option[x].required);
+    const requiredOptions = Object.keys(elements.option).filter((x) => elements.option[x].required);
     let requiredArgumentsOrder = [];
     let optionalArgumentsOrder = [];
 
     if (requiredOptions.length){
-      output += requiredOptions.map(x => elements.option[x].usageDisplay).join(' ');
+      output += requiredOptions.map((x) => elements.option[x].usageDisplay).join(' ');
       output += ' ';
     }
     output += '[options]';
@@ -512,8 +512,8 @@ class CliArgs extends Reader{
       }
 
       const requiredArgumentNames = Object.keys(requiredArguments);
-      requiredArgumentsOrder = requiredArgumentNames.filter(x => !requiredArguments[x].vector);
-      requiredArgumentsOrder = requiredArgumentsOrder.concat(requiredArgumentNames.filter(x => !requiredArgumentsOrder.includes(x)));
+      requiredArgumentsOrder = requiredArgumentNames.filter((x) => !requiredArguments[x].vector);
+      requiredArgumentsOrder = requiredArgumentsOrder.concat(requiredArgumentNames.filter((x) => !requiredArgumentsOrder.includes(x)));
 
       // first adding the required arguments
       let hasVectorRequiredArgument = false;
@@ -531,8 +531,8 @@ class CliArgs extends Reader{
 
       // then adding the optional ones
       const optionalArgumentNames = Object.keys(optionalArguments);
-      optionalArgumentsOrder = optionalArgumentNames.filter(x => !optionalArguments[x].vector);
-      optionalArgumentsOrder = optionalArgumentsOrder.concat(optionalArgumentNames.filter(x => !optionalArgumentsOrder.includes(x)));
+      optionalArgumentsOrder = optionalArgumentNames.filter((x) => !optionalArguments[x].vector);
+      optionalArgumentsOrder = optionalArgumentsOrder.concat(optionalArgumentNames.filter((x) => !optionalArgumentsOrder.includes(x)));
 
       for (const inputName in optionalArguments){
         output += ' [';
@@ -577,7 +577,7 @@ class CliArgs extends Reader{
 
         output += '[options] ';
         if (requiredOptionNames.length){
-          output += requiredOptionNames.filter(y => y !== inputName).map(x => elements.option[x].usageDisplay).join(' ');
+          output += requiredOptionNames.filter((y) => y !== inputName).map((x) => elements.option[x].usageDisplay).join(' ');
           output += ' ';
         }
 

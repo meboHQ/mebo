@@ -2,7 +2,7 @@ const assert = require('assert');
 const stream = require('stream');
 const Handler = require('../Handler');
 const Writer = require('../Writer');
-const Errors = require('../Errors');
+const MeboErrors = require('../MeboErrors');
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
@@ -105,7 +105,7 @@ class CliOutput extends Writer{
     process.exitCode = 1;
     const message = super._errorOutput();
 
-    if (this.value() instanceof Errors.Help){
+    if (this.value() instanceof MeboErrors.Help){
       this.stderr().write(`${message}\n`);
     }
     else{

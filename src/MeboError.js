@@ -1,8 +1,5 @@
-const Settings = require('../Settings');
-
-
 /**
- * Exception raised when querying a resource that does not exist.
+ * Exception raised when a resource already exists.
  *
  * This error is provided by Mebo to complement the rest support ({@link Web.restful}),
  * although the main purpose is to provide a status code which is used when reporting
@@ -12,9 +9,9 @@ const Settings = require('../Settings');
  *
  * @see {@link Writer._errorOutput}
  */
-class NotFound extends Error{
+class MeboError extends Error{
 
-  constructor(message='Not Found'){
+  constructor(message='Conflict'){
     super(message);
 
     /**
@@ -22,12 +19,12 @@ class NotFound extends Error{
      * level action (an action that has not been created from another action).
      *
      * Value driven by:
-     * `Settings.get('error/notFound/status')`
-     * (default: `404`)
+     * `Settings.get('error/conflict/status')`
+     * (default: `409`)
      *
      * @type {number}
      */
-    this.status = Settings.get('error/notFound/status');
+    this.status = 500; // Settings.get('error/conflict/status');
 
     /**
      * Boolean telling if this error is not allowed as output ({@link Handler.output})
@@ -37,17 +34,13 @@ class NotFound extends Error{
      * emitted by the signal {@link Handler.onErrorDuringOutput}.
      *
      * Value driven by:
-     * `Settings.get('error/notFound/disableOutputInNested')`
+     * `Settings.get('error/conflict/disableOutputInNested')`
      * (default: `false`)
      *
      * @type {boolean}
      */
-    this.disableOutputInNested = Settings.get('error/notFound/disableOutputInNested');
+    this.disableOutputInNested = false; // = Settings.get('error/conflict/disableOutputInNested');
   }
 }
 
-// default settings
-Settings.set('error/notFound/status', 404);
-Settings.set('error/notFound/disableOutputInNested', false);
-
-module.exports = NotFound;
+module.exports = MeboError;

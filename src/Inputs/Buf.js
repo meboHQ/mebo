@@ -1,4 +1,4 @@
-const ValidationFail = require('../Errors/ValidationFail');
+const ValidationFail = require('../MeboErrors/ValidationFail');
 const Input = require('../Input');
 
 
@@ -16,7 +16,7 @@ const Input = require('../Input');
  * --- | --- | :---: | :---:
  * hidden | boolean telling if the input is hidden from the {@link Reader}, \
  * therefore it should only be used internally | ::on:: | ::true::
- * maxLength | maximum size of the buffer in bytes | ::off:: | ::none::
+ * maxBufferSize | maximum size of the buffer in bytes | ::off:: | ::none::
  *
  * All properties including the inherited ones can be listed via
  * {@link registeredPropertyNames}
@@ -44,7 +44,7 @@ class Buf extends Input{
     // calling super class validations
     return super._validation(at).then((value) => {
 
-      const maxLength = this.property('maxLength');
+      const maxBufferSize = this.property('maxBufferSize');
 
       // type checking
       if (!(value instanceof Buffer)){
@@ -55,7 +55,7 @@ class Buf extends Input{
       }
 
       // specific type check
-      else if (maxLength !== null && value.length > maxLength){
+      else if (maxBufferSize !== null && value.length > maxBufferSize){
         throw new ValidationFail(
           'Value exceeds the maximum length',
           '4387c432-ffd6-48d6-a144-91566d262fa0',
@@ -100,6 +100,6 @@ Input.register(Buf, 'buffer');
 
 // registering properties
 Input.registerProperty(Buf, 'hidden', true);
-Input.registerProperty(Buf, 'maxLength');
+Input.registerProperty(Buf, 'maxBufferSize');
 
 module.exports = Buf;

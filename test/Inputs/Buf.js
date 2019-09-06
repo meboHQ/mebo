@@ -64,7 +64,7 @@ describe('Buffer Input:', () => {
 
   it('Should not allow a buffer that exceeds the maximum length', (done) => {
     const buf = Buffer.from('test', 'ascii');
-    const input = Input.create('input: buffer', {maxLength: 3});
+    const input = Input.create('input: buffer', {maxBufferSize: 3});
     input.setValue(buf);
 
     input.serializeValue().then((value) => {
@@ -76,7 +76,7 @@ describe('Buffer Input:', () => {
 
   it('Should allow a buffer that does not exceed the maximum length', () => {
     const buf = Buffer.from('test', 'ascii');
-    const input = Input.create('input: buffer', {maxLength: 100});
+    const input = Input.create('input: buffer', {maxBufferSize: 100});
     input.setValue(buf);
 
     return input.serializeValue();

@@ -19,7 +19,7 @@ describe('Input Property:', () => {
       'description',
     ];
 
-    assert.equal((expectedPropertyNames.filter(x => !propertyNames.includes(x))).length, 0);
+    assert.equal((expectedPropertyNames.filter((x) => !propertyNames.includes(x))).length, 0);
   });
 
   it('Should return the available property names', () => {

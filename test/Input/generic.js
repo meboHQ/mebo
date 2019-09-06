@@ -3,7 +3,7 @@ const minimatch = require('minimatch');
 const Mebo = require('../../src');
 
 const Input = Mebo.Input;
-const ValidationFail = Mebo.Errors.ValidationFail;
+const ValidationFail = Mebo.MeboErrors.ValidationFail;
 
 
 describe('Input Generic:', () => {

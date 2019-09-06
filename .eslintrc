@@ -35,6 +35,7 @@
           "param",
           "pre",
           "ejs",
+          "abc123",
           "madge",
           "mebo",
           "func",
@@ -274,6 +275,9 @@
         "allowTemplateLiterals": true,
         "avoidEscape": true
       }
+    ],
+    "max-classes-per-file": [
+      0
     ],
     "linebreak-style": [
       2,

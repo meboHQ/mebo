@@ -1,7 +1,8 @@
 const modules = {};
 
 // main modules
-modules.Errors = require('./Errors');
+modules.MeboError = require('./MeboError');
+modules.MeboErrors = require('./MeboErrors');
 modules.Utils = require('./Utils');
 modules.Tasks = require('./Tasks');
 modules.Input = require('./Input');

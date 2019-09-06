@@ -9,6 +9,12 @@ describe('Text Input:', () => {
   it('Input should start empty', () => {
     const input = Input.create('input: text');
     assert.equal(input.value(), null);
+    assert.equal(input.property('hidden'), undefined);
+  });
+
+  it('Should create a hidden input using the underscore prefix syntax', () => {
+    const input = Input.create('_input: text');
+    assert(input.property('hidden'));
   });
 
   it('Should create the input using the alias: string', () => {

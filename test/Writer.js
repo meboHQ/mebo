@@ -86,7 +86,7 @@ describe('Writer:', () => {
 
   it('Should test serialize an error as output', () => {
 
-    const err = new Mebo.Errors.ValidationFail('Some Error');
+    const err = new Mebo.MeboErrors.ValidationFail('Some Error');
 
     const writer = new CustomWriter(err);
     writer.serialize();
