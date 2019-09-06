@@ -14,9 +14,9 @@
 
 [![experimental](https://badges.github.io/stability-badges/dist/experimental.svg)](https://github.com/meboHQ/mebo/issues)
 
-Mebo is an experimental framework focused to provide an unified interface across multiple domains. Although most applications are designed with a specific domain in mind, mebo can still be employed to provide an easy way to interact with bits of your application, coming handy during the development & debugging process.
+Mebo is an experimental full OOP framework focused in providing an unified interface across multiple domains.
 
-The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to mebo. The idea of going through this process is to simplify the development process by minimizing repetitive routines ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)).
+The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to Mebo. Therefore, reducing the need for writing coupled/boilerplate code.
 
 It comes bundled with support for web (rest/middlewares) and command-line (docopt) domains which was one of the reasons why I wanted to try to find a common ground to provide an unified interface for such distinctive domains that turned out to be extremely challenge.
 
@@ -27,17 +27,17 @@ It comes bundled with support for web (rest/middlewares) and command-line (docop
 ## Key features
 - **Flexible architeture**. Mebo can be integrated to existing applications. Also, it's designed from ground up to be customizable and extendable
 
-- **Reliable executions**. Mebo enforces validating the data used in the evaluations by performing a wide range of verifications
+- **Reliable executions**. Mebo enforces validating the data used prior the execution of evaluations by performing a wide range of verifications
 
-- **Agnostic execution platform**. Evaluations in Mebo can be executed across multiple domains
+- **Agnostic execution platform**. Implementations using Mebo can be executed easily across different domains
 
-- **Integrated caching system**. Mebo provides out-the-box integrated caching system that can be easily enabled for any evaluation, speeding up your application
+- **Integrated caching system**. Mebo provides out-the-box integrated caching system
 
-- **Express integration**. The web support from Mebo is done using express, embracing the most popular web framework for Node.js
+- **Express integration**. The web support in Mebo is done through express, embracing the most popular web framework for Node.js
 
 - **RESTful support**. Evaluations can be executed through REST automatically
 
-- **Command support**. By using Mebo your evaluations can be executed through command-line interfaces following docopt specifications.
+- **CLI support**. By using Mebo your evaluations can be executed through command-line interfaces following docopt specifications.
 
 [<img src="https://mebohq.github.io/docs/data/intro.png?v=1"/>](data/manual/INTRODUCTION.md)
 
