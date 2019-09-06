@@ -10,8 +10,8 @@
     "docs": "npm install esdoc@0.5.2 --no-save && esdoc -c .esdoc.json && npm run docs-assets",
     "docs-assets": "cp -R data/ esdoc/data/",
     "lint": "eslint src/** test/**",
-    "test": "nyc mocha --check-leaks --full-trace --recursive --exit",
-    "test-debug": "mocha --inspect --trace-deprecation --debug-brk --watch --full-trace --recursive --compilers babel-register --exit",
+    "test": "nyc mocha --check-leaks --full-trace --recursive --timeout 4000 --exit",
+    "test-debug": "mocha --inspect --trace-deprecation --timeout 4000 --debug-brk --watch --full-trace --recursive --compilers babel-register --exit",
     "test-cr": "madge ./src/ --circular",
     "test-ci": "npm run lint && npm run test-cr && npm test && codecov"
   },
