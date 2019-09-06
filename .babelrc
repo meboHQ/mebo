@@ -2,6 +2,7 @@
   "plugins": [
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-transform-strict-mode"
+    "@babel/plugin-transform-strict-mode",
+    "@babel/plugin-proposal-object-rest-spread"
   ]
 }
