@@ -16,7 +16,7 @@
 
 Mebo is an experimental full OOP framework focused in providing an unified interface across multiple domains.
 
-The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to Mebo. Therefore, reducing the need for writing coupled/boilerplate code.
+The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to Mebo. Therefore, reducing the need of writing boilerplate code.
 
 It comes bundled with support for web (rest/middlewares) and command-line (docopt) domains which was one of the reasons why I wanted to try to find a common ground to provide an unified interface for such distinctive domains that turned out to be extremely challenge.
 
