@@ -14,7 +14,7 @@
 
 [![experimental](https://badges.github.io/stability-badges/dist/experimental.svg)](https://github.com/meboHQ/mebo/issues)
 
-Mebo is an experimental full OOP framework focused in providing an unified interface across multiple domains.
+Mebo is an experimental full OOP framework focused in providing a unified interface across multiple domains.
 
 The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to Mebo. Therefore, reducing the need of writing boilerplate code.
 
