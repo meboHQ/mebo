@@ -1,3 +1,4 @@
+const MeboError = require('../MeboError');
 const Settings = require('../Settings');
 
 
@@ -12,7 +13,7 @@ const Settings = require('../Settings');
  *
  * @see {@link Writer._errorOutput}
  */
-class NoContent extends Error{
+class NoContent extends MeboError{
 
   constructor(message='No Content'){
     super(message);

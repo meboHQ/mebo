@@ -7,20 +7,25 @@ const formidable = require('formidable');
 const TypeCheck = require('js-typecheck');
 const ejs = require('ejs');
 const Settings = require('../Settings');
+const Inputs = require('../Inputs');
 const Handler = require('../Handler');
 const Reader = require('../Reader');
 const Utils = require('../Utils');
-const Errors = require('../Errors');
+const MeboError = require('../MeboError');
+const MeboErrors = require('../MeboErrors');
 
 // promisifying
 const mkdtemp = util.promisify(fs.mkdtemp);
 const rename = util.promisify(fs.rename);
 const stat = util.promisify(fs.stat);
 const rmdir = util.promisify(fs.rmdir);
+const unlink = util.promisify(fs.unlink);
+const readFile = util.promisify(fs.readFile);
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
 const _temporaryFolders = Symbol('temporaryFolders');
+const _temporaryFiles = Symbol('temporaryFiles');
 const _request = Symbol('request');
 const _checkedUploadDirectories = Symbol('checkedUploadDirectories');
 
@@ -103,9 +108,9 @@ const _checkedUploadDirectories = Symbol('checkedUploadDirectories');
  * uploads, any illegal character is replaced by underscore, otherwise if disabled \
  * it gives a random name to the upload, default value driven by: \
  * <br>`Settings.get('reader/webRequest/uploadPreserveName')`
- * uploadMaxFileSize | total maximum file size about all uploads in bytes, \
+ * uploadDefaultMaxFileSize | total maximum file size about all uploads in bytes, \
  * default value (`4 mb`) driven by: \
- * <br>`Settings.get('reader/webRequest/uploadMaxFileSize')`
+ * <br>`Settings.get('reader/webRequest/uploadDefaultMaxFileSize')`
  * maxFields | Limits the number of fields that the querystring parser will decode, \
  * default value (`1000`) driven by: \
  * <br>`Settings.get('reader/webRequest/maxFields')`
@@ -113,7 +118,7 @@ const _checkedUploadDirectories = Symbol('checkedUploadDirectories');
  * allocate in bytes, default value (`2 mb`) driven by:\
  * <br>`Settings.get('reader/webRequest/maxFieldsSize')` [`2 mb`]
  *
- * <br/>Example about defining a custom `uploadMaxFileSize` option from inside of an
+ * <br/>Example about defining a custom `uploadDefaultMaxFileSize` option from inside of an
  * action through the metadata support:
  *
  * ```
@@ -121,9 +126,9 @@ const _checkedUploadDirectories = Symbol('checkedUploadDirectories');
  *    constructor(){
  *      super();
  *
- *      // 'uploadMaxFileSize' option
+ *      // 'uploadDefaultMaxFileSize' option
  *      this.setMeta('handler.web.readOptions', {
- *        uploadMaxFileSize: 10 * 1024 * 1024,
+ *        uploadDefaultMaxFileSize: 10 * 1024 * 1024,
  *      });
  *    }
  * }
@@ -145,11 +150,12 @@ class WebRequest extends Reader{
     // default options
     this.setOption('uploadDirectory', Settings.get('reader/webRequest/uploadDirectory'));
     this.setOption('uploadPreserveName', Settings.get('reader/webRequest/uploadPreserveName'));
-    this.setOption('uploadMaxFileSize', Settings.get('reader/webRequest/uploadMaxFileSize'));
+    this.setOption('uploadDefaultMaxFileSize', Settings.get('reader/webRequest/uploadDefaultMaxFileSize'));
     this.setOption('maxFields', Settings.get('reader/webRequest/maxFields'));
     this.setOption('maxFieldsSize', Settings.get('reader/webRequest/maxFieldsSize'));
 
     this[_temporaryFolders] = [];
+    this[_temporaryFiles] = [];
   }
 
   /**
@@ -173,10 +179,11 @@ class WebRequest extends Reader{
   async _perform(inputList){
     const result = {};
     const request = this.request();
+    const test = new Map();
 
     // when help is requested
     if (Settings.get('handler/web/allowHelp') && 'help' in request.query){
-      throw new Errors.Help(await this._renderHelp(inputList));
+      throw new MeboErrors.Help(await this._renderHelp(inputList));
     }
 
     // handling body fields
@@ -219,8 +226,27 @@ class WebRequest extends Reader{
       }
 
       if (requestInputValue !== undefined){
+
+        // reading buffer data
+        if (input instanceof Inputs.Buf){
+          // creating a promise that is later executed to retrieve the buffer
+          // from the uploaded file
+          test.set(inputName, readFile(requestInputValue));
+
+          // marking for removal temporary file used by the buffer input
+          this[_temporaryFiles].push(requestInputValue);
+        }
+
         result[inputName] = requestInputValue;
       }
+    }
+
+    // retrieving the value from the buffer inputs
+    const bufferPromisesResult = await Promise.all(test.values());
+    let currentIndex = 0;
+    for (const bufferInputName of test.keys()){
+      result[bufferInputName] = bufferPromisesResult[currentIndex];
+      currentIndex++;
     }
 
     return result;
@@ -292,10 +318,12 @@ class WebRequest extends Reader{
    * Returns an object containing the processed body fields parsed, this object separates
    * the fields from the files
    *
+   * @param {Array<Input>} inputList - Valid list of inputs that should be used for
+   * the parsing
    * @return {Promise<Object>}
    * @private
    */
-  async _bodyFields(){
+  async _bodyFields(inputList){
 
     // making sure the upload directory exists
     const uploadDirectory = this.option('uploadDirectory');
@@ -327,7 +355,7 @@ class WebRequest extends Reader{
     }
 
     // parsing the body fields
-    const bodyFields = await this._parseForm();
+    const bodyFields = await this._parseForm(inputList);
 
     // normalizing multiple values for the fields
     this._normalizeFieldMultipleValues(bodyFields);
@@ -422,7 +450,17 @@ class WebRequest extends Reader{
       }
     }
 
-    // adding the cleanup temporary folders to the wrapup tasks
+    // adding a wrapup to cleanup temporary files used for the uploads
+    if (this[_temporaryFolders].length){
+      this.action().session().wrapup().addWrappedPromise(
+        this._cleanupTemporaryFiles.bind(this),
+        {
+          priority: 100,
+        },
+      );
+    }
+
+    // adding a wrapup to cleanup temporary folders used for the uploads
     if (this[_temporaryFolders].length){
       this.action().session().wrapup().addWrappedPromise(
         this._cleanupTemporaryFolders.bind(this),
@@ -436,17 +474,39 @@ class WebRequest extends Reader{
   /**
    * Auxiliary method used to promisify formidable's form.parse call
    *
+   * @param {Array<Input>} inputList - Valid list of inputs that should be used for
+   * the parsing
    * @return {Promise<Object>}
    * @private
    */
-  _parseForm(){
+  _parseForm(inputList){
     return new Promise((resolve, reject) => {
 
       const form = new formidable.IncomingForm();
 
       // formidable settings
       form.uploadDir = this.option('uploadDirectory');
-      form.maxFileSize = this.option('uploadMaxFileSize');
+
+      // in case the max size has been cranked-up by the inputs
+      // to a value that is greater than the option 'uploadDefaultMaxFileSize'
+      // we use that value instead
+      let maxFileSize = this.option('uploadDefaultMaxFileSize');
+      for (const input of inputList){
+        // file path input
+        if (input instanceof Inputs.FilePath
+        && input.hasProperty('maxFileSize')
+        && input.property('maxFileSize') > maxFileSize){
+          maxFileSize = input.property('maxFileSize');
+        }
+        // buffer input
+        else if (input instanceof Inputs.Buf
+        && input.hasProperty('maxBufferSize')
+        && input.property('maxBufferSize') > maxFileSize){
+          maxFileSize = input.property('maxBufferSize');
+        }
+      }
+
+      form.maxFileSize = maxFileSize;
       form.keepExtensions = true;
       form.multiples = true;
       form.encoding = 'utf-8';
@@ -459,6 +519,17 @@ class WebRequest extends Reader{
         /* istanbul ignore next */
         if (err){
           err.status = err.status || 500;
+
+          // converting some of the formidable exceptions
+          // to mebo mebo exceptions.
+          // formidable does not provide a custom exception type
+          // for the exceptions. Therefore, we need to parse
+          // the message to know the context.
+          if (!(err instanceof MeboError) && err.message.startsWith('maxFileSize exceeded,')){
+            reject(new MeboErrors.ValidationFail(err.message));
+            return;
+          }
+
           reject(err);
           return;
         }
@@ -494,6 +565,25 @@ class WebRequest extends Reader{
   }
 
   /**
+   * Promise based method that removes the temporary files created during upload
+   * (used by buffer inputs)
+   *
+   * @return {Promise}
+   * @private
+   */
+  _cleanupTemporaryFiles(){
+    const result = Promise.all(
+      this[_temporaryFiles].map((x) => unlink(x)),
+    );
+
+    // theoretically this method can be called multiple times by handler.run
+    // for the same request
+    this[_temporaryFiles] = [];
+
+    return result;
+  }
+
+  /**
    * Promise based method that removes the temporary folders that are created
    * when `uploadPreserveName` is enabled
    *
@@ -502,7 +592,7 @@ class WebRequest extends Reader{
    */
   _cleanupTemporaryFolders(){
     const result = Promise.all(
-      this[_temporaryFolders].map(x => this._deleteTemporaryFolder(x)),
+      this[_temporaryFolders].map((x) => this._deleteTemporaryFolder(x)),
     );
 
     // theoretically this method can be called multiple times by handler.run
@@ -535,10 +625,10 @@ WebRequest[_checkedUploadDirectories] = [];
 
 // default settings
 Settings.set('reader/webRequest/uploadDirectory', path.join(os.tmpdir(), 'upload'));
-Settings.set('reader/webRequest/uploadMaxFileSize', 4 * 1024 * 1024);
+Settings.set('reader/webRequest/uploadDefaultMaxFileSize', 4 * 1024 * 1024);
 Settings.set('reader/webRequest/uploadPreserveName', true);
 Settings.set('reader/webRequest/maxFields', 1000);
-Settings.set('reader/webRequest/maxFieldsSize', 2 * 1024 * 1024);
+Settings.set('reader/webRequest/maxFieldsSize', 4 * 1024 * 1024);
 Settings.set(
   'reader/webRequest/helpTemplate',
   path.join(path.dirname(path.dirname(path.dirname(__filename))), 'data', 'handlers', 'web', 'help.ejs'),

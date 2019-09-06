@@ -2,7 +2,7 @@ const assert = require('assert');
 const Mebo = require('../../src');
 const testutils = require('../../testutils');
 
-const ValidationFail = Mebo.Errors.ValidationFail;
+const ValidationFail = Mebo.MeboErrors.ValidationFail;
 
 
 describe('Action Input:', () => {
@@ -39,7 +39,7 @@ describe('Action Input:', () => {
   // input names
   it('When querying the input names it should return all inputs added to the action', () => {
     const multiplyAction = Mebo.Action.create('multiplyAction');
-    assert.equal(multiplyAction.inputNames().filter(x => (['a', 'b'].includes(x))).length, 2);
+    assert.equal(multiplyAction.inputNames().filter((x) => (['a', 'b'].includes(x))).length, 2);
   });
 
   it('Should fail when trying to add the same input name twice', () => {

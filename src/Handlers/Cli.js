@@ -7,7 +7,7 @@ const Settings = require('../Settings');
 const Input = require('../Input');
 const Metadata = require('../Metadata');
 const Handler = require('../Handler');
-const Errors = require('../Errors');
+const MeboErrors = require('../MeboErrors');
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
@@ -334,14 +334,14 @@ class Cli extends Handler{
           description,
         },
       ).then((result) => {
-        _handlerOutput(new Errors.Help(result));
+        _handlerOutput(new MeboErrors.Help(result));
       }).catch(/* istanbul ignore next */ (error) => {
         _handlerOutput(error);
       });
     }
     // command not found
     else if (!(useCommand in availableCommands)){
-      _handlerOutput(new Errors.Help(`Could not initialize '${useCommand}', command not found!`));
+      _handlerOutput(new MeboErrors.Help(`Could not initialize '${useCommand}', command not found!`));
     }
     // found cli, initializing from it
     else{

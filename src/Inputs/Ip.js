@@ -1,5 +1,5 @@
 const nodeIp = require('ip');
-const ValidationFail = require('../Errors/ValidationFail');
+const ValidationFail = require('../MeboErrors/ValidationFail');
 const Input = require('../Input');
 const BaseText = require('./BaseText');
 

@@ -4,7 +4,7 @@ const TypeCheck = require('js-typecheck');
 const Settings = require('../Settings');
 const Handler = require('../Handler');
 const Writer = require('../Writer');
-const Errors = require('../Errors');
+const MeboErrors = require('../MeboErrors');
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
@@ -159,7 +159,7 @@ class WebResponse extends Writer{
     this.response().status(status);
 
     // when help is requested
-    if (this.value() instanceof Errors.Help){
+    if (this.value() instanceof MeboErrors.Help){
       this.response().send(this.value().message);
       return;
     }

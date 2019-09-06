@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const TypeCheck = require('js-typecheck');
-const ValidationFail = require('../Errors/ValidationFail');
+const ValidationFail = require('../MeboErrors/ValidationFail');
 const Input = require('../Input');
 const Hex = require('./Hex');
 

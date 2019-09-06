@@ -268,7 +268,7 @@ describe('Handler:', () => {
       if (err.message === 'Failed to execute 1 tasks (out of 1)'
         && name === 'sessionErrorHandler'
         && mask === '*'
-        && err.taskErrors[0].message === 'Should fail'){
+        && err.taskMeboErrors[0].message === 'Should fail'){
         done();
       }
       else{
@@ -353,7 +353,7 @@ describe('Handler:', () => {
       }
       catch(err){
         error = err;
-        if (!(err instanceof Mebo.Errors.ValidationFail)){
+        if (!(err instanceof Mebo.MeboErrors.ValidationFail)){
           throw err;
         }
         else{

@@ -1,3 +1,4 @@
+const MeboError = require('../MeboError');
 const Settings = require('../Settings');
 
 
@@ -12,7 +13,7 @@ const Settings = require('../Settings');
  *
  * @see {@link Writer._errorOutput}
  */
-class Conflict extends Error{
+class Conflict extends MeboError{
 
   constructor(message='Conflict'){
     super(message);

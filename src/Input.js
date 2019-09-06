@@ -1,6 +1,6 @@
 const assert = require('assert');
 const TypeCheck = require('js-typecheck');
-const ValidationFail = require('./Errors/ValidationFail');
+const ValidationFail = require('./MeboErrors/ValidationFail');
 const Utils = require('./Utils');
 
 // symbols used for private members to avoid any potential clashing
@@ -42,6 +42,15 @@ const _registeredProperties = Symbol('registeredProperties');
  * Input.create('myInput: bool[]')
  * ```
  *
+ * In case you want to hide specific inputs from readers ({@link Reader}), you can
+ * use the prefix `_` in the input name. By doing that the input is automatically
+ * assigned as hidden (same effect as setting the property `hidden=true` at the
+ * construction of the input):
+ *
+ * ```javascript
+ * Input.create('_myInput: bool[]')
+ * ```
+ *
  * Additionally, you can specify if an input is optional (not required) by adding
  * `?` beside of the input name:
  *
@@ -52,7 +61,7 @@ const _registeredProperties = Symbol('registeredProperties');
  * You can also create inputs through a verbose (boilerplate) interface where each
  * of the options described above can be defined at construction time via properties:
  * ```javascript
- * Input.create('myInput', {type: 'bool', vector: true, required: false})
+ * Input.create('myInput', {type: 'bool', vector: true, required: false, hidden: false})
  * ```
  *
  * Since inputs are used by actions they can be created directly inside of an {@link Action} via
@@ -176,7 +185,7 @@ class Input{
    */
   static create(inputInterface, properties={}, extendedValidation=null){
     const inputInterfaceParts = inputInterface.split(':');
-    const propertiesFinal = Object.assign({}, properties);
+    const propertiesFinal = {...properties};
 
     if (inputInterfaceParts.length === 2){
       for (let i=0, len=inputInterfaceParts.length; i < len; ++i){
@@ -206,6 +215,11 @@ class Input{
     // storing the input type in lower-case to keep the same convention
     // found in the registration
     propertiesFinal.type = propertiesFinal.type.toLowerCase();
+
+    // adding hidden property when input name starts with '_'
+    if (inputInterfaceParts[0].startsWith('_')){
+      propertiesFinal.hidden = true;
+    }
 
     return new InputTypeClass(inputInterfaceParts[0], propertiesFinal, extendedValidation);
   }

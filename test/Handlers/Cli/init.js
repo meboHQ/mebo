@@ -58,7 +58,7 @@ describe('Cli Init:', () => {
     options.stderr = new WriteStream();
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
-      if (result instanceof Mebo.Errors.Help){
+      if (result instanceof Mebo.MeboErrors.Help){
         error = null;
       }
 
@@ -76,7 +76,7 @@ describe('Cli Init:', () => {
     options.stderr = new WriteStream();
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
-      if (result instanceof Mebo.Errors.Help){
+      if (result instanceof Mebo.MeboErrors.Help){
         error = null;
       }
 
@@ -95,7 +95,7 @@ describe('Cli Init:', () => {
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
 
-      if (result instanceof Mebo.Errors.Help){
+      if (result instanceof Mebo.MeboErrors.Help){
         try{
           assert.equal(`${result.message}\n`, fs.readFileSync(path.join(__dirname, 'commandsHelp.txt'), 'utf8'));
           error = null;
@@ -121,7 +121,7 @@ describe('Cli Init:', () => {
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
 
-      if (result instanceof Mebo.Errors.Help){
+      if (result instanceof Mebo.MeboErrors.Help){
         try{
           assert.equal(`${result.message}\n`, fs.readFileSync(path.join(__dirname, 'commandsHelpWithDescription.txt'), 'utf8'));
           error = null;
@@ -148,7 +148,7 @@ describe('Cli Init:', () => {
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
 
-      if (result instanceof Mebo.Errors.Help){
+      if (result instanceof Mebo.MeboErrors.Help){
         try{
           assert.equal(`${result.message}\n`, fs.readFileSync(path.join(__dirname, 'commandsHelpWithoutBanner.txt'), 'utf8'));
           error = null;
@@ -172,7 +172,7 @@ describe('Cli Init:', () => {
     options.stderr = new WriteStream();
     options.finalizeCallback = ((result) => {
       let error = new Error('Invalid result');
-      if (result instanceof Mebo.Errors.Help && result.message === "Could not initialize 'invalidCommand', command not found!"){
+      if (result instanceof Mebo.MeboErrors.Help && result.message === "Could not initialize 'invalidCommand', command not found!"){
         error = null;
       }
 

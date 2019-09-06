@@ -5,7 +5,7 @@ const http = require('http');
 const https = require('https');
 const TypeCheck = require('js-typecheck');
 const Input = require('../Input');
-const ValidationFail = require('../Errors/ValidationFail');
+const ValidationFail = require('../MeboErrors/ValidationFail');
 const BaseText = require('./BaseText');
 
 
@@ -184,7 +184,7 @@ class Url extends BaseText{
     const value = await super._validation(at);
 
     // supported extensions check
-    if (this.property('allowedExtensions') && !this.property('allowedExtensions').map(x => x.toLowerCase()).includes(this.extension(at).toLowerCase())){
+    if (this.property('allowedExtensions') && !this.property('allowedExtensions').map((x) => x.toLowerCase()).includes(this.extension(at).toLowerCase())){
       throw new ValidationFail(
         util.format("Extension '%s' is not supported! (supported extensions: %s)", this.extension(at), this.property('allowedExtensions')),
         'fb833b76-2ebb-4f27-be45-dac510bda816',

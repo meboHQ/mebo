@@ -3,7 +3,7 @@ const assert = require('assert');
 const TypeCheck = require('js-typecheck');
 const debug = require('debug')('Mebo');
 const Utils = require('./Utils');
-const Errors = require('./Errors');
+const MeboErrors = require('./MeboErrors');
 
 // symbols used for private members to avoid any potential clashing
 // caused by re-implementations
@@ -156,7 +156,7 @@ class Writer{
 
     // printing the stack-trace information when running in development mode
     /* istanbul ignore next */
-    if (process.env.NODE_ENV === 'development' && err.stack && !(err instanceof Errors.Help)){
+    if (process.env.NODE_ENV === 'development' && err.stack && !(err instanceof MeboErrors.Help)){
       process.stderr.write(`${err.stack}\n`);
       debug(err.stack);
     }
