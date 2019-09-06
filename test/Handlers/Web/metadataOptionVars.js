@@ -27,10 +27,10 @@ describe('Web metadata option vars:', () => {
     );
   });
 
-  it('Should test $webUploadMaxFileSize var', () => {
+  it('Should test $webDefaultUploadMaxFileSize var', () => {
     assert.equal(
-      Metadata.optionVar('$webUploadMaxFileSize'),
-      'handler.web.readOptions.uploadMaxFileSize',
+      Metadata.optionVar('$webDefaultUploadMaxFileSize'),
+      'handler.web.readOptions.uploadDefaultMaxFileSize',
     );
   });
 

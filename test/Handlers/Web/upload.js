@@ -41,6 +41,25 @@ describe('Web Upload:', () => {
     }
   }
 
+  class DisableRestrictWebAccessAction3 extends testutils.Actions.Shared.UploadAction{
+    constructor(){
+      super();
+      this.input('file').assignProperty('restrictWebAccess', false);
+      this.input('file').assignProperty('maxFileSize', 5 * 1024 * 1024);
+    }
+  }
+
+  class DisableRestrictWebAccessAction4 extends Mebo.Action{
+    constructor(){
+      super();
+      this.createInput('buffer: buf', {maxBufferSize: 5 * 1024 * 1024, hidden: false});
+    }
+
+    _perform(data){
+      return Promise.resolve(this.input('buffer').value().toString('ascii'));
+    }
+  }
+
   before((done) => {
 
     // registrations
@@ -48,12 +67,16 @@ describe('Web Upload:', () => {
     Mebo.Action.register(testutils.Actions.Shared.VectorUploadAction, 'vectorUploadAction');
     Mebo.Action.register(DisableRestrictWebAccessAction1, 'disableRestrictWebAccessAction1');
     Mebo.Action.register(DisableRestrictWebAccessAction2, 'disableRestrictWebAccessAction2');
+    Mebo.Action.register(DisableRestrictWebAccessAction3, 'disableRestrictWebAccessAction3');
+    Mebo.Action.register(DisableRestrictWebAccessAction4, 'disableRestrictWebAccessAction4');
 
     // webfying actions
     Mebo.Handler.grantAction('web', 'uploadAction', {method: 'post', restRoute: '/E'});
     Mebo.Handler.grantAction('web', 'vectorUploadAction', {method: 'post', restRoute: '/E/VectorUploadAction'});
     Mebo.Handler.grantAction('web', 'disableRestrictWebAccessAction1', {method: 'post', auth: false, restRoute: '/E/DisableRestrictWebAccessAction1'});
     Mebo.Handler.grantAction('web', 'disableRestrictWebAccessAction2', {method: 'post', auth: false, restRoute: '/E/DisableRestrictWebAccessAction2'});
+    Mebo.Handler.grantAction('web', 'disableRestrictWebAccessAction3', {method: 'post', auth: false, restRoute: '/E/DisableRestrictWebAccessAction3'});
+    Mebo.Handler.grantAction('web', 'disableRestrictWebAccessAction4', {method: 'post', auth: false, restRoute: '/E/DisableRestrictWebAccessAction4'});
 
     // auth
     passport.use(new BasicStrategy(
@@ -130,6 +153,142 @@ describe('Web Upload:', () => {
         const result = JSON.parse(body);
         assert.equal(result.data.a, 'A value');
         assert.equal(result.data.file, '/a/custom/filePath.bin');
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
+
+  it('Should allow the upload of file under the maximum allowed size by the action', (done) => {
+
+    const postFormData = {
+      a: 'A value',
+
+      file: {
+        value: Buffer.from(Array.from('x'.repeat(5 * 1024 * 1014)).join('')),
+        options: {
+          filename: 'foo.bin',
+          contentType: 'application/bin',
+        },
+      },
+    };
+
+    request.post(`http://localhost:${port}/E/DisableRestrictWebAccessAction3`, {formData: postFormData}, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+      try{
+        assert.equal(response.statusCode, 200);
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
+
+  it('Should not allow the upload of file larger than the maximum size allowed by the action', (done) => {
+
+    const postFormData = {
+      file: {
+        value: Buffer.from(Array.from('x'.repeat(6 * 1024 * 1014)).join('')),
+        options: {
+          filename: 'foo.bin',
+          contentType: 'application/bin',
+        },
+      },
+    };
+
+    request.post(`http://localhost:${port}/E/DisableRestrictWebAccessAction3`, {formData: postFormData}, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+      try{
+        assert.equal(response.statusCode, 400);
+
+        const result = JSON.parse(body);
+        assert(JSON.parse(result.error.message).message.startsWith('maxFileSize exceeded,'));
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
+  it('Should allow upload of a buffer under the maximum size allowed by the action', (done) => {
+
+    const postFormData = {
+      buffer: {
+        value: Buffer.from('abc123'),
+        options: {
+          filename: 'foo.bin',
+          contentType: 'text/plain',
+        },
+      },
+    };
+
+    request.post(`http://localhost:${port}/E/DisableRestrictWebAccessAction4`, {formData: postFormData}, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+      try{
+        assert.equal(response.statusCode, 200);
+
+        const result = JSON.parse(body);
+        assert.equal(result.data.value, 'abc123');
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
+
+  it('Should not allow the upload of a buffer larger than the maximum size allowed by the action', (done) => {
+
+    const postFormData = {
+      a: 'A value',
+
+      buffer: {
+        value: Buffer.from(Array.from('x'.repeat(6 * 1024 * 1014)).join('')),
+        options: {
+          filename: 'foo.bin',
+          contentType: 'application/bin',
+        },
+      },
+    };
+
+    request.post(`http://localhost:${port}/E/DisableRestrictWebAccessAction4`, {formData: postFormData}, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+      try{
+        assert.equal(response.statusCode, 400);
+
+        const result = JSON.parse(body);
+        assert(JSON.parse(result.error.message).message.startsWith('maxFileSize exceeded,'));
       }
       catch(errr){
         error = errr;

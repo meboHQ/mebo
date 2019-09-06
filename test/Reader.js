@@ -32,8 +32,8 @@ describe('Reader:', () => {
     action.setSession(new Session());
 
     const reader = new CustomReader(action);
-    // default option
-    assert.equal(reader.setOption('defaultOption', 'test'));
+    reader.setOption('defaultOption', 'test');
+    assert.equal(reader.option('defaultOption'), 'test');
   });
 
   it('Should parse the action input values', () => {
