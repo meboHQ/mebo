@@ -1,59 +1,82 @@
 matrix:
   include:
     - os: linux
-      dist: trusty
+      language: node_js
+      node_js: "12"
+      sudo: false
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-8
+    - os: linux
+      language: node_js
+      node_js: "11"
+      sudo: false
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-8
+    - os: linux
       language: node_js
       node_js: "10"
       sudo: false
-      env:
-        CXX=g++-4.8
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - g++-4.8
+          - g++-8
     - os: linux
-      dist: trusty
       language: node_js
       node_js: "9"
       sudo: false
-      env:
-        CXX=g++-4.8
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - g++-4.8
+          - g++-8
     - os: linux
-      dist: trusty
       language: node_js
       node_js: "8"
       sudo: false
-      env:
-        CXX=g++-4.8
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - g++-4.8
+          - g++-8
 
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.2
+      language: node_js
+      node_js: "12"
+      env:
+      - TOOL="xcode-osx"
+    - os: osx
+      osx_image: xcode10.2
+      language: node_js
+      node_js: "11"
+      env:
+      - TOOL="xcode-osx"
+    - os: osx
+      osx_image: xcode10.2
       language: node_js
       node_js: "10"
       env:
       - TOOL="xcode-osx"
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.2
       language: node_js
       node_js: "9"
       env:
       - TOOL="xcode-osx"
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.2
       language: node_js
       node_js: "8"
       env:
@@ -62,5 +85,7 @@ matrix:
 script:
   - npm run test-ci
 install:
+  - node --version
+  - npm --version
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-8; export CC=gcc-8; fi
   - npm install
-
