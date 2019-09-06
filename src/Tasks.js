@@ -94,7 +94,7 @@ class Tasks{
       return a.i - b.i;
     });
 
-    const finalTaskOrder = taskOrder.map(x => x.contents);
+    const finalTaskOrder = taskOrder.map((x) => x.contents);
 
     let resultIndex = 0;
     const actionIdMap = new Map();
@@ -166,7 +166,7 @@ class Tasks{
    * multiple times it ensures each task is only executed once.
    *
    * Failed tasks are reported through an exception raised after all tasks have been executed,
-   * this error provides the `taskErrors` member that contains a list about the errors raised
+   * this error provides the `taskMeboErrors` member that contains a list about the errors raised
    * during the execution of the tasks.
    *
    * @return {Promise<Array>} Returns an array containing each result of the tasks
@@ -174,7 +174,7 @@ class Tasks{
   async run(){
 
     const contents = await this.contents();
-    const taskErrors = [];
+    const taskMeboErrors = [];
     const result = [];
 
     let currentIndex = 0;
@@ -196,22 +196,22 @@ class Tasks{
         );
       }
       catch(err){
-        taskErrors.push(err);
+        taskMeboErrors.push(err);
       }
 
     }
 
     // throwing a new exception about the failed tasks
-    if (taskErrors.length){
-      const error = new Error(`Failed to execute ${taskErrors.length} tasks (out of ${contents.length})`);
+    if (taskMeboErrors.length){
+      const error = new Error(`Failed to execute ${taskMeboErrors.length} tasks (out of ${contents.length})`);
 
       // including the stack trace information from the failed tasks (debugging purposes)
-      for (const taskError of taskErrors){
+      for (const taskError of taskMeboErrors){
         error.stack += `\n\nTask stack trace:\n${taskError.stack}`;
       }
 
       // also, including the task errors to the error itself (debugging purposes)
-      error.taskErrors = taskErrors;
+      error.taskMeboErrors = taskMeboErrors;
 
       throw error;
     }

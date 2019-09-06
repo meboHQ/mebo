@@ -15,7 +15,7 @@ function deepMerge(objectA, objectB){
   assert(TypeCheck.isPlainObject(objectA), 'objectA needs to be a plain object');
   assert(TypeCheck.isPlainObject(objectB), 'objectB needs to be a plain object');
 
-  const result = Object.assign({}, objectA);
+  const result = {...objectA};
 
   for (const key in objectB){
 
