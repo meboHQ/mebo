@@ -26,14 +26,15 @@ describe('Reader:', () => {
     }
   }
 
-  it('Should test custom options defined to the writer', () => {
+  it('Should test custom options defined to the reader', () => {
 
     const action = new testutils.Actions.Shared.PlainObjectResult();
     action.setSession(new Session());
 
     const reader = new CustomReader(action);
-    reader.setOption('defaultOption', 'test');
+    reader.setOption('defaultOption2', 10);
     assert.equal(reader.option('defaultOption'), 'test');
+    assert.equal(reader.option('defaultOption2'), 10);
   });
 
   it('Should parse the action input values', () => {
