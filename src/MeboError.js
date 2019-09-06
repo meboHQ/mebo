@@ -1,17 +1,11 @@
+const Settings = require('./Settings');
+
 /**
- * Exception raised when a resource already exists.
- *
- * This error is provided by Mebo to complement the rest support ({@link Web.restful}),
- * although the main purpose is to provide a status code which is used when reporting
- * it through requests, it can still be used when an action is executed
- * through a different handler since it defines a custom exception type that can be
- * used to identify the error.
- *
- * @see {@link Writer._errorOutput}
+ * Base exception class used by mebo exceptions.
  */
 class MeboError extends Error{
 
-  constructor(message='Conflict'){
+  constructor(message){
     super(message);
 
     /**
@@ -19,12 +13,12 @@ class MeboError extends Error{
      * level action (an action that has not been created from another action).
      *
      * Value driven by:
-     * `Settings.get('error/conflict/status')`
+     * `Settings.get('error/status')`
      * (default: `409`)
      *
      * @type {number}
      */
-    this.status = 500; // Settings.get('error/conflict/status');
+    this.status = Settings.get('error/status');
 
     /**
      * Boolean telling if this error is not allowed as output ({@link Handler.output})
@@ -34,13 +28,17 @@ class MeboError extends Error{
      * emitted by the signal {@link Handler.onErrorDuringOutput}.
      *
      * Value driven by:
-     * `Settings.get('error/conflict/disableOutputInNested')`
+     * `Settings.get('error/disableOutputInNested')`
      * (default: `false`)
      *
      * @type {boolean}
      */
-    this.disableOutputInNested = false; // = Settings.get('error/conflict/disableOutputInNested');
+    this.disableOutputInNested = Settings.get('error/disableOutputInNested');
   }
 }
+
+// default settings
+Settings.set('error/status', 500);
+Settings.set('error/disableOutputInNested', false);
 
 module.exports = MeboError;
