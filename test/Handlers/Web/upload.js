@@ -372,6 +372,44 @@ describe('Web Upload:', () => {
     });
   });
 
+  it('Should perform an action through POST by uploading a single file in vector input', (done) => {
+
+    const postFormData = {
+      // Pass a simple key-value pair
+      a: 'A value',
+
+      file: {
+        value: Buffer.from([1, 2, 3]),
+        options: {
+          filename: 'foo.bin',
+          contentType: 'application/bin',
+        },
+      },
+    };
+
+    request.post({url: `http://localhost:${port}/E/VectorUploadAction`, formData: postFormData}, (err, response, body) => {
+
+      if (err){
+        return done(err);
+      }
+
+      let error = null;
+
+      try{
+        assert.equal(response.statusCode, 200);
+
+        const result = JSON.parse(body);
+        assert.equal(result.data.a, postFormData.a);
+        assert.equal(result.data['foo.bin'], '039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81');
+      }
+      catch(errr){
+        error = errr;
+      }
+
+      done(error);
+    });
+  });
+
   it('Should perform an action through POST by uploading multiple files for the same input (vector) keeping the file names', (done) => {
 
     const postFormData = {
