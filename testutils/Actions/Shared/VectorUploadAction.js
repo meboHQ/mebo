@@ -11,20 +11,14 @@ class VectorUploadAction extends Mebo.Action{
   async _perform(data){
     const checksum = this.createAction('file.checksum');
 
-    checksum.input('file').setValue(data.file[0]);
-    const file1 = await checksum.run();
-
-    checksum.input('file').setValue(data.file[1]);
-    const file2 = await checksum.run();
-
-    checksum.input('file').setValue(data.file[2]);
-    const file3 = await checksum.run();
-
     const result = {};
     result[this.input('a').name()] = data.a;
-    result[this.input('file').basename(0)] = file1;
-    result[this.input('file').basename(1)] = file2;
-    result[this.input('file').basename(2)] = file3;
+
+    for (let i=0; i < data.file.length; i++){
+      checksum.input('file').setValue(data.file[i]);
+      // eslint-disable-next-line no-await-in-loop
+      result[this.input('file').basename(i)] = await checksum.run();
+    }
 
     return result;
   }
