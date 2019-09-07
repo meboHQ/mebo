@@ -218,6 +218,12 @@ class WebRequest extends Reader{
             requestInputValue = bodyFields.fields[inputName];
           }
         }
+
+        // in case of a vector input when just a single file has been uploaded we need to
+        // make the value from a scalar to vector one
+        if (input.isVector() && inputName in bodyFields.files && !TypeCheck.isList(requestInputValue)){
+          requestInputValue = [requestInputValue];
+        }
       }
 
       // GET, DELETE ...
@@ -381,7 +387,7 @@ class WebRequest extends Reader{
 
     for (const inputName in bodyFields.fields){
 
-      // checking if there is any array field if so extracting their name and value
+      // checking if there is any array field if so extracting their names and values
       if (inputName.endsWith(']')){
         const inputParts = inputName.split('[');
         if (inputParts.length === 2){
