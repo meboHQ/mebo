@@ -30,7 +30,7 @@ By using mebo you can easily expose your evaluations through the [web](https://m
 REST/middlewares and also without much effort expose them through [command-line](https://mebohq.github.io/docs/class/src/Handlers/Cli.js~Cli.html) (CLI coming handy during development/debugging to interact 
 with your evaluations quickly).
 
-So, you can use Mebo for desktop apps, web apps or all together.
+So, you can use Mebo for building desktop apps, web apps or all together.
 
 <p align="center">
   <img src="https://mebohq.github.io/docs/data/hi.png?v=2"/>
