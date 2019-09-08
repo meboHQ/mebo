@@ -14,7 +14,7 @@ class MeboError extends Error{
      *
      * Value driven by:
      * `Settings.get('error/status')`
-     * (default: `409`)
+     * (default: `500`)
      *
      * @type {number}
      */
