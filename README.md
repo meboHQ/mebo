@@ -16,9 +16,21 @@
 
 Mebo is an experimental framework focused in providing a unified interface across multiple domains.
 
-The support for multiple domains is done by promoting abstracted implementations which don't need to know too much about the specifics of each domain. Instead, the specifics are delegated to Mebo.
+The idea behing mebo is to provide a platform where [evaluations](https://mebohq.github.io/docs/class/src/Action.js~Action.html) and 
+their requirements are defined in a simple matter. The way it is done 
+lets you to build strict specifications with validations in a fairly 
+expressive way.
 
-It comes bundled with support for web (rest/middlewares) and command-line (docopt) domains which was one of the reasons why I wanted to try to find a common ground to provide an unified interface for such distinctive domains that turned out to be extremely challenge.
+Evaluations in Mebo are exposed by promoting implementations that don't need to be too coupled to a specific 
+domain instead, most of the boilerplate code needed when [bridging](https://mebohq.github.io/docs/class/src/Handler.js~Handler.html) a domain 
+(for instance on the web: request & response) to an evaluation is 
+avoided and automatically handled by mebo ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)).
+
+By using mebo you can easily expose your evaluations through the [web](https://mebohq.github.io/docs/class/src/Handlers/Web.js~Web.html) via 
+REST/middlewares and also without much effort expose them through [command-line](https://mebohq.github.io/docs/class/src/Handlers/Cli.js~Cli.html) (CLI coming handy during development/debugging to interact 
+with your evaluations quickly).
+
+So you can use Mebo for desktop apps, web apps or all together.
 
 <p align="center">
   <img src="https://mebohq.github.io/docs/data/hi.png?v=2"/>
