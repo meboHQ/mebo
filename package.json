@@ -1,6 +1,6 @@
 {
   "name": "mebo",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A framework focused in providing a unified interface across multiple domains",
   "scripts": {
     "build": "babel src --out-dir=dist --source-maps both",
