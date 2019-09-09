@@ -17,7 +17,7 @@
 Mebo is an experimental framework focused in providing a unified interface across multiple domains.
 
 The idea behing mebo is to provide a platform where [evaluations](https://mebohq.github.io/docs/class/src/Action.js~Action.html) and 
-their requirements are defined in a simple matter. The way it is done 
+their [requirements](https://mebohq.github.io/docs/class/src/Input.js~Input.html) are defined in a simple matter. The way it is done 
 lets you to build strict specifications with validations in a fairly 
 expressive way.
 
