@@ -36,6 +36,12 @@ So, you can use Mebo for building web apps, command-line apps or all together.
   <img src="https://mebohq.github.io/docs/data/hi.png?v=2"/>
 </p>
 
+## Upcoming integrations
+
+- [GraphQL](https://github.com/meboHQ/mebo/issues/121)
+- [gRPC](https://github.com/meboHQ/mebo/issues/122)
+- [Socket.io](https://github.com/meboHQ/mebo/issues/5)
+
 ## Key features
 - **Flexible architeture**. Mebo can be integrated to existing applications. Also, it's designed from ground up to be customizable and extendable
 
