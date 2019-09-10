@@ -31,11 +31,16 @@ class Sum extends Mebo.Action{
   }
 }
 
-// Command-line support: node . sum --value-x=5 --value-y=2
+// Command-line support:
+// node . --help
+// node . sum --help
+// node . sum --value-x=5 --value-y=2
 if (Mebo.Handler.get('cli').isSupported()){
   Mebo.Handler.get('cli').init();
 }
-// Web support: node . (http://localhost:8080/sum?valueX=5&valueY=2)
+// Web support: node .
+// GET: http://localhost:8080/sum?help
+// GET: http://localhost:8080/sum?valueX=5&valueY=2
 else{
   const app = express();
 
