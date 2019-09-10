@@ -38,7 +38,8 @@ class Sum extends Mebo.Action{
 if (Mebo.Handler.get('cli').isSupported()){
   Mebo.Handler.get('cli').init();
 }
-// Web support: node .
+// Web support:
+// node .
 // GET: http://localhost:8080/sum?help
 // GET: http://localhost:8080/sum?valueX=5&valueY=2
 else{
