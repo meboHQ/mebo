@@ -10,7 +10,7 @@
 ## What is an Action ?
 
 An action is used to implement evalutations that can be performed accross multiple domains
-
+> Tip: You can use one of the example full projects to run the code below: [Hello World](https://github.com/meboHQ/example-hello-world)
 ```javascript
 const Mebo = require('mebo');
 const express = require('express');
