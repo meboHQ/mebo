@@ -51,37 +51,6 @@ matrix:
           packages:
           - g++-8
 
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "12"
-      env:
-      - TOOL="xcode-osx"
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "11"
-      env:
-      - TOOL="xcode-osx"
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "10"
-      env:
-      - TOOL="xcode-osx"
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "9"
-      env:
-      - TOOL="xcode-osx"
-    - os: osx
-      osx_image: xcode10.2
-      language: node_js
-      node_js: "8"
-      env:
-      - TOOL="xcode-osx"
-
 script:
   - npm run test-ci
 install:
