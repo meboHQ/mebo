@@ -42,7 +42,7 @@
   "dependencies": {
     "compare-versions": "^3.5.1",
     "debug": "^4.1.1",
-    "ejs": "^2.7.1",
+    "ejs": "^3.0.1",
     "formidable": "^1.2.1",
     "ip": "^1.1.5",
     "js-typecheck": "^0.6.0",
