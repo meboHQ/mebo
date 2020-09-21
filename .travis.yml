@@ -1,5 +1,25 @@
 matrix:
   include:
+     - os: linux
+      language: node_js
+      node_js: "14"
+      sudo: false
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-8
+    - os: linux
+      language: node_js
+      node_js: "13"
+      sudo: false
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-8
     - os: linux
       language: node_js
       node_js: "12"
